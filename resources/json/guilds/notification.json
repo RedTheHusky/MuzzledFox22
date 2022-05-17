@@ -14,44 +14,27 @@
 		"enable": true,
 		"name": "test0425a",
 		"embed": {
-			"description": "News about the bot. To check please do `/news get` or `<prefix>news`",
+			"description": "<:new:736926339113680976>**New begging** Now available on **Github** and a public board on **Trello** so we can work together and improve the bot. For link and more info, please read,`/news get` or `<prefix>news`",
 			"color": 8388863
 		},
 		"guilds": {
-			"blocked": {"475589373791043594":{},"345772350819794947":{},"481700616457027597":{}},
+			"blocked": {
+				"475589373791043594": {},
+				"345772350819794947": {},
+				"481700616457027597": {}
+			},
 			"allowed": null
 		}
 	},
 	"trigger_news": {
 		"enable": true,
-		"name": "test0425a",
+		"name": "news0517a",
 		"timeout": 21600000,
 		"embed": {
-			"description": "<:new:736926339113680976> Bot Hosting Upgraded, moved away from self-hosting on raspberry pi to KVM VPS hosting. If you like the bot, please support it, you can check the link at the [site](https://redhusky.hostingerapp.com/muzzledfox/).\n<:new:736926339113680976> New privacy option to opt out for bot reading message content `/privacy` or `<prefix>privacy`\n<:new:736926339113680976> News configuration can be done in slash or `!>news help`.\n:lady_beetle: [Bug Reports](https://docs.google.com/forms/d/e/1FAIpQLSe_HBQam5TfzAab_Lpm6ZS9LioXDxh3qE2GFKGRxX94ZLCBbA/viewform?usp=sf_link)",
+			"description": "Links to [Github](https://github.com/RedTheHusky/MuzzledFox22.git) and [Board on Trello](https://trello.com/b/kDd7eaNV). Lets improve the bot together. \nOther news:\n• The bot will stay online while it can pay its hosting.\n• Due to private life situation, bot improvements are slow but any support&help will be welcomed. \n\nAdditional links: [server](https://discord.gg/FuUH5nn), [site](https://redhusky.hostingerapp.com/muzzledfox/),[bug report](https://docs.google.com/forms/d/e/1FAIpQLSe_HBQam5TfzAab_Lpm6ZS9LioXDxh3qE2GFKGRxX94ZLCBbA/viewform?usp=sf_link).\nIf you like the bot, please support it via on [Patreon](https://patreon.com/MuzzledFox) or [Paypal](https://paypal.me/reddiscordservers)",
 			"color": 8388863
 		},
 		"delete_option": true,
 		"auto_delete": 900
-	},
-	"news44": {
-		"enable": true,
-		"name": "annoucnment_0423",
-		"timeout": 21600000,
-		"embed": {
-			"description": "Prefix `!>` will be removed by the end of April. From that point on use the bot mentioning as prefix or slash.\n<:new:736926339113680976> New privacy option to opt out for bot reading message content `/privacy` or `<prefix>privacy`\n<:new:736926339113680976> Bot Hosting Upgraded, moved away from self-hosting on raspberry pi to KVM VPS hosting. If you like the bot, please support it, you can check the link at the [site](https://redhusky.hostingerapp.com/muzzledfox/).\n:lady_beetle: [Bug Reports](https://docs.google.com/forms/d/e/1FAIpQLSe_HBQam5TfzAab_Lpm6ZS9LioXDxh3qE2GFKGRxX94ZLCBbA/viewform?usp=sf_link)",
-			"color": 8388863
-		},
-		"delete_option": true,
-		"auto_delete": 900,
-		"default_val": {
-			"timeout_def_6hours": 21600000,
-			"auto_delete_15minutes": 900
-		},
-		"old": {
-			"embed_0421a": {
-				"description": "• Prefix '!>' will be removed by the end of April. From that point on use the bot mentioning as prefix or slash.\n<:new:736926339113680976> Setting up message privacy by using '/privacy' or '<prefix>privacy'\n<:new:736926339113680976> Bot is no more self-hosted from Raspberry pi, moved to a more proper hosting service. If you like the bot, please support it, you can more at [site](https://redhusky.hostingerapp.com/muzzledfox/).",
-				"color": 8388863
-			}
-		}
 	}
 }
