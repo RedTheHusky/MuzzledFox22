@@ -1,0 +1,125 @@
+    public lcText2Json text2Json=new lcText2Json();
+    public JSONArray gJsonMessageComponent=new JSONArray();
+    boolean loadMessageComponentDebug=true;
+    public lcMessageBuildComponents messageBuildComponents=new lcMessageBuildComponents();
+    public lcMessageBuildComponent messageBuildComponent_Button=new lcMessageBuildComponent();
+    public lcMessageBuildComponent messageBuildComponent_Select=new lcMessageBuildComponent();
+    public  lcMessageBuildComponent.SelectMenu selectContainer=null;
+    public lcMyMessageJsonBuilder myMessageJsonBuilder=new lcMyMessageJsonBuilder();
+    public void buildMessageComponents(){
+        String fName = "[buildMessageComponents]";
+        try {
+            messageBuildComponents.set(gJsonMessageComponent);
+        } catch (Exception e) {
+            logger.error(fName+"exception:"+e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
+
+        }
+    }
+    public JSONArray readMessageComponentsJson(String path){
+        String fName = "[loadMessageComponentsJson]";
+        try {
+            if(loadMessageComponentDebug){
+                text2Json.getFile2Json(path);
+                return text2Json.jsonArray;
+            }
+            if(!gGlobal.globalSettingsJson.has(llCommonKeys.keyMessageComponents)||gGlobal.globalSettingsJson.isNull(llCommonKeys.keyMessageComponents)){
+                gGlobal.globalSettingsJson.put(llCommonKeys.keyMessageComponents,new JSONObject());
+            }
+            JSONObject jsonObject=gGlobal.globalSettingsJson.optJSONObject(llCommonKeys.keyMessageComponents);
+            if(!jsonObject.has(path)||jsonObject.isNull(path)){
+                text2Json.getFile2Json(path);
+                jsonObject.put(path,text2Json.jsonArray);
+                return text2Json.jsonArray;
+            }else{
+                return jsonObject.getJSONArray(path);
+
+            }
+        } catch (Exception e) {
+            logger.error(fName+"exception:"+e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
+            return  null;
+        }
+    }
+    public void loadMessageComponents(String path,boolean build){
+        String fName = "[loadMessageComponents]";
+        try {
+            if(loadMessageComponentDebug){
+                text2Json.getFile2Json(path);
+                gJsonMessageComponent=text2Json.jsonArray;
+                if(build)messageBuildComponents.set(gJsonMessageComponent);
+                return;
+            }
+            if(!gGlobal.globalSettingsJson.has(llCommonKeys.keyMessageComponents)||gGlobal.globalSettingsJson.isNull(llCommonKeys.keyMessageComponents)){
+                gGlobal.globalSettingsJson.put(llCommonKeys.keyMessageComponents,new JSONObject());
+            }
+            JSONObject jsonObject=gGlobal.globalSettingsJson.optJSONObject(llCommonKeys.keyMessageComponents);
+            if(!jsonObject.has(path)||jsonObject.isNull(path)){
+                text2Json.getFile2Json(path);
+                jsonObject.put(path,text2Json.jsonArray);
+                gJsonMessageComponent=text2Json.jsonArray;
+            }else{
+                gJsonMessageComponent=jsonObject.getJSONArray(path);
+
+            }
+            if(build)messageBuildComponents.set(gJsonMessageComponent);
+        } catch (Exception e) {
+            logger.error(fName+"exception:"+e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
+
+        }
+    }
+    public void setMessageComponents(JSONArray jsonArray,boolean build){
+        String fName = "[setMessageComponents]";
+        try {
+            if(jsonArray==null)jsonArray=new JSONArray();
+            gJsonMessageComponent=jsonArray;
+            if(build)messageBuildComponents.set(gJsonMessageComponent);
+        } catch (Exception e) {
+            logger.error(fName+"exception:"+e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
+
+        }
+    }
+    public void addMessageComponents(JSONObject jsonObject,boolean build){
+        String fName = "[addMessageComponents]";
+        try {
+            if(jsonObject==null||jsonObject.isEmpty())return;
+            gJsonMessageComponent.put(jsonObject);
+            if(build)messageBuildComponents.set(gJsonMessageComponent);
+        } catch (Exception e) {
+            logger.error(fName+"exception:"+e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
+
+        }
+    }
+    public void addMessageComponents(JSONArray jsonArray,boolean build){
+        String fName = "[setMessageComponents]";
+        try {
+            if(jsonArray==null||jsonArray.isEmpty())return;
+            for(int i=0;i<jsonArray.length();i++){
+                gJsonMessageComponent.put(jsonArray.getJSONObject(i));
+            }
+            if(build)messageBuildComponents.set(gJsonMessageComponent);
+        } catch (Exception e) {
+            logger.error(fName+"exception:"+e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
+
+        }
+    }
+    public void loadMessageComponents(String path){
+        loadMessageComponents(path,true);
+    }
+    public void setMessageComponents(JSONArray jsonArray){
+        setMessageComponents(jsonArray,true);
+    }
+    public void addMessageComponents(JSONObject jsonObject){
+        addMessageComponents(jsonObject,true);
+    }
+    public void addMessageComponents(JSONArray jsonArray){ addMessageComponents(jsonArray,true); }

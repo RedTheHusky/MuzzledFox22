@@ -1,0 +1,106 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_onesie",
+				"options": [
+					{
+						"label": "None",
+						"value": "zero",
+						"description": "Naked like the b-day"
+					},
+					{
+						"label": "White",
+						"value": "one",
+						"description": "Classic"
+					},
+					{
+						"label": "White Plastic",
+						"value": "two",
+						"description": "Like the classic but holds more"
+					},
+					{
+						"label": "Pink",
+						"value": "three",
+						"description": "With pink color"
+					},
+					{
+						"label": "Pink Plastic",
+						"value": "four",
+						"description": "Pink&Plastic"
+					},
+					{
+						"label": "PullUps",
+						"value": "five",
+						"description": "For more mature ones"
+					},
+					{
+						"label": "Briefs4Night",
+						"value": "six",
+						"description": "Nighttime briefs"
+					},
+					{
+						"label": "BriefswClothing",
+						"value": "seven",
+						"description": "Briefs made of clothing"
+					},
+					{
+						"label": "BriefswPlastic",
+						"value": "eight",
+						"description": "Briefs made of plastic"
+					},
+					{
+						"label": "Swimmers",
+						"value": "nine",
+						"description": "Diapers specially for swimming. !Wont hold liquid!"
+					},
+					{
+						"label": "Eevee",
+						"value": "regional_indicator_symbol_a",
+						"description": "cute"
+					},
+					{
+						"label": "Pickachu",
+						"value": "regional_indicator_symbol_b",
+						"description": "Warrning, it might shock the wearer"
+					},
+					{
+						"label": "Paws",
+						"value": "regional_indicator_symbol_c",
+						"description": "Nice and comfy"
+					},
+					{
+						"label": "Peekabu",
+						"value": "regional_indicator_symbol_d",
+						"description": "Cute and hold alot"
+					},
+					{
+						"label": "Unicorn",
+						"value": "regional_indicator_symbol_e",
+						"description": "Yay..go horsy"
+					}
+				],
+				"placeholder": "Choose an diaper"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

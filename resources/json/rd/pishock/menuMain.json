@@ -1,0 +1,169 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "!label",
+				"style": 3,
+				"custom_id": "!enable/disable"
+			},
+			{
+				"type": 2,
+				"label": "🇸",
+				"style": 3,
+				"custom_id": "regional_indicator_symbol_s"
+			},
+			{
+				"type": 2,
+				"label": "🎲Games",
+				"style": 3,
+				"custom_id": "game_die"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_shocker",
+				"options": [
+					{
+						"label": "0️⃣ ",
+						"value": "zero"
+					},
+					{
+						"label": "1️⃣ ",
+						"value": "one"
+					},
+					{
+						"label": "2️⃣ ",
+						"value": "two"
+					},
+					{
+						"label": "3️⃣ ",
+						"value": "three"
+					},
+					{
+						"label": "4️⃣ ",
+						"value": "four"
+					},
+					{
+						"label": "5️⃣ ",
+						"value": "five"
+					},
+					{
+						"label": "6️⃣ ",
+						"value": "six"
+					},
+					{
+						"label": "7️⃣ ",
+						"value": "seven"
+					},
+					{
+						"label": "8️⃣ ",
+						"value": "eight"
+					},
+					{
+						"label": "9️⃣ ",
+						"value": "nine"
+					},
+					{
+						"label": "Add",
+						"value": "add"
+					}
+				],
+				"placeholder": "Choose an shocker"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "🔧Set",
+				"style": 3,
+				"custom_id": "shocker_set"
+			},
+			{
+				"type": 2,
+				"label": "🚀Trigger",
+				"style": 3,
+				"custom_id": "shocker_action"
+			},
+			{
+				"type": 2,
+				"label": "🔔Beep",
+				"style": 3,
+				"custom_id": "bell"
+			},
+			{
+				"type": 2,
+				"label": "📳Vibrate",
+				"style": 3,
+				"custom_id": "vibration_mode"
+			},
+			{
+				"type": 2,
+				"label": "⚡Zap",
+				"style": 3,
+				"custom_id": "zap"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "▫Switch Mode",
+				"style": 3,
+				"custom_id": "white_small_square"
+			},
+			{
+				"type": 2,
+				"label": "⚪White List",
+				"style": 3,
+				"custom_id": "white_circle"
+			},
+			{
+				"type": 2,
+				"label": "⚫Black List",
+				"style": 3,
+				"custom_id": "black_circle"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "◀",
+				"style": 3,
+				"custom_id": "arrow_backward"
+			},
+			{
+				"type": 2,
+				"label": "▶",
+				"style": 3,
+				"custom_id": "arrow_forward"
+			},
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"disabled":true,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

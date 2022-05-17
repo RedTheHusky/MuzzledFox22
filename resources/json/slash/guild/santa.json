@@ -1,0 +1,20 @@
+{
+	"name": "santa",
+	"delete":true,
+	"description": "Quick slash command for dearsanta, confessing to Santa.",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "sfw",
+			"description": "Confessing sfw stuffs to dear Santa."
+	
+		},
+		{
+			"type": 1,
+			"name": "nsfw",
+			"description": "Confessing nsfw stuffs to dear Santa."
+	
+		}
+	]
+}

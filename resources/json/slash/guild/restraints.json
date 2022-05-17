@@ -1,0 +1,403 @@
+{
+	"name": "restraints",
+	"description": "Bondage command",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "menu",
+			"description": "Menu pages",
+			"options": [
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				},
+				{
+					"type": 3,
+					"name": "subdir",
+					"description": "Subdirectory",
+					"regured":true,
+					"choices": [
+						{
+							"name": "main",
+							"value": "main"
+						},
+						{
+							"name": "auth",
+							"value": "auth"
+						},
+						{
+							"name": "nametag",
+							"value": "nametag"
+						},
+						{
+							"name": "gag",
+							"value": "gag"
+						},
+						{
+							"name": "collar",
+							"value": "collar"
+						},
+						{
+							"name": "cuffs",
+							"value": "cuffs"
+						},
+						{
+							"name": "straitjacket",
+							"value": "straitjacket"
+						},
+						{
+							"name": "mitts",
+							"value": "mitts"
+						},
+						{
+							"name": "suit",
+							"value": "suit"
+						},
+						{
+							"name": "hood",
+							"value": "hood"
+						},
+						{
+							"name": "chastity",
+							"value": "chastity"
+						},
+						{
+							"name": "blindfold",
+							"value": "blindfold"
+						},
+						{
+							"name": "ears",
+							"value": "ears"
+						},
+						{
+							"name": "lock",
+							"value": "lock"
+						},
+						{
+							"name": "encase",
+							"value": "encase"
+						},
+						{
+							"name": "pishock",
+							"value": "pishock"
+						},
+						{
+							"name": "timelock",
+							"value": "timelock"
+						},
+						{
+							"name": "timeout",
+							"value": "timeout"
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": 2,
+			"name": "auth",
+			"description": "Authorization",
+			"options": [
+				{
+					"type": 1,
+					"name": "menu",
+					"description": "Open menu",
+					"options": [
+						{
+							"name": "user",
+							"description": "The user to use on",
+							"type": 6
+						}
+					]
+				},
+				{
+					"type": 1,
+					"name": "access",
+					"description": "subs access level",
+					"options": [
+						{
+							"name": "level",
+							"description": "Level of access",
+							"type": 3,
+							"regured": true,
+							"choices": [
+								{
+									"name": "exposed",
+									"value": "exposed"
+								},
+								{
+									"name": "public",
+									"value": "public"
+								},
+								{
+									"name": "ask",
+									"value": "ask"
+								},
+								{
+									"name": "key",
+									"value": "key"
+								},
+								{
+									"name": "protected",
+									"value": "protected"
+								},
+								{
+									"name": "pet",
+									"value": "pet"
+								}
+							]
+						},
+						{
+							"name": "user",
+							"description": "The user to use on",
+							"type": 6
+						}
+					]
+				},
+				{
+					"type": 1,
+					"name": "owner_add",
+					"description": "Add owner",
+					"options": [
+						{
+							"name": "owner",
+							"description": "The user to use on",
+							"type": 6,
+							"regured": true
+						}
+					]
+				},
+				{
+					"type": 1,
+					"name": "owner_accept",
+					"description": "Accept ownership",
+					"options": [
+						{
+							"name": "user",
+							"description": "The user to use on",
+							"type": 6,
+							"regured": true
+						}
+					]
+				},
+				{
+					"type": 1,
+					"name": "owner_reject",
+					"description": "Reject ownership or release",
+					"options": [
+						{
+							"name": "user",
+							"description": "The user to use on",
+							"type": 6,
+							"regured": true
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "padlock",
+			"description": "The sub's padlock to its restraints.",
+			"options": [
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				},
+				{
+					"type": 5,
+					"name": "lock",
+					"description": "Locks the subs restraints."
+				}
+			]
+		},
+		{
+			"name": "gag",
+			"description": "A cute gag between the jaws.",
+			"type": 1,
+			"options": [
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				},
+				{
+					"type": 3,
+					"name": "level",
+					"description": "Gags&muzzle to gag your sub",
+					"choices": [
+						{
+							"name": "ungag",
+							"value": "ungag"
+						},
+						{
+							"name": "faux",
+							"value": "faux"
+						},
+						{
+							"name": "loose",
+							"value": "loose"
+						},
+						{
+							"name": "puppy",
+							"value": "puppy"
+						},
+						{
+							"name": "nucleus",
+							"value": "nucleus"
+						},
+						{
+							"name": "drone",
+							"value": "drone"
+						},
+						{
+							"name": "extreme",
+							"value": "extreme"
+						}
+					]
+				},
+				{
+					"type": 3,
+					"name": "type",
+					"description": "What type of gag the sub is wearing between the jaws.",
+					"choices": [
+						{
+							"name": "ball-gag",
+							"value": "ball"
+						},
+						{
+							"name": "leather-muzzle",
+							"value": "leather"
+						},
+						{
+							"name": "wire-muzzle",
+							"value": "wire"
+						},
+						{
+							"name": "paci",
+							"value": "paci"
+						},
+						{
+							"name": "tape",
+							"value": "tape"
+						},
+						{
+							"name": "dildo",
+							"value": "dildo"
+						},
+						{
+							"name": "reverse-dildo",
+							"value": "reverse-dildo"
+						},
+						{
+							"name": "ring",
+							"value": "ring"
+						},
+						{
+							"name": "sock",
+							"value": "sock"
+						},
+						{
+							"name": "underwear",
+							"value": "underwear"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "collar",
+			"description": "The type of animal",
+			"type": 1,
+			"options": [
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				},
+				{
+					"name": "type",
+					"description": "Types of collar",
+					"type": 3,
+					"choices": [
+						{
+							"name": "remove",
+							"value": "off"
+						},
+						{
+							"name": "leather",
+							"value": "leather"
+						},
+						{
+							"name": "latex",
+							"value": "latex"
+						},
+						{
+							"name": "rubber",
+							"value": "rubber"
+						},
+						{
+							"name": "chain",
+							"value": "chain"
+						},
+						{
+							"name": "iron",
+							"value": "iron"
+						}
+					]
+				},
+				{
+					"name": "shock",
+					"description": "Turn on/off the 'shock' function",
+					"type": 5
+				},
+				{
+					"name": "zap",
+					"description": "Bad puppy",
+					"type": 3,
+					"choices": [
+						{
+							"name": "warn",
+							"value": "warn"
+						},
+						{
+							"name": "zap",
+							"value": "zap"
+						},
+						{
+							"name": "punish",
+							"value": "punish"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "straitjacket",
+			"description": "A special jacket",
+			"type": 1,
+			"options": [
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "cuffs",
+			"description": "Cuffs to tie up pups legs.",
+			"options": [
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				}
+			]
+		}
+	]
+}

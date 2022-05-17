@@ -1,0 +1,220 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_arm",
+				"options": [
+					{
+						"label": "Free hands",
+						"value": "zero",
+						"description": "Hands free"
+					},
+					{
+						"label": "Armbinder",
+						"value": "one",
+						"description": "Hands inside armbinders"
+					},
+					{
+						"label": "Behind",
+						"value": "two",
+						"description": "Hands behind their back"
+					},
+					{
+						"label": "Behind Belt",
+						"value": "three",
+						"description": "Hands behind them and attached to belt"
+					},
+					{
+						"label": "Behind Belt Tight",
+						"value": "four",
+						"description": "Hands behind them and attached to belt, tightly"
+					},
+					{
+						"label": "Behind Tight",
+						"value": "five",
+						"description": "Hands behind their back, tightly"
+					},
+					{
+						"label": "Elbows",
+						"value": "six",
+						"description": "Hands restrained at elbows"
+					},
+					{
+						"label": "Front",
+						"value": "seven",
+						"description": "Hands n front of them"
+					},
+					{
+						"label": "Front Belt",
+						"value": "eight",
+						"description": "Hands in front and attached to belt"
+					},
+					{
+						"label": "Reverse Prayer",
+						"value": "nine",
+						"description": "Hands behind in players position"
+					},
+					{
+						"label": "Sides",
+						"value": "regional_indicator_symbol_a",
+						"description": "Hands at sides"
+					},
+					{
+						"label": "Sides Tight",
+						"value": "regional_indicator_symbol_b",
+						"description": "Hands at sides, tightly"
+					}
+				],
+				"placeholder": "Arms"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_leg",
+				"options": [
+					{
+						"label": "Free legs",
+						"value": "zero",
+						"description": "Free to walk&run"
+					},
+					{
+						"label": "Taut",
+						"value": "two",
+						"description": "Walking is easy, but running not so much"
+					},
+					{
+						"label": "Stand",
+						"value": "three",
+						"description": "Forced to stand"
+					},
+					{
+						"label": "Sit",
+						"value": "four",
+						"description": "Forced to sit and not get up to walk"
+					},
+					{
+						"label": "Lay Back",
+						"value": "five",
+						"description": "Force to lay on the ground"
+					},
+					{
+						"label": "Lay Belly",
+						"value": "six",
+						"description": "Force to lay on the ground"
+					},
+					{
+						"label": "Spreader bar",
+						"value": "seven",
+						"description": "Legs forcefully opened"
+					},
+					{
+						"label": "Hog Back",
+						"value": "eight",
+						"description": "Legs tied behind their back"
+					},
+					{
+						"label": "Hog Sideways",
+						"value": "nine",
+						"description": "Legs tied behind their back"
+					},
+					{
+						"label": "HogTie",
+						"value": "regional_indicator_symbol_a",
+						"description": "Legs tied behind their back"
+					}
+				],
+				"placeholder": "Legs"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_slowdown",
+				"options": [
+					{
+						"label": "Disabled",
+						"value": "white_circle"
+					},
+					{
+						"label": "Shortest",
+						"value": "large_blue_circle",
+						"description": "5 seconds"
+					},
+					{
+						"label": "Short",
+						"value": "green_circle",
+						"description": "15 seconds"
+					},
+					{
+						"label": "Normal",
+						"value": "yellow_circle",
+						"description": "30 seconds"
+					},
+					{
+						"label": "Long",
+						"value": "orange_circle",
+						"description": "45 seconds"
+					},
+					{
+						"label": "Longest",
+						"value": "red_circle",
+						"description": "60 seconds"
+					},
+					{
+						"label": "Custom",
+						"value": "purple_circle",
+						"description": "The default style, panel."
+					}
+				],
+				"placeholder": "Arms Slowdown"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_restriction",
+				"options": [
+					{
+						"label": "Unrestricted",
+						"value": "unlock"
+					},
+					{
+						"label": "Restricted",
+						"value": "lock",
+						"description": "restricted to the room"
+					}
+				],
+				"placeholder": "Channel restriction"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

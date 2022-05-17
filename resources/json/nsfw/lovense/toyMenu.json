@@ -1,0 +1,71 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "🇫unction",
+				"style": 3,
+				"custom_id": "regional_indicator_symbol_f"
+			},
+			{
+				"type": 2,
+				"label": "🇵reset",
+				"style": 3,
+				"custom_id": "regional_indicator_symbol_p"
+			},
+			{
+				"type": 2,
+				"label": "🛑Stop",
+				"style": 3,
+				"custom_id": "octagonal_sign"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "public/private",
+				"style": 3,
+				"custom_id": "public/private"
+			},
+			{
+				"type": 2,
+				"label": "on/off",
+				"style": 3,
+				"custom_id": "on/off"
+			},
+			{
+				"type": 2,
+				"label": "❌Remove",
+				"style": 3,
+				"custom_id": "x"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "⬆Up",
+				"style": 3,
+				"custom_id": "arrow_up"
+			},
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

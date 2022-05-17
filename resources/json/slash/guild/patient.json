@@ -1,0 +1,261 @@
+{
+	"name": "patient",
+	"description": "Patient",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "menu",
+			"description": "Menu pages",
+			"options": [
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				}
+			]
+		},
+		{
+			"type": 2,
+			"name": "set",
+			"description": "Set a character info",
+			"options": [
+				{
+					"type": 1,
+					"name": "text",
+					"description": "Edit a character text",
+					"options": [
+						{
+							"type": 5,
+							"name": "nsfw",
+							"description": "Is it nsfw character?",
+							"required": true
+						},
+						{
+							"type": 4,
+							"name": "slot",
+							"description": "The character slot number",
+							"required": true
+						},
+						{
+							"type": 3,
+							"name": "name",
+							"description": "Name of character"
+						},
+						{
+							"type": 3,
+							"name": "species",
+							"description": "Species of character"
+						},
+						{
+							"type": 4,
+							"name": "age",
+							"description": "Age of character"
+						},
+						{
+							"type": 3,
+							"name": "gender",
+							"description": "Gender of character"
+						},
+						{
+							"type": 3,
+							"name": "sexuality",
+							"description": "Sexuality of character"
+						},
+						{
+							"type": 3,
+							"name": "desc",
+							"description": "Description of character"
+						},
+						{
+							"type": 3,
+							"name": "height",
+							"description": "height of character"
+						},
+						{
+							"type": 3,
+							"name": "weight",
+							"description": "Weight of character"
+						},
+						{
+							"type": 3,
+							"name": "reason",
+							"description": "Reason for incarceration"
+						},
+						{
+							"type": 3,
+							"name": "minimum",
+							"description": "Patient minimum stay"
+						},
+						{
+							"type": 3,
+							"name": "security",
+							"description": "Patient Security description"
+						},
+						{
+							"type": 3,
+							"name": "medical",
+							"description": "Patient medical record"
+						},
+						{
+							"type": 3,
+							"name": "treatment",
+							"description": "Patient treatment"
+						},
+						{
+							"type": 3,
+							"name": "schedule",
+							"description": "Patient schedule"
+						}
+					]
+				},
+				{
+					"type": 1,
+					"name": "attachment",
+					"description": "Edit a character files",
+					"options": [
+						{
+							"type": 5,
+							"name": "nsfw",
+							"description": "Is it nsfw character?",
+							"required": true
+						},
+						{
+							"type": 4,
+							"name": "slot",
+							"description": "The character slot number",
+							"required": true
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "get",
+			"description": "Get a character info",
+			"options": [
+				{
+					"type": 4,
+					"name": "slot",
+					"description": "The character slot number",
+					"required": true
+				},
+				{
+					"type": 3,
+					"name": "field",
+					"description": "Select the field",
+					"choices": [
+						{
+							"name": "main",
+							"value": "field_main"
+						},
+						{
+							"name": "desc",
+							"value": "field_desc"
+						,
+						{
+							"name": "medical",
+							"value": "field_medical"
+						},
+						{
+							"name": "schedule",
+							"value": "field_schedule"
+						},
+						{
+							"name": "incident",
+							"value": "field_incident"
+						},
+						{
+							"name": "note",
+							"value": "field_note"
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "new",
+			"description": "Add new character",
+			"options": [
+				{
+					"type": 5,
+					"name": "nsfw",
+					"description": "Is it nsfw character?",
+					"required": true
+				},
+				{
+					"type": 3,
+					"name": "name",
+					"description": "Name of character"
+				},
+				{
+					"type": 3,
+					"name": "species",
+					"description": "Species of character"
+				},
+				{
+					"type": 4,
+					"name": "age",
+					"description": "Age of character"
+				},
+				{
+					"type": 3,
+					"name": "gender",
+					"description": "Gender of character"
+				},
+				{
+					"type": 3,
+					"name": "sexuality",
+					"description": "Sexuality of character"
+				},
+				{
+					"type": 3,
+					"name": "desc",
+					"description": "Description of character"
+				},
+				{
+					"type": 3,
+					"name": "height",
+					"description": "height of character"
+				},
+				{
+					"type": 3,
+					"name": "weight",
+					"description": "Weight of character"
+				},
+				{
+					"type": 3,
+					"name": "reason",
+					"description": "Reason for incarceration"
+				},
+				{
+					"type": 3,
+					"name": "minimum",
+					"description": "Patient minimum stay"
+				},
+				{
+					"type": 3,
+					"name": "security",
+					"description": "Patient Security description"
+				},
+				{
+					"type": 3,
+					"name": "medical",
+					"description": "Patient medical record"
+				},
+				{
+					"type": 3,
+					"name": "treatment",
+					"description": "Patient treatment"
+				},
+				{
+					"type": 3,
+					"name": "schedule",
+					"description": "Patient schedule"
+				}
+			]
+		}
+	]
+}

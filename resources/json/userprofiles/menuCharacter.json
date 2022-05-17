@@ -1,0 +1,85 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_edit",
+				"options": [
+					{
+						"label": "Name",
+						"value": "one"
+					},
+					{
+						"label": "Species",
+						"value": "two"
+					},
+					{
+						"label": "Age",
+						"value": "three"
+					},
+					{
+						"label": "Gender",
+						"value": "four"
+					},
+					{
+						"label": "Sexuality",
+						"value": "five"
+					},
+					{
+						"label": "Description",
+						"value": "six"
+					},
+					{
+						"label": "for Image",
+						"value": "seven"
+					},
+					{
+						"label": "for Avatar",
+						"value": "eight"
+					},
+					{
+						"label": "RpPreferencer fave",
+						"value": "star"
+					},
+					{
+						"label": "RpPreferencer yes",
+						"value": "green_heart"
+					},
+					{
+						"label": "RpPreferencer maybe",
+						"value": "yellow_square"
+					},
+					{
+						"label": "RpPreferencer no",
+						"value": "skull"
+					}
+				],
+				"placeholder": "Choose an edit option"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "Delete",
+				"style": 4,
+				"custom_id": "x"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

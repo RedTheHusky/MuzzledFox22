@@ -1,0 +1,36 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "guild_allow_read",
+				"options": [
+					{
+						"label": "yes",
+						"value": "yes",
+						"description": "Free fingers"
+					},
+					{
+						"label": "no",
+						"value": "no",
+						"description": "Hands helpless in special socks"
+					}
+				],
+				"placeholder": "Choose a guild message privacy option"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+		
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

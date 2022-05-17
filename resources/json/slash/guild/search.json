@@ -1,0 +1,44 @@
+{
+	"name": "search",
+	"description": "Search for...",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "fa",
+			"description": "Search images from furaffinity.",
+			"options": [
+				{
+					"type": 3,
+					"name": "general",
+					"description": "sfw",
+					"choices": [
+						{
+							"name": "Dog",
+							"value": "animal_dog"
+						},
+						{
+							"name": "Cat",
+							"value": "animal_dog"
+						}
+					]
+				},
+				{
+					"type": 3,
+					"name": "mature",
+					"description": "nsfw",
+					"choices": [
+						{
+							"name": "Dog",
+							"value": "animal_dog"
+						},
+						{
+							"name": "Cat",
+							"value": "animal_dog"
+						}
+					]
+				}
+			]
+		}
+	]
+}

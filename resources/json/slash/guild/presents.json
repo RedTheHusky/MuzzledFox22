@@ -1,0 +1,71 @@
+{
+	"name": "presents",
+	"description": "Virtual gifts",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "menu",
+			"description": "Menu"
+		},
+		{
+			"type": 1,
+			"name": "event",
+			"description": "Partake in random event to get a present"
+		},
+		{
+			"type": 1,
+			"name": "inventory",
+			"description": "Check inventory",
+			"options": [
+				{
+					"name": "index",
+					"description": "To select an number from 0.",
+					"type": 4
+				},
+				{
+					"name": "user",
+					"description": "To select target.",
+					"type": 6
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "gift",
+			"description": "Give a present to somebody as a gift",
+			"options": [
+				{
+					"name": "user",
+					"description": "To select target.",
+					"type": 6,
+					"required": true
+				},
+				{
+					"name": "index",
+					"description": "To select an number from 0.",
+					"type": 4,
+					"required": true
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "use",
+			"description": "Using your gift",
+			"options": [
+				{
+					"name": "index",
+					"description": "To select an number from 0.",
+					"type": 4,
+					"required": true
+				},
+				{
+					"name": "user",
+					"description": "To select target.",
+					"type": 6
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,108 @@
+{
+  "data": {
+    "component_type": 2,
+    "custom_id": "click_blue"
+  },
+  "member": {
+    "premium_since": null,
+    "nick": "Red",
+    "joined_at": "2018-08-22T05:46:16.659000+00:00",
+    "communication_disabled_until": null,
+    "permissions": "2199023255551",
+    "roles": [
+      "481701001758507008",
+      "736647455164334080",
+      "771014712040095744",
+      "760426203353579590",
+      "481713466877542413",
+      "732652119093674099",
+      "735202701175947284",
+      "735205038435074109",
+      "902430476663418911"
+    ],
+    "pending": false,
+    "deaf": false,
+    "mute": false,
+    "avatar": null,
+    "user": {
+      "public_flags": 512,
+      "id": "249197641181822977",
+      "avatar": "a_d53098f1c6d5bf0f4b25a79679c45a4f",
+      "username": "Red The Husky",
+      "discriminator": "9918"
+    },
+    "is_pending": false
+  },
+  "guild_id": "481700616457027597",
+  "id": "913006076423729183",
+  "type": 3,
+  "message": {
+    "mention_everyone": false,
+    "pinned": false,
+    "components": [
+      {
+        "components": [
+          {
+            "custom_id": "click_blue",
+            "style": 1,
+            "label": "Click blue/primary!",
+            "type": 2,
+            "hash": ""
+          },
+          {
+            "custom_id": "click_grey",
+            "style": 2,
+            "label": "Click grey/secondary!",
+            "type": 2,
+            "hash": ""
+          },
+          {
+            "custom_id": "click_green",
+            "style": 3,
+            "label": "Click green/success!",
+            "type": 2,
+            "hash": ""
+          },
+          {
+            "custom_id": "click_red",
+            "style": 4,
+            "label": "Click red/danger!",
+            "type": 2,
+            "hash": ""
+          },
+          {
+            "style": 5,
+            "label": "Click grey/link!",
+            "type": 2,
+            "url": "https://discord.com/developers/docs/interactions/message-components"
+          }
+        ],
+        "type": 1
+      }
+    ],
+    "attachments": [],
+    "author": {
+      "bot": true,
+      "public_flags": 0,
+      "id": "389512707973316608",
+      "avatar": "f67792f59fa6cefdaf1ac385ada00b1b",
+      "username": "Red_MusicBot",
+      "discriminator": "1646"
+    },
+    "flags": 0,
+    "type": 0,
+    "mention_roles": [],
+    "edited_timestamp": null,
+    "content": "Components",
+    "tts": false,
+    "mentions": [],
+    "id": "848960945874927646",
+    "embeds": [],
+    "channel_id": "848960210160582686",
+    "timestamp": "2021-05-31T16:27:42.428000+00:00"
+  },
+  "version": 1,
+  "channel_id": "848960210160582686",
+  "application_id": "389512707973316608",
+  "token": "aW50ZXJhY3Rpb246OTEzMDA2MDc2NDIzNzI5MTgzOnY5alZjNDBiQzlKaUM1c0ZVaUZZWnFrWnA1TGN4bWptQ2NZOVltVUUwNGpUTTlSd25GQWlyM0lvcnFxU3ZEVWJkTEptWnlsbTM3THd6d0JTZVFMY0JVakQ4ODREZFB5RFl0NW1vU00xQ1JyTTFYMnltelhwR09UY3BTZU9BODRS"
+}

@@ -1,0 +1,11 @@
+{
+	"name": "help",
+	"description": "Accessing bot help menu",
+	"options": [
+		{
+			"type": 1,
+			"name": "commands",
+			"description": "The bot commands"
+		}
+	]
+}

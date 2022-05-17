@@ -1,0 +1,94 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "zero|one",
+				"style": 1,
+				"custom_id": "zero|one"
+			},
+			{
+				"type": 2,
+				"label": "💶Gag exception",
+				"style": 3,
+				"custom_id": "euro"
+			},
+			{
+				"type": 2,
+				"label": "💵(Server)Gag exception",
+				"style": 3,
+				"custom_id": "dollar"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "2️⃣View badwords",
+				"style": 1,
+				"custom_id": "two"
+			},
+			{
+				"type": 2,
+				"label": "4️⃣Add badword",
+				"style": 1,
+				"custom_id": "four"
+			},
+			{
+				"type": 2,
+				"label": "7️⃣Clear badwords",
+				"style": 1,
+				"custom_id": "seven"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "3️⃣View enforcewords",
+				"style": 1,
+				"custom_id": "three"
+			},
+			{
+				"type": 2,
+				"label": "5️⃣Add enforceword",
+				"style": 1,
+				"custom_id": "five"
+			},
+			{
+				"type": 2,
+				"label": "9️⃣Clear enforcewords",
+				"style": 1,
+				"custom_id": "nine"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "⬆Back",
+				"style": 1,
+				"custom_id": "arrow_up"
+			},
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 1,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 1,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

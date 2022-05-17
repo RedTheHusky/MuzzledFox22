@@ -1,0 +1,32 @@
+{
+	"name": "help",
+	"description": "Accessing bot help menu",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "general",
+			"description": "Teh general page"
+		},
+		{
+			"type": 1,
+			"name": "sfw",
+			"description": "SFW commands"
+		},
+		{
+			"type": 1,
+			"name": "nsfw",
+			"description": "NSFW commands"
+		},
+		{
+			"type": 1,
+			"name": "between",
+			"description": "SFW&NSFW commands"
+		},
+		{
+			"type": 1,
+			"name": "utility",
+			"description": "UTILITY commands"
+		}
+	]
+}

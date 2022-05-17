@@ -1,0 +1,110 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_type",
+				"options": [
+					{
+						"label": "Alpha",
+						"value": "regional_indicator_symbol_a",
+						"description": "Easiest toysuit"
+					},
+					{
+						"label": "Beta",
+						"value": "regional_indicator_symbol_b",
+						"description": "Challenging toysuit"
+					},
+					{
+						"label": "Omega",
+						"value": "regional_indicator_symbol_o",
+						"description": "Hard toysuit"
+					}
+				],
+				"placeholder": "Choose an toy suit"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "+1",
+				"style": 3,
+				"custom_id": "large_blue_circle"
+			},
+			{
+				"type": 2,
+				"label": "+5",
+				"style": 3,
+				"custom_id": "green_circle"
+			},
+			{
+				"type": 2,
+				"label": "+10",
+				"style": 3,
+				"custom_id": "yellow_circle"
+			},
+			{
+				"type": 2,
+				"label": "+25",
+				"style": 3,
+				"custom_id": "orange_circle"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "-1",
+				"style": 3,
+				"custom_id": "blue_square"
+			},
+			{
+				"type": 2,
+				"label": "-5",
+				"style": 3,
+				"custom_id": "green_square"
+			},
+			{
+				"type": 2,
+				"label": "-10",
+				"style": 3,
+				"custom_id": "yellow_square"
+			},
+			{
+				"type": 2,
+				"label": "-25",
+				"style": 3,
+				"custom_id": "orange_square"
+			}
+		]
+	}
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "Prefix",
+				"style": 3,
+				"custom_id": "id"
+			},
+			{
+				"type": 2,
+				"label": "Good Words",
+				"style": 3,
+				"custom_id": "memo"
+			},
+			{
+				"type": 2,
+				"label": "Gag Words",
+				"style": 3,
+				"custom_id": "sound"
+			}
+		]
+	}
+]

@@ -1,0 +1,77 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_toy",
+				"options": [
+					{
+						"label": "0️⃣ ",
+						"value": "zero"
+					},
+					{
+						"label": "1️⃣ ",
+						"value": "one"
+					},
+					{
+						"label": "2️⃣ ",
+						"value": "two"
+					},
+					{
+						"label": "3️⃣ ",
+						"value": "three"
+					},
+					{
+						"label": "4️⃣ ",
+						"value": "four"
+					},
+					{
+						"label": "5️⃣ ",
+						"value": "five"
+					},
+					{
+						"label": "6️⃣ ",
+						"value": "six"
+					},
+					{
+						"label": "7️⃣ ",
+						"value": "seven"
+					},
+					{
+						"label": "8️⃣ ",
+						"value": "eight"
+					},
+					{
+						"label": "9️⃣ ",
+						"value": "nine"
+					}
+				],
+				"placeholder": "Choose a toy"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "📷QRCode",
+				"style": 3,
+				"custom_id": "camera"
+			},
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

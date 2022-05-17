@@ -1,0 +1,58 @@
+[
+	
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_mitts",
+				"options": [
+					{
+						"label": "Off",
+						"value": "zero",
+						"description": "Free fingers"
+					},
+					{
+						"label": "General",
+						"value": "one",
+						"description": "Hands helpless in special socks"
+					},
+					{
+						"label": "Puppy",
+						"value": "two",
+						"description": "Like a puppy paws"
+					},
+					{
+						"label": "Pony",
+						"value": "three",
+						"description": "Horses don't need hands, they need paws"
+					}
+					,
+					{
+						"label": "Ducky",
+						"value": "star",
+						"description": "Ducky ducky"
+					}
+				],
+				"placeholder": "Choose an mitt"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

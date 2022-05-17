@@ -1,0 +1,54 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "Back",
+				"style": 2,
+				"custom_id": "arrow_back"
+			},
+			{
+				"type": 2,
+				"label": "⬆Up",
+				"style": 2,
+				"custom_id": "arrow_up"
+			},
+			{
+				"type": 2,
+				"label": "⬆Next",
+				"style": 2,
+				"custom_id": "arrow_next"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "SFW",
+				"style": 1,
+				"custom_id": "gr_sfw"
+			},
+			{
+				"type": 2,
+				"label": "NSFW",
+				"style": 1,
+				"custom_id": "gr_nsfw"
+			},
+			{
+				"type": 2,
+				"label": "Between",
+				"style": 1,
+				"custom_id": "gr_between"
+			},
+			{
+				"type": 2,
+				"label": "Utility",
+				"style": 1,
+				"custom_id": "gr_utility"
+			}
+		]
+	}
+]

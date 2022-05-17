@@ -1,0 +1,37 @@
+{
+	"name": "number",
+	"description": "Number generator",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "random",
+			"description": "Get a random number",
+			"options": [
+				
+				{
+					"name": "digit",
+					"description": "Set digit from 1-10",
+					"type": 4
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "between",
+			"description": "Get a random number between low-high",
+			"options": [
+				{
+					"name": "low",
+					"required": true,
+					"type": 4
+				},
+				{
+					"name": "high",
+					"required": true,
+					"type": 4
+				}
+			]
+		}
+	]
+}

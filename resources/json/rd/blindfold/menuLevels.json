@@ -1,0 +1,46 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_blindfold",
+				"options": [
+					{
+						"label": "Off",
+						"value": "zero",
+						"description": "Off blindfolds"
+					},
+					{
+						"label": "Panel",
+						"value": "two",
+						"description": "The default style, panel."
+					},
+					{
+						"label": "Contacts",
+						"value": "three",
+						"description": "Contacts in the eyes to future limit their vision."
+					}
+				],
+				"placeholder": "Choose an option"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

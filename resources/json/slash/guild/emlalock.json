@@ -1,0 +1,109 @@
+{
+	"name": "emlalock",
+	"description": "Command for Emlalock integration",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "menu",
+			"description": "open menu",
+			"options": [
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "voting",
+			"description": "Do the voting",
+			"options": [
+				{
+					"type": 3,
+					"required": true,
+					"name": "option",
+					"description": "Select an option.",
+					"choices": [
+						{
+							"name": "add",
+							"value": "add"
+						},
+						{
+							"name": "sub",
+							"value": "sub"
+						},
+						{
+							"name": "random",
+							"value": "random"
+						}
+					]
+				},
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "api_time",
+			"description": "Do api calls",
+			"options": [
+				{
+					"type": 3,
+					"name": "option",
+					"description": "Select an option.",
+					"choices": [
+						{
+							"name": "add",
+							"value": "add"
+						},
+						{
+							"name": "addmaximum",
+							"value": "addmaximum"
+						},
+						{
+							"name": "addminimum",
+							"value": "addminimum"
+						},
+						{
+							"name": "sub",
+							"value": "sub"
+						},
+						{
+							"name": "submaximum",
+							"value": "submaximum"
+						},
+						{
+							"name": "subminimum",
+							"value": "subminimum"
+						}
+					]
+				},
+				{
+					"name": "days",
+					"description": "Duration in days",
+					"type": 4
+				},
+				{
+					"name": "hours",
+					"description": "Duration in hours",
+					"type": 4
+				},
+				{
+					"name": "seconds",
+					"description": "Duration in seconds",
+					"type": 4
+				},
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				}
+			]
+		}
+	]
+}

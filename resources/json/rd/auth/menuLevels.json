@@ -1,0 +1,78 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_access",
+				"options": [
+					{
+						"label": "Ask",
+						"value": "zero",
+						"description": "Better ask consent than regret."
+					},
+					{
+						"label": "Exposed",
+						"value": "one",
+						"description": "Exposed for anyone to use."
+					},
+					{
+						"label": "Public",
+						"value": "two",
+						"description": "The public can use this sub."
+					},
+					{
+						"label": "Key",
+						"value": "three",
+						"description": "Only the person with the key has access."
+					},
+					{
+						"label": "Protected",
+						"value": "Four",
+						"description": "Only wearer or their owner."
+					},
+					{
+						"label": "Pet",
+						"value": "Five",
+						"description": "Only their owner."
+					}
+				],
+				"placeholder": "Choose an access"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": ":redirectLabel",
+				"style": 3,
+				"custom_id": ":redirectId"
+			},
+			{
+				"type": 2,
+				"label": "sos",
+				"style": 3,
+				"custom_id": "sos"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

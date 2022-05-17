@@ -1,0 +1,62 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_level2",
+				"options": [
+					{
+						"label": "Ungag",
+						"value": "zero",
+						"description": "Free jaw"
+					},
+					{
+						"label": "hex",
+						"value": "one",
+						"description": "Your words are hexxed"
+					},
+					{
+						"label": "base64",
+						"value": "two",
+						"description": "Converts text 2 base64"
+					},
+					{
+						"label": "binary",
+						"value": "three",
+						"description": "Machine talking"
+					},
+					{
+						"label": "binaryblocks",
+						"value": "four",
+						"description": "Bender talk..Kill all humans"
+					}
+				],
+				"placeholder": "Gag"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "Up",
+				"style": 3,
+				"custom_id": "arrow_up"
+			},
+			{
+				"type": 2,
+				"label": "Back",
+				"style": 3,
+				"custom_id": "arrow_backward"
+			},
+			{
+				"type": 2,
+				"label": "Forward",
+				"style": 3,
+				"custom_id": "arrow_forward"
+			}
+		]
+	}
+]

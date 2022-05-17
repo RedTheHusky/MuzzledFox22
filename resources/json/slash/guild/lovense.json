@@ -1,0 +1,140 @@
+{
+	"name": "lovense",
+	"description": "lovense toys commands",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "function",
+			"description": "Send function command",
+			"options": [
+				{
+					"type": 4,
+					"name": "index",
+					"required": true,
+					"description": "Toy index"
+				},
+				{
+					"name": "action",
+					"description": "action",
+					"type": 3,
+					"choices": [
+						{
+							"name": "vibrate",
+							"value": "vibrate"
+						},
+						{
+							"name": "rotate",
+							"value": "rotate"
+						},
+						{
+							"name": "pump",
+							"value": "pump"
+						}
+					],
+					"required": true
+				},
+				{
+					"type": 3,
+					"name": "strength",
+					"required": true,
+					"description": "Strength of action"
+				},
+				{
+					"type": 3,
+					"name": "duration",
+					"required": true,
+					"description": "Duration of the action in seconds."
+				},
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "preset",
+			"description": "Send preset command",
+			"options": [
+				{
+					"type": 4,
+					"name": "index",
+					"required": true,
+					"description": "Toy index"
+				},
+				{
+					"name": "name",
+					"description": "name",
+					"type": 3,
+					"required": true,
+					"choices": [
+						{
+							"name": "pulse",
+							"value": "pulse"
+						},
+						{
+							"name": "wave",
+							"value": "wave"
+						},
+						{
+							"name": "fireworks",
+							"value": "fireworks"
+						},
+						{
+							"name": "earthquake",
+							"value": "earthquake"
+						}
+					]
+				},
+				{
+					"type": 3,
+					"name": "duration",
+					"required": true,
+					"description": "Duration of the action in seconds."
+				},
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "stop",
+			"description": "Stop all actions.",
+			"options": [
+				{
+					"type": 4,
+					"name": "index",
+					"required": true,
+					"description": "Toy index"
+				},
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "menu",
+			"description": "Open menu",
+			"options": [
+				{
+					"type": 4,
+					"name": "index",
+					"description": "Toy index"
+				},
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				}
+			]
+		}
+	]
+}

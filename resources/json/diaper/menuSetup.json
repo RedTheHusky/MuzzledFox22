@@ -1,0 +1,95 @@
+[
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_access",
+				"options": [
+					{
+						"label": "🚌Public",
+						"value": "access_public"
+					},
+					{
+						"label": "🚗Private",
+						"value": "access_private"
+					},
+					{
+						"label": "👵Caretaker",
+						"value": "access_caretaker"
+					}
+				],
+				"placeholder": "Choose an access"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "1️⃣Wet enable",
+				"style": 3,
+				"custom_id": "wetness_enable"
+			},
+			{
+				"type": 2,
+				"label": "3️⃣wet-",
+				"style": 3,
+				"custom_id": "wetness_chancge_des"
+			},
+			{
+				"type": 2,
+				"label": "4️⃣Wet+",
+				"style": 3,
+				"custom_id": "wetness_chancge_inc"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "2️⃣Messy enable",
+				"style": 3,
+				"custom_id": "messy_enable"
+			},
+			{
+				"type": 2,
+				"label": "5️⃣Messy-",
+				"style": 3,
+				"custom_id": "messy_chancge_des"
+			},
+			{
+				"type": 2,
+				"label": "6️⃣Messy+",
+				"style": 3,
+				"custom_id": "messy_chancge_inc"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "🏃‍♂Actions",
+				"style": 3,
+				"custom_id": "custom_actions"
+			},
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

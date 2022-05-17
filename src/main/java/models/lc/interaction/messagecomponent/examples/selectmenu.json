@@ -1,0 +1,114 @@
+{
+  "data": {
+    "component_type": 3,
+    "values": [
+      "mage"
+    ],
+    "custom_id": "class_select_1"
+  },
+  "member": {
+    "premium_since": null,
+    "nick": "Red",
+    "joined_at": "2018-08-22T05:46:16.659000+00:00",
+    "communication_disabled_until": null,
+    "permissions": "2199023255551",
+    "roles": [
+      "481701001758507008",
+      "736647455164334080",
+      "771014712040095744",
+      "760426203353579590",
+      "481713466877542413",
+      "732652119093674099",
+      "735202701175947284",
+      "735205038435074109",
+      "902430476663418911"
+    ],
+    "pending": false,
+    "deaf": false,
+    "mute": false,
+    "avatar": null,
+    "user": {
+      "public_flags": 512,
+      "id": "249197641181822977",
+      "avatar": "a_d53098f1c6d5bf0f4b25a79679c45a4f",
+      "username": "Red The Husky",
+      "discriminator": "9918"
+    },
+    "is_pending": false
+  },
+  "guild_id": "481700616457027597",
+  "id": "913006498198716457",
+  "type": 3,
+  "message": {
+    "mention_everyone": false,
+    "pinned": false,
+    "components": [
+      {
+        "components": [
+          {
+            "min_values": 1,
+            "custom_id": "class_select_1",
+            "options": [
+              {
+                "emoji": {
+                  "name": "rogue",
+                  "id": "625891304148303894"
+                },
+                "description": "Sneak n stab",
+                "label": "Rogue",
+                "value": "rogue"
+              },
+              {
+                "emoji": {
+                  "name": "mage",
+                  "id": "625891304081063986"
+                },
+                "description": "Turn 'em into a sheep",
+                "label": "Mage",
+                "value": "mage"
+              },
+              {
+                "emoji": {
+                  "name": "priest",
+                  "id": "625891303795982337"
+                },
+                "description": "You get heals when I'm done doing damage",
+                "label": "Priest",
+                "value": "priest"
+              }
+            ],
+            "max_values": 3,
+            "placeholder": "Choose a class",
+            "type": 3,
+            "hash": ""
+          }
+        ],
+        "type": 1
+      }
+    ],
+    "attachments": [],
+    "author": {
+      "bot": true,
+      "public_flags": 0,
+      "id": "389512707973316608",
+      "avatar": "f67792f59fa6cefdaf1ac385ada00b1b",
+      "username": "Red_MusicBot",
+      "discriminator": "1646"
+    },
+    "flags": 0,
+    "type": 0,
+    "mention_roles": [],
+    "edited_timestamp": null,
+    "content": "Do you want to get shocked",
+    "tts": false,
+    "mentions": [],
+    "id": "860067077041684521",
+    "embeds": [],
+    "channel_id": "848960210160582686",
+    "timestamp": "2021-07-01T07:59:30.440000+00:00"
+  },
+  "version": 1,
+  "channel_id": "848960210160582686",
+  "application_id": "389512707973316608",
+  "token": "aW50ZXJhY3Rpb246OTEzMDA2NDk4MTk4NzE2NDU3OlJtR3JkNkNneUtSbm1hZHJpNHl2T3ZhcXozUUoxblMwaGo4N3VjSHdiM3lPODdhdHhjb21qT0NheDZORVJncGpGbjZkQ2w4YXVKU3V0dVhLdzFWUzBENTFabTNQZUpTQzBrRHZRdHBHSHlTNUtPQjJ4TUdjVkVXaHgzYzdNUm9v"
+}

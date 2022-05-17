@@ -1,0 +1,40 @@
+{
+	"name": "verify",
+	"description": "Gives you a code to take a photo with to verify.",
+	"type": 1,
+	"options": [
+		{
+			"type": 3,
+			"name": "option",
+			"description": "To select an option for what kind of verification",
+			"choices": [
+				{
+					"name": "generic",
+					"value": "generic"
+				},
+				{
+					"name": "chastity",
+					"value": "chastity"
+				},
+				{
+					"name": "collar",
+					"value": "collar"
+				},
+				{
+					"name": "diaper",
+					"value": "diaper"
+				}
+			]
+		},
+		{
+			"type": 5,
+			"name": "last",
+			"description": "To get last verified upload"
+		},
+		{
+			"type": 6,
+			"name": "user",
+			"description": "Provide user"
+		}
+	]
+}

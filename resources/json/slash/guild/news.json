@@ -1,0 +1,41 @@
+{
+	"name": "news",
+	"description": "Check news about bot",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "get",
+			"description": "Get news"
+		},
+		{
+			"type": 2,
+			"name": "config",
+			"description": "Settings",
+			"options": [
+				{
+					"type": 1,
+					"name": "get",
+					"description": "Get settings"
+				},
+				{
+					"type": 1,
+					"name": "set_channel",
+					"description": "Sets/clear channel redirect.",
+					"options": [
+						{
+							"name": "channel",
+							"description": "Sets the channel to send to",
+							"type": 7
+						}
+					]
+				},
+				{
+					"type": 1,
+					"name": "reset",
+					"description": "Resets settings"
+				}
+			]
+		}
+	]
+}

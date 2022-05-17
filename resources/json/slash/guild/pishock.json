@@ -1,0 +1,68 @@
+{
+	"name": "pishock",
+	"description": "Command for PiShock",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "menu",
+			"description": "Menu for pishock",
+			"options": [
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "send",
+			"description": "Send command to shocker",
+			"options": [
+				{
+					"type": 3,
+					"required": true,
+					"name": "action",
+					"description": "To select an action to send",
+					"choices": [
+						{
+							"name": "beep",
+							"value": "beep"
+						},
+						{
+							"name": "vibrate",
+							"value": "vibrate"
+						},
+						{
+							"name": "shock",
+							"value": "shock"
+						}
+					]
+				},
+				{
+					"name": "user",
+					"description": "To select target.",
+					"type": 6
+				},
+				{
+					"type": 4,
+					"name": "duration",
+					"required": true,
+					"description": "Duration of the action in seconds from 1-15."
+				},
+				{
+					"type": 4,
+					"name": "intensity",
+					"required": true,
+					"description": "Intensity of the action from 1-100."
+				},
+				{
+					"type": 3,
+					"name": "code",
+					"description": "Enter custom sharecode or index."
+				}
+			]
+		}
+	]
+}

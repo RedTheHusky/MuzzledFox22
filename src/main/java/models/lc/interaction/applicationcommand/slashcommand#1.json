@@ -1,0 +1,91 @@
+{
+	"data": {
+		"options": [
+			{
+				"options": [
+					{
+						"name": "user",
+						"type": 6,
+						"value": "389512707973316608"
+					}
+				],
+				"name": "padlock",
+				"type": 1
+			}
+		],
+		"name": "bdsm",
+		"id": "869880708519325706",
+		"type": 1,
+		"resolved": {
+			"members": {
+				"389512707973316608": {
+					"premium_since": null,
+					"nick": null,
+					"joined_at": "2020-04-01T05:01:06.248000+00:00",
+					"permissions": "249107578871",
+					"roles": [
+						"481712378833141761",
+						"694773313628536852",
+						"736816697021038653"
+					],
+					"pending": false,
+					"avatar": null,
+					"user": {
+						"bot": true,
+						"public_flags": 0,
+						"id": "389512707973316608",
+						"avatar": "f67792f59fa6cefdaf1ac385ada00b1b",
+						"username": "Red_MusicBot",
+						"discriminator": "1646"
+					},
+					"is_pending": false
+				}
+			},
+			"users": {
+				"389512707973316608": {
+					"bot": true,
+					"public_flags": 0,
+					"id": "389512707973316608",
+					"avatar": "f67792f59fa6cefdaf1ac385ada00b1b",
+					"username": "Red_MusicBot",
+					"discriminator": "1646"
+				}
+			}
+		}
+	},
+	"member": {
+		"premium_since": null,
+		"nick": "Red",
+		"joined_at": "2018-08-22T05:46:16.659000+00:00",
+		"permissions": "274877906943",
+		"roles": [
+			"481701001758507008",
+			"736647455164334080",
+			"771014712040095744",
+			"760426203353579590",
+			"481713466877542413",
+			"732652119093674099",
+			"735202701175947284",
+			"735205038435074109"
+		],
+		"pending": false,
+		"deaf": false,
+		"mute": false,
+		"avatar": null,
+		"user": {
+			"public_flags": 512,
+			"id": "249197641181822977",
+			"avatar": "a_d53098f1c6d5bf0f4b25a79679c45a4f",
+			"username": "Red The Husky",
+			"discriminator": "9918"
+		},
+		"is_pending": false
+	},
+	"guild_id": "481700616457027597",
+	"id": "875113752511541248",
+	"type": 2,
+	"version": 1,
+	"channel_id": "836906339900719115",
+	"application_id": "389512707973316608",
+	"token": "aW50ZXJhY3Rpb246ODc1MTEzNzUyNTExNTQxMjQ4OkV5QndSc3FqUFhqY0hMUFExVWtTSDNXWVk5MVNFVnNIbXVSSTQ2RnNnMDV5Q1NSTm1ZbkhTT2lzUE5qdk54SXduWjJDVHE2VEpQUU54ZTZyRlNNU1gwM0FKRVZIeXlmNFJnWXg1clEzNG92VzVKNFpuUW1mUjRsNUE4YTBVNHlm"
+}

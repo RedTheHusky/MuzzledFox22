@@ -1,0 +1,77 @@
+[
+	
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_hood",
+				"options": [
+					{
+						"label": "Off",
+						"value": "zero",
+						"description": "Free head"
+					},
+					{
+						"label": "Puppy",
+						"value": "one",
+						"description": "Head of a puppy, time to bark"
+					},
+					{
+						"label": "Kitty",
+						"value": "two",
+						"description": "Kitty head, meow meow"
+					},
+					{
+						"label": "Pony",
+						"value": "three",
+						"description": "Ready to place binders for pulling cart"
+					},
+					{
+						"label": "Drone",
+						"value": "four",
+						"description": "Helmet designed to for wearer to server others"
+					},
+					{
+						"label": "Cow",
+						"value": "five",
+						"description": "Moooo"
+					},
+					{
+						"label": "Gwen",
+						"value": "six",
+						"description": "Free eyes but covered mouth"
+					},
+					{
+						"label": "OpenFace",
+						"value": "seven",
+						"description": "Hood with open face, allowing usage"
+					},
+					{
+						"label": "Bondage",
+						"value": "eight",
+						"description": "Isolation bondage hood"
+					}
+				],
+				"placeholder": "Choose a hood"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

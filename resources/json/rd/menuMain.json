@@ -1,0 +1,146 @@
+[
+	
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_utility",
+				"options": [
+					{
+						"label": "Auth",
+						"value": "auth",
+						"description": "Set up authorization"
+					},
+					{
+						"label": "Nametag",
+						"value": "nametag",
+						"description": "Setting the name&avatar used for gag"
+					},
+					{
+						"label": "Pishock",
+						"value": "pishock",
+						"description": "Access pishock function"
+					},
+					{
+						"label": "Timelock",
+						"value": "timelock",
+						"description": "locking their restraints till timer expires"
+					},
+					{
+						"label": "Timeout",
+						"value": "timeout",
+						"description": "no talkin till timer expires"
+					}
+				],
+				"placeholder": "Choose an utility"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_restraint",
+				"options": [
+					{
+						"label": "Gag",
+						"value": "gag",
+						"description": "Gag the sub so they can't scream"
+					},
+					{
+						"label": "Collar",
+						"value": "collar",
+						"description": "Hands in front and attached to belt"
+					},
+					{
+						"label": "Cuffs",
+						"value": "cuffs",
+						"description": "Tie up sub's arms&legs."
+					},
+					{
+						"label": "Straitjacket",
+						"value": "straitjacket",
+						"description": "A special suit"
+					},
+					{
+						"label": "Mitts",
+						"value": "mitts",
+						"description": "Places mittens over the sub's paws/hands."
+					},
+					{
+						"label": "Suit",
+						"value": "suit",
+						"description": "Placing the sub into a suit."
+					},
+					{
+						"label": "Hood",
+						"value": "hood",
+						"description": "Placing a hood over the sub's head."
+					},
+					{
+						"label": "Chastity",
+						"value": "chastity",
+						"description": "Locking the subs genitals away."
+					},
+					{
+						"label": "Blindfold",
+						"value": "blindfold ",
+						"description": "Blindfolding the sub eyes"
+					},
+					{
+						"label": "Ears",
+						"value": "ears",
+						"description": "Deafening the sub's ears"
+					},
+					{
+						"label": "Lock",
+						"value": "lock",
+						"description": "Different locks to lock the sub"
+					},
+					{
+						"label": "Encase",
+						"value": "encase",
+						"description": "Encasing sub in a box"
+					}
+				],
+				"placeholder": "Choose an restraint"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "ℹLock/Unlock",
+				"style": 3,
+				"custom_id": "!lock/unlock"
+			},
+			{
+				"type": 2,
+				"label": "🆘Safeword",
+				"style": 3,
+				"custom_id": "sos"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

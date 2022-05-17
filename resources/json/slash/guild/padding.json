@@ -1,0 +1,244 @@
+{
+	"name": "padding",
+	"description": "Virtual padding",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "menu",
+			"description": "Menu for pishock",
+			"options": [
+				{
+					"name": "user",
+					"description": "The user to use on",
+					"type": 6
+				},
+				{
+					"type": 3,
+					"name": "subdir",
+					"description": "Subdirectory",
+					"choices": [
+						{
+							"name": "main",
+							"value": "main"
+						},
+						{
+							"name": "diaper",
+							"value": "diaper"
+						},
+						{
+							"name": "onesie",
+							"value": "onesie"
+						},
+						{
+							"name": "timelock",
+							"value": "timelock"
+						},
+						{
+							"name": "setup",
+							"value": "setup"
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "quick",
+			"description": "Quick commands",
+			"options": [
+				{
+					"type": 3,
+					"required": true,
+					"name": "action",
+					"description": "To select an action to send",
+					"choices": [
+						{
+							"name": "display",
+							"value": "display"
+						},
+						{
+							"name": "check",
+							"value": "check"
+						},
+						{
+							"name": "change",
+							"value": "change"
+						},
+						{
+							"name": "pat",
+							"value": "pat"
+						},
+						{
+							"name": "tickle",
+							"value": "tickle"
+						},
+						{
+							"name": "spank",
+							"value": "spank"
+						},
+						{
+							"name": "swat",
+							"value": "swat"
+						},
+						{
+							"name": "pee",
+							"value": "pee"
+						},
+						{
+							"name": "poop",
+							"value": "poop"
+						}
+					]
+				},
+				{
+					"name": "user",
+					"description": "To select target.",
+					"type": 6
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "diaper",
+			"description": "Diaper submenu",
+			"options": [
+				{
+					"type": 3,
+					"name": "type",
+					"description": "To select an diaper type",
+					"choices": [
+						{
+							"name": "none",
+							"value": "0"
+						},
+						{
+							"name": "classic",
+							"value": "1"
+						},
+						{
+							"name": " plastic",
+							"value": "2"
+						},
+						{
+							"name": "pink classic",
+							"value": "3"
+						},
+						{
+							"name": "pink plastic",
+							"value": "4"
+						},
+						{
+							"name": "pull-ups",
+							"value": "5"
+						},
+						{
+							"name": "briefs for overnights",
+							"value": "6"
+						},
+						{
+							"name": " briefs with cloth backing",
+							"value": "7"
+						},
+						{
+							"name": "briefs with plastic backing",
+							"value": "8"
+						},
+						{
+							"name": "swim diapers",
+							"value": "9"
+						},
+						{
+							"name": "eevee",
+							"value": "a"
+						},
+						{
+							"name": "pikachu",
+							"value": "b"
+						},
+						{
+							"name": "paws",
+							"value": "c"
+						},
+						{
+							"name": " peekabu",
+							"value": "d"
+						},
+						{
+							"name": " unicorn",
+							"value": "e"
+						}
+					]
+				},
+				{
+					"name": "user",
+					"description": "To select target.",
+					"type": 6
+				}
+			]
+		},
+		{
+			"type": 1,
+			"name": "onesie",
+			"description": "Onesie submenu",
+			"options": [
+				{
+					"type": 3,
+					"name": "type",
+					"description": "To select an diaper type",
+					"choices": [
+						{
+							"name": "none",
+							"value": "0"
+						},
+						{
+							"name": "eevee",
+							"value": "1"
+						},
+						{
+							"name": "pikachu",
+							"value": "2"
+						},
+						{
+							"name": "kitten",
+							"value": "3"
+						},
+						{
+							"name": "jolteon",
+							"value": "4"
+						},
+						{
+							"name": "flareon",
+							"value": "5"
+						},
+						{
+							"name": "puppy",
+							"value": "6"
+						},
+						{
+							"name": "unicorn",
+							"value": "7"
+						},
+						{
+							"name": "vaporeon",
+							"value": "8"
+						},
+						{
+							"name": "wolf",
+							"value": "9"
+						},
+						{
+							"name": "sylveon",
+							"value": "a"
+						}
+					]
+				},
+				{
+					"name": "user",
+					"description": "To select target.",
+					"type": 6
+				}
+			]
+		}
+	]
+}

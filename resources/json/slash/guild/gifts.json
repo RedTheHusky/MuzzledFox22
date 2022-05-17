@@ -1,0 +1,23 @@
+{
+	"name": "gifts",
+	"delete":true,
+	"description": "Gifts by Naughty Santa.",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "receive",
+			"description": "Receive a gift."
+		},
+		{
+			"type": 1,
+			"name": "open",
+			"description": "Open a gift."
+		},
+		{
+			"type": 1,
+			"name": "items",
+			"description": "Check what you got from the gifts."
+		}
+	]
+}

@@ -1,0 +1,66 @@
+[
+	
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "Duration",
+				"style": 3,
+				"custom_id": "one"
+			},
+			{
+				"type": 2,
+				"label": "Max",
+				"style": 3,
+				"custom_id": "two"
+			},
+			{
+				"type": 2,
+				"label": "Min",
+				"style": 3,
+				"custom_id": "three"
+			},
+			{
+				"type": 2,
+				"label": "Start",
+				"style": 3,
+				"custom_id": "lock"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "Add",
+				"style": 3,
+				"custom_id": "heavy_plus_sign"
+			},
+			{
+				"type": 2,
+				"label": "Sub",
+				"style": 3,
+				"custom_id": "heavy_minus_sign"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

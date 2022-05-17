@@ -1,0 +1,6 @@
+[
+{"e621":"e621 post id","text":"The message you want it to say"}
+,{"fa":"fa submission id","text":"The message you want it to say"}
+,{"e621":"2425898","text":"@User ended up becoming a gift, a puppy toy. Their gear ensures they will be have like any good puppy toy should."}
+,{"e621":"2425807","text":"Putting on a Nullsuit is not that hard. And while you can run its setup to configure the suit the way you want it, you can leave it on default settings. @User lchoice to ignore the manual warnings and put on the suit with the default settings. Little did they know putting on is the easy part, taking it off is the hard part."}
+]

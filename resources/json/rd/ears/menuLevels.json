@@ -1,0 +1,53 @@
+[
+	
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_level",
+				"options": [
+					{
+						"label": "Off",
+						"value": "zero",
+						"description": "No ears bindings"
+					},
+					{
+						"label": "Muffs",
+						"value": "two",
+						"description": "Comfy and warm muffs"
+					},
+					{
+						"label": "Plugs",
+						"value": "three",
+						"description": "Plugs just for extra security"
+					}
+				],
+				"placeholder": "Choose an option"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": ":sound:",
+				"style": 3,
+				"custom_id": "!sound/mute"
+			},
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]

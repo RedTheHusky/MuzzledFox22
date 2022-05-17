@@ -1,0 +1,41 @@
+{
+	"events": {
+		"test0": {
+			"name": "test",
+			"display_name": "display_name",
+			"presents": [
+				"dildo"
+			],
+			"restraints": {
+				"gag": "puppy"
+			},
+			"embed": {
+				"description": "you got a dildo"
+			}
+		},
+		"test1": {
+			"name": "test",
+			"presents": [
+				"dildo"
+			],
+			"restraints": {
+				"gag": "puppy"
+			},
+			"embed": {
+				"description": "you got a dildo"
+			}
+		}
+	},
+	"presents": {
+		"dildo": {
+			"name": "dildo",
+			"hp":10,
+			"embed_hidden": {
+				"description": "you got something long"
+			},
+			"embed_show": {
+				"description": "you got a long dildo"
+			}
+		}
+	}
+}

@@ -1,0 +1,13 @@
+
+flip	coin flip/toss
+fml	N/A	furfml Sheri will respond with a random FML statement. Warning: hardcore bruh moments beyond this point.
+binary	N/A	furbinary Convert text to binary.
+nicknameme	party	furnicknameme   Give you a random nickname
+heresthething	htt	furheresthething So here's the thing Copypastas
+pun	N/A	furpun Puns :D!
+randomness	rnd	furrandomness Useless Paragraphs
+tdance	N/A	furtdance Converts text/sentence to dancing emojis
+roast	N/A	furroast Roasting Copypasta
+unbinary	N/A	furunbinary Convert binary to text
+what	N/A	furwhat Have your copypastas
+wisdom	wis	furwisdom Gives inspirational Quotes

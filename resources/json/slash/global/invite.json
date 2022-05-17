@@ -1,0 +1,4 @@
+{
+	"name": "invite",
+	"description": "Sends the oauth url used to invite the bot to other servers."
+}

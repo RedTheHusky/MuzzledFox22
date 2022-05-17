@@ -1,0 +1,80 @@
+[
+	
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 3,
+				"custom_id": "select_lock",
+				"options": [
+					{
+						"label": "Unlock",
+						"value": "zero",
+						"description": "No locks"
+					},
+					{
+						"label": "Default",
+						"value": "one",
+						"description": "Default locks"
+					},
+					{
+						"label": "Glue",
+						"value": "two",
+						"description": "Glue uses in locks"
+					},
+					{
+						"label": "Tape",
+						"value": "four",
+						"description": "Tapping the wearer helplessly"
+					},
+					{
+						"label": "Extra",
+						"value": "five",
+						"description": "Extra locks added to ensure they wont escape"
+					}
+					,
+					{
+						"label": "Stich",
+						"value": "six",
+						"description": "Stitching their restraints"
+					}
+				],
+				"placeholder": "Choose an lock"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": ":lockLabel",
+				"style": 3,
+				"custom_id": ":lockId"
+			},
+			{
+				"type": 2,
+				"label": "Perma",
+				"style": 3,
+				"custom_id": "fire"
+			}
+		]
+	},
+	{
+		"type": 1,
+		"components": [
+			{
+				"type": 2,
+				"label": "ℹInfo",
+				"style": 3,
+				"custom_id": "information_source"
+			},
+			{
+				"type": 2,
+				"label": "✅Close",
+				"style": 3,
+				"custom_id": "white_check_mark"
+			}
+		]
+	}
+]
