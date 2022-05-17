@@ -28,6 +28,7 @@ import okhttp3.ConnectionPool;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import org.apache.log4j.Logger;
+import restraints.models.entity.pishock.PishockConfig;
 import telegram.TelegramRoot;
 import util.entity.GuildNotificationReader;
 import util.removed.worldclock;
@@ -1750,8 +1751,8 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
                     logger.error(fName + ".failed to read file");
                     return false;
                 }
-                if(!getProperties()){
-                    logger.error(fName + ".failed to get properties");
+                if(!readProperties()){
+                    logger.error(fName + ".failed to read file");
                     return false;
                 }
                 logger.info(fName + ".done");
@@ -1829,14 +1830,6 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
                     logger.warn(fName+".isEmpty");return false;
                 }
                 logger.info(fName + ".text2Json.jsonObject=" + text2Json.jsonObject.toString());
-
-                try {
-                    botconfig=new BOTCONFIG(text2Json.jsonObject.getJSONObject("bot"));
-                } catch (Exception e) {
-                    logger.error(fName + ".exception=" + e);
-                    logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-
-                }
                 return  true;
 
             } catch (Exception e) {
@@ -1845,23 +1838,22 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
                 return false;
             }
         }
-        public boolean getProperties(){
-            String fName="[getProperties]";
+        public boolean readProperties(){
+            String fName="[readProperties]";
             try {
-                if(text2Json.jsonObject.isEmpty()){
-                    logger.warn(fName+".isEmpty");return false;
+                try {
+                    botconfig=new BOTCONFIG(text2Json.jsonObject.getJSONObject("bot"));
+                } catch (Exception e) {
+                    logger.error(fName + ".exception=" + e+", StackTrace:" + Arrays.toString(e.getStackTrace()));
                 }
-                logger.info(fName + ".text2Json.jsonObject=" + text2Json.jsonObject.toString());
-                String key="";
-                key="bot";if( text2Json.jsonObject.has(key)&&!text2Json.jsonObject.isNull(key)){
-                    JSONObject jsonBot=text2Json.jsonObject.optJSONObject(key);
-                    //key= llCommonKeys.BotConfig.token;if( jsonBot.has(key)&&!jsonBot.isNull(key))gBotToken=jsonBot.optString(key,"");
-                    //key= llCommonKeys.BotConfig.id;if( jsonBot.has(key)&&!jsonBot.isNull(key))gBotId=jsonBot.optString(key,"");
-                    logger.info(fName + ".return true");
-                    return  true;
+                try {
+                    pishockConfig=new PishockConfig(text2Json.jsonObject.getJSONObject("Pishock"));
+                } catch (Exception e) {
+                    logger.error(fName + ".exception=" + e+", StackTrace:" + Arrays.toString(e.getStackTrace()));
+
                 }
-                logger.info(fName + ".return false");
-                return false;
+                return  true;
+
             } catch (Exception e) {
                 logger.error(fName + ".exception=" + e);
                 logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -2188,6 +2180,16 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
                 return null;
             }
         }
+        public JSONObject getJSONObject(){
+            String fName="getJSONObject@";
+            try {
+
+                return  text2Json.jsonObject;
+            } catch (Exception e) {
+                logger.error(fName + ".exception=" + e+", StackTrace="+Arrays.toString(e.getStackTrace()));
+                return null;
+            }
+        }
     }
     public CONFIGFILE configfile=new CONFIGFILE();
 
@@ -2358,5 +2360,6 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
     }
 
     public GuildNotificationReader generalGuildNotification;
+    public PishockConfig pishockConfig;
 
 }
