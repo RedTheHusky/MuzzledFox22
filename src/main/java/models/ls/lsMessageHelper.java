@@ -2816,13 +2816,13 @@ public interface lsMessageHelper extends llColors
     static void lsMessageDelete(CommandEvent event){
         String fName="[lsMessageDelete]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
-        lsMessageDeleteStatus(event);
+        lsMessageDeleteQueue(event);
     }
     static void lsMessageDeleteQueue(CommandEvent event){
         String fName="[lsMessageDeleteQueue]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
         try {
-            event.getMessage().delete().queue();
+            lsMessageDelete(event.getMessage());
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -2832,12 +2832,7 @@ public interface lsMessageHelper extends llColors
         String fName="[lsMessageDeleteStatus]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
         try{
-            if(lsGlobalHelper.lsIsDisabled2DeleteMessage){
-                logger.warn(fName+"Its disabled to delete message");
-                return false;
-            }
-            event.getMessage().delete().complete();
-            return true;
+            return lsMessageDeleteStatus(event.getMessage());
         }catch (Exception e){
             logger.error(fName+".exception=" + e);
             return false;
@@ -2846,12 +2841,15 @@ public interface lsMessageHelper extends llColors
     static void lsMessageDelete(Message message){
         String fName="[lsMessageDelete]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
-        lsMessageDeleteStatus(message);
+        lsMessageDeleteQueue(message);
     }
     static void lsMessageDeleteQueue(Message message){
         String fName="[lsMessageDeleteQueue]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
         try {
+            if(lsGlobalHelper.lsIsDisabled2DeleteMessage)throw  new Exception("Its disabled to delete message");
+            if(message==null)throw  new Exception("can't delete null");
+            if(message.isEphemeral()) throw  new Exception("can't delete ephemeral");
             message.delete().queue();
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
@@ -2862,18 +2860,9 @@ public interface lsMessageHelper extends llColors
         String fName="[lsMessageDeleteStatus]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
         try{
-            if(lsGlobalHelper.lsIsDisabled2DeleteMessage){
-                logger.warn(fName+"Its disabled to delete message");
-                return false;
-            }
-            if(message==null){
-                logger.warn(fName+"can't delete null");
-                return  false;
-            }
-            if(message.isEphemeral()){
-                logger.warn(fName+"can't delete ephemeral");
-                return  false;
-            }
+            if(lsGlobalHelper.lsIsDisabled2DeleteMessage)throw  new Exception("Its disabled to delete message");
+            if(message==null)throw  new Exception("can't delete null");
+            if(message.isEphemeral()) throw  new Exception("can't delete ephemeral");
             message.delete().complete();
             return true;
         }catch (Exception e){
@@ -2884,12 +2873,15 @@ public interface lsMessageHelper extends llColors
     static void lsMessageDelete(PrivateChannel channel, String id){
         String fName="[lsMessageDelete]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
-        lsMessageDeleteStatus(channel,id);
+        lsMessageDeleteQueue(channel,id);
     }
     static void lsMessageDeleteQueue(PrivateChannel channel, String id){
         String fName="[lsMessageDeleteQueue]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
         try {
+            if(lsGlobalHelper.lsIsDisabled2DeleteMessage)throw  new Exception("Its disabled to delete message");
+            if(channel==null)throw  new Exception("can't delete channel null");
+            if(id==null||id.isBlank())throw  new Exception("can't delete id null/blank");
             channel.deleteMessageById(id).queue();
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
@@ -2900,14 +2892,9 @@ public interface lsMessageHelper extends llColors
         String fName="[lsMessageDeleteStatus]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
         try{
-            if(lsGlobalHelper.lsIsDisabled2DeleteMessage){
-                logger.warn(fName+"Its disabled to delete message");
-                return false;
-            }
-            if(channel==null||id==null){
-                logger.warn(fName+"can't delete null");
-                return  false;
-            }
+            if(lsGlobalHelper.lsIsDisabled2DeleteMessage)throw  new Exception("Its disabled to delete message");
+            if(channel==null)throw  new Exception("can't delete channel null");
+            if(id==null||id.isBlank())throw  new Exception("can't delete id null/blank");
             channel.deleteMessageById(id).complete();
             return true;
         }catch (Exception e){
@@ -2918,12 +2905,15 @@ public interface lsMessageHelper extends llColors
     static void lsMessageDelete(TextChannel channel, String id){
         String fName="[lsMessageDelete]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
-        lsMessageDeleteStatus(channel,id);
+        lsMessageDeleteQueue(channel,id);
     }
     static void lsMessageDeleteQueue(TextChannel channel, String id){
         String fName="[lsMessageDeleteQueue]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
         try {
+            if(lsGlobalHelper.lsIsDisabled2DeleteMessage)throw  new Exception("Its disabled to delete message");
+            if(channel==null)throw  new Exception("can't delete channel null");
+            if(id==null||id.isBlank())throw  new Exception("can't delete id null/blank");
             channel.deleteMessageById(id).queue();
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
@@ -2934,14 +2924,9 @@ public interface lsMessageHelper extends llColors
         String fName="[lsMessageDeleteStatus]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
         try{
-            if(lsGlobalHelper.lsIsDisabled2DeleteMessage){
-                logger.warn(fName+"Its disabled to delete message");
-                return false;
-            }
-            if(channel==null||id==null){
-                logger.warn(fName+"can't delete null");
-                return  false;
-            }
+            if(lsGlobalHelper.lsIsDisabled2DeleteMessage)throw  new Exception("Its disabled to delete message");
+            if(channel==null)throw  new Exception("can't delete channel null");
+            if(id==null||id.isBlank())throw  new Exception("can't delete id null/blank");
             channel.deleteMessageById(id).complete();
             return true;
         }catch (Exception e){
@@ -2952,12 +2937,15 @@ public interface lsMessageHelper extends llColors
     static void lsMessageDelete(PrivateChannel channel, long id){
         String fName="[lsMessageDelete]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
-        lsMessageDeleteStatus(channel, id);
+        lsMessageDeleteQueue(channel, id);
     }
     static void lsMessageDeleteQueue(PrivateChannel channel, long id){
         String fName="[lsMessageDeleteQueue]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
         try {
+            if(lsGlobalHelper.lsIsDisabled2DeleteMessage)throw  new Exception("Its disabled to delete message");
+            if(channel==null)throw  new Exception("can't delete channel null");
+            if(id==0L)throw  new Exception("can't delete id zero");
             channel.deleteMessageById(id).queue();
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
@@ -2968,14 +2956,9 @@ public interface lsMessageHelper extends llColors
         String fName="[lsMessageDeleteStatus]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
         try{
-            if(lsGlobalHelper.lsIsDisabled2DeleteMessage){
-                logger.warn(fName+"Its disabled to delete message");
-                return false;
-            }
-            if(channel==null||id==0L){
-                logger.warn(fName+"can't delete null");
-                return  false;
-            }
+            if(lsGlobalHelper.lsIsDisabled2DeleteMessage)throw  new Exception("Its disabled to delete message");
+            if(channel==null)throw  new Exception("can't delete channel null");
+            if(id==0L)throw  new Exception("can't delete id zero");
             channel.deleteMessageById(id).complete();
             return true;
         }catch (Exception e){
@@ -2986,12 +2969,15 @@ public interface lsMessageHelper extends llColors
     static void lsMessageDelete(TextChannel channel, long id){
         String fName="[lsMessageDelete]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
-        lsMessageDeleteStatus(channel,id);
+        lsMessageDeleteQueue(channel,id);
     }
     static void lsMessageDeleteQueue(TextChannel channel,long id){
         String fName="[lsMessageDeleteQueue]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
         try {
+            if(lsGlobalHelper.lsIsDisabled2DeleteMessage)throw  new Exception("Its disabled to delete message");
+            if(channel==null)throw  new Exception("can't delete channel null");
+            if(id==0)throw  new Exception("can't delete id zero");
             channel.deleteMessageById(id).queue();
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
@@ -3002,14 +2988,9 @@ public interface lsMessageHelper extends llColors
         String fName="[lsMessageDeleteStatus]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);
         try{
-            if(lsGlobalHelper.lsIsDisabled2DeleteMessage){
-                logger.warn(fName+"Its disabled to delete message");
-                return false;
-            }
-            if(channel==null||id==0L){
-                logger.warn(fName+"can't delete null");
-                return  false;
-            }
+            if(lsGlobalHelper.lsIsDisabled2DeleteMessage)throw  new Exception("Its disabled to delete message");
+            if(channel==null)throw  new Exception("can't delete channel null");
+            if(id==0)throw  new Exception("can't delete id zero");
             channel.deleteMessageById(id).complete();
             return true;
         }catch (Exception e){

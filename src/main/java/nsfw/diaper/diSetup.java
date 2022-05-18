@@ -27,6 +27,9 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
+import nsfw.diaper.modules.dExtension;
+import nsfw.diaper.modules.entities.entityCustomActions;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive;
 import org.apache.log4j.Logger;
 import restraints.in.iRestraints;
 import restraints.rdRestrictions;
@@ -37,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 import static models.ls.lsMemberHelper.lsMemberIsBotOwner;
 
-public class diSetup extends Command implements llMessageHelper, llGlobalHelper, llMemberHelper, llNetworkHelper,iDiaperInteractive {
+public class diSetup extends Command implements llMessageHelper, llGlobalHelper, llMemberHelper, llNetworkHelper, iDiaperInteractive {
         Logger logger = Logger.getLogger(getClass()); String cName="[diaperInteractive2]";
         lcGlobalHelper gGlobal;
         JSONObject rfEntries;
@@ -104,7 +107,7 @@ public class diSetup extends Command implements llMessageHelper, llGlobalHelper,
         new Thread(r).start();
     }
 
-protected class runLocal extends  dExtension implements Runnable {
+protected class runLocal extends dExtension implements Runnable {
     String cName = "[runLocal]";
     public runLocal(CommandEvent ev){
         loggerExt.info(".run build");
@@ -365,24 +368,24 @@ protected class runLocal extends  dExtension implements Runnable {
                     }
                     loadValues();
                     if(!vEnabled){
-                        sendEmbed(sRTitle,"Its disabled!",llColorRed_Cinnabar);isInvalidCommand = false;
+                        sendEmbedInText(sRTitle,"Its disabled!",llColorRed_Cinnabar);isInvalidCommand = false;
                     }else
                     if(!gBDSMCommands.diaper.isAllowedChannel4Command(gTextChannel)){
-                        sendEmbed(sRTitle,"Not allowed channel!",llColorRed_Cinnabar);isInvalidCommand = false;
+                        sendEmbedInText(sRTitle,"Not allowed channel!",llColorRed_Cinnabar);isInvalidCommand = false;
                     }else
                     if(!gBDSMCommands.diaper.hasPermission2UseCommand(gMember)){
-                        sendEmbed(sRTitle,"Member not allowed to use this!",llColorRed_Cinnabar);isInvalidCommand = false;
+                        sendEmbedInText(sRTitle,"Member not allowed to use this!",llColorRed_Cinnabar);isInvalidCommand = false;
                     }else
                     if(gBDSMCommands.diaper.isMemberBanned2UseCommand(gMember)){
-                        sendEmbed(sRTitle,"Member not allowed to use this!",llColorRed_Cinnabar);isInvalidCommand = false;
+                        sendEmbedInText(sRTitle,"Member not allowed to use this!",llColorRed_Cinnabar);isInvalidCommand = false;
                     }
                     if(isInvalidCommand&&isTargeted()){
                         if((gTarget!=null&&!gBDSMCommands.diaper.hasPermission2TargetCommand(gTarget))){
-                            sendEmbed(sRTitle,"Member "+gTarget.getAsMention()+" can't be targeted!",llColorRed_Cinnabar);
+                            sendEmbedInText(sRTitle,"Member "+gTarget.getAsMention()+" can't be targeted!",llColorRed_Cinnabar);
                             isInvalidCommand = false;
                             return;
                         }else if(!gBDSMCommands.diaper.hasPermission2TargetCommand(gMember)){
-                            sendEmbed(sRTitle,stringReplacer("Member !USER can't be targeted!"),llColorRed_Cinnabar);
+                            sendEmbedInText(sRTitle,stringReplacer("Member !USER can't be targeted!"),llColorRed_Cinnabar);
                             isInvalidCommand = false;
                             return;
                         }
@@ -876,7 +879,7 @@ protected class runLocal extends  dExtension implements Runnable {
             global.waiter.waitForEvent(SelectionMenuEvent.class,
                     e -> (e.getMessageId().equalsIgnoreCase(message.getId())),
                     e -> {
-                        if(gCurrentInteractionHook!=null)deferReplySet(e);
+                        if(gCurrentInteractionHook!=null)gComponentInteractionHook=lsMessageHelper.lsDeferReply(e,true);
                         try {
                             String value=e.getValues().get(0);
                             logger.warn(fName+"value="+value);
@@ -898,7 +901,7 @@ protected class runLocal extends  dExtension implements Runnable {
             global.waiter.waitForEvent(ButtonClickEvent.class,
                     e -> (e.getMessageId().equalsIgnoreCase(message.getId())),
                     e -> {
-                        if(gCurrentInteractionHook!=null)deferReplySet(e);
+                        if(gCurrentInteractionHook!=null)gComponentInteractionHook=lsMessageHelper.lsDeferReply(e,true);
                         try {
                             String id=e.getButton().getId();
                             logger.warn(fName+"id="+id);
@@ -1220,7 +1223,7 @@ protected class runLocal extends  dExtension implements Runnable {
             global.waiter.waitForEvent(SelectionMenuEvent.class,
                     e -> (e.getMessageId().equalsIgnoreCase(message.getId())),
                     e -> {
-                        if(gCurrentInteractionHook!=null)deferReplySet(e);
+                        if(gCurrentInteractionHook!=null)gComponentInteractionHook=lsMessageHelper.lsDeferReply(e,true);
                         try {
                             String value=e.getValues().get(0);
                             logger.warn(fName+"value="+value);
@@ -1242,7 +1245,7 @@ protected class runLocal extends  dExtension implements Runnable {
             global.waiter.waitForEvent(ButtonClickEvent.class,
                     e -> (e.getMessageId().equalsIgnoreCase(message.getId())),
                     e -> {
-                        if(gCurrentInteractionHook!=null)deferReplySet(e);
+                        if(gCurrentInteractionHook!=null)gComponentInteractionHook=lsMessageHelper.lsDeferReply(e,true);
                         try {
                             String id=e.getButton().getId();
                             logger.warn(fName+"id="+id);
@@ -1531,6 +1534,7 @@ protected class runLocal extends  dExtension implements Runnable {
                 lcMessageBuildComponent.Button buttonMessEnable=messageComponentManager.messageBuildComponents.getButtonAt(2,0);
                 lcMessageBuildComponent.Button buttonMessDes=messageComponentManager.messageBuildComponents.getButtonAt(2,1);
                 lcMessageBuildComponent.Button buttonMessInc=messageComponentManager.messageBuildComponents.getButtonAt(2,2);
+
                 if(!gNewUserProfile.cWet.isEnabled()){
                     buttonWetEnable.setStyle(ButtonStyle.SUCCESS).setLabel("1️⃣Wet Enable");
                     buttonWetDes.setDisable();buttonWetInc.setDisable();
@@ -1544,9 +1548,9 @@ protected class runLocal extends  dExtension implements Runnable {
                     buttonMessEnable.setStyle(ButtonStyle.DANGER).setLabel("2️⃣Messy Disable");
                 }
                 lcMessageBuildComponent.Button buttonCustomActions=messageComponentManager.messageBuildComponents.getButtonAt(3,0);
-                lcMessageBuildComponent.Button buttonClose=messageComponentManager.messageBuildComponents.getButtonAt(3,2);
                 buttonCustomActions.setDisable();
-                if(gCurrentInteractionHook!=null)buttonClose.setIgnored();
+                lcMessageBuildComponent.Button buttonClose=messageComponentManager.messageBuildComponents.getComponent(3).getButtonById("white_check_mark");
+                if(gCurrentInteractionHook!=null)buttonClose.setDisable();
                 if(gNewUserProfile.cProfile.getAccess()==ACCESSLEVEL.Caretaker||gNewUserProfile.cProfile.getAccess()==ACCESSLEVEL.Protected||gNewUserProfile.cProfile.getAccess()==ACCESSLEVEL.Private){
                     buttonWetEnable.setDisable();buttonWetDes.setDisable();buttonWetInc.setDisable();
                     buttonMessEnable.setDisable();buttonMessDes.setDisable();buttonMessInc.setDisable();
@@ -1573,7 +1577,7 @@ protected class runLocal extends  dExtension implements Runnable {
             global.waiter.waitForEvent(SelectionMenuEvent.class,
                     e -> (e.getMessageId().equalsIgnoreCase(message.getId())),
                     e -> {
-                        if(gCurrentInteractionHook!=null)deferReplySet(e);
+                        if(gCurrentInteractionHook!=null)gComponentInteractionHook=lsMessageHelper.lsDeferReply(e,true);
                         try {
                             String value=e.getValues().get(0);
                             logger.warn(fName+"value="+value);
@@ -1595,7 +1599,7 @@ protected class runLocal extends  dExtension implements Runnable {
             global.waiter.waitForEvent(ButtonClickEvent.class,
                     e -> (e.getMessageId().equalsIgnoreCase(message.getId())),
                     e -> {
-                        if(gCurrentInteractionHook!=null)deferReplySet(e);
+                        if(gCurrentInteractionHook!=null)gComponentInteractionHook=lsMessageHelper.lsDeferReply(e,true);
                         try {
                             String id=e.getButton().getId();
                             logger.warn(fName+"id="+id);
@@ -3323,7 +3327,7 @@ protected class runLocal extends  dExtension implements Runnable {
     private void rSlashNT() {
         String fName = "[rSlashNT]";
         logger.info(fName);
-        slashReplyCheckDm();
+        gCurrentInteractionHook=lsMessageHelper.lsDeferReply(gSlashCommandEvent,true);
         Member user=null;
         boolean subdirProvided=false;
         loadValues();

@@ -5,6 +5,7 @@ import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 import org.apache.log4j.Logger;
+import restraints.models.enums.ACCESSLEVELS;
 
 import java.util.Arrays;
 
@@ -254,9 +255,9 @@ public interface lsDiscordApi {
             }
 
         }
-        public static String getName(restraints.models.ACCESSLEVELS gag){
+        public static String getName(ACCESSLEVELS gag){
             String fName="[getName]";
-            Logger logger = Logger.getLogger(restraints.models.ACCESSLEVELS.class);
+            Logger logger = Logger.getLogger(ACCESSLEVELS.class);
             try {
                 return gag.getName();
             }catch (Exception e){

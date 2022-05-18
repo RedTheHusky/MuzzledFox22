@@ -1,4 +1,4 @@
-package nsfw.diaper;
+package nsfw.diaper.modules.interfaces;
 
 import kong.unirest.json.JSONArray;
 import models.lc.json.profile.lcJSONUserProfile;
@@ -11,7 +11,8 @@ import org.apache.log4j.Logger;
 import restraints.in.iMitts;
 import restraints.in.iRDPatreon;
 import restraints.in.iRestraints;
-import restraints.models.CUFFSARMSLEVELS;
+import restraints.models.enums.CUFFSARMSLEVELS;
+import restraints.models.enums.CONFINELEVELS;
 
 import java.util.Arrays;
 
@@ -80,7 +81,7 @@ public interface iDiaperInteractive {
         }
         public static String getString(ACCESSLEVEL level){
             String fName="[getString]";
-            Logger logger = Logger.getLogger(restraints.models.CONFINELEVELS.class);
+            Logger logger = Logger.getLogger(CONFINELEVELS.class);
             try {
                 return level.getString();
             }catch (Exception e){
@@ -239,7 +240,7 @@ public interface iDiaperInteractive {
         }
         public static String getString(DIAPERTYPE level){
             String fName="[getString]";
-            Logger logger = Logger.getLogger(nsfw.diaper.iDiaperInteractive.class);
+            Logger logger = Logger.getLogger(iDiaperInteractive.class);
             try {
                 return level.getString();
             }catch (Exception e){
@@ -250,7 +251,7 @@ public interface iDiaperInteractive {
         }
         public static String getName(DIAPERTYPE level){
             String fName="[geName]";
-            Logger logger = Logger.getLogger(nsfw.diaper.iDiaperInteractive.class);
+            Logger logger = Logger.getLogger(iDiaperInteractive.class);
             try {
                 return level.getName();
             }catch (Exception e){
@@ -325,7 +326,7 @@ public interface iDiaperInteractive {
         }
         public static String getString(DIAPERTYPE level){
             String fName="[getString]";
-            Logger logger = Logger.getLogger(nsfw.diaper.iDiaperInteractive.class);
+            Logger logger = Logger.getLogger(iDiaperInteractive.class);
             try {
                 return level.getString();
             }catch (Exception e){
@@ -336,7 +337,7 @@ public interface iDiaperInteractive {
         }
         public static String getName(DIAPERTYPE level){
             String fName="[getName]";
-            Logger logger = Logger.getLogger(nsfw.diaper.iDiaperInteractive.class);
+            Logger logger = Logger.getLogger(iDiaperInteractive.class);
             try {
                 return level.getName();
             }catch (Exception e){

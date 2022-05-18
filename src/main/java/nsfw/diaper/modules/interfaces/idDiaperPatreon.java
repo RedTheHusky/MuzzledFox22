@@ -1,4 +1,4 @@
-package nsfw.diaper;
+package nsfw.diaper.modules.interfaces;
 
 import models.lc.json.profile.lcJSONUserProfile;
 import models.ll.colors.llColors;

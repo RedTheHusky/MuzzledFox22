@@ -1,7 +1,8 @@
-package nsfw.diaper;
+package nsfw.diaper.modules.entities;
 
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class entityCustomActions {
     /*gUserProfile.safetyPutFieldEntry(field, keyEnabled,true);
             gUserProfile.safetyPutFieldEntry(field, keyType,typeDiaper_White);
             gUserProfile.safetyPutFieldEntry(field, keyMaxLevel,6);*/
-    protected final String fieldAction=iDiaperInteractive.fieldCustomActions,keyEnabled=iDiaperInteractive.keyEnabled,keyActions=iDiaperInteractive.keyActions;
+    protected final String fieldAction= iDiaperInteractive.fieldCustomActions,keyEnabled=iDiaperInteractive.keyEnabled,keyActions=iDiaperInteractive.keyActions;
     protected final String keyName=iDiaperInteractive.keyName,keyText1=iDiaperInteractive.keyText1,keyText2=iDiaperInteractive.keyText2;
     protected  boolean gEnabled=false;
     protected List<ACTION>actions=new ArrayList<>();

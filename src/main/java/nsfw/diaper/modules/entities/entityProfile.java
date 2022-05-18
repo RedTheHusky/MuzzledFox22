@@ -1,27 +1,37 @@
-package nsfw.diaper;
+package nsfw.diaper.modules.entities;
 
 import kong.unirest.json.JSONObject;
+import net.dv8tion.jda.api.entities.Member;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import nsfw.diaper.iDiaperInteractive.DIAPERTYPE;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive.ACCESSLEVEL;
 
-public class entityDiaper {
+public class entityProfile {
     Logger logger = Logger.getLogger(getClass()); String cName="[entityDiaper]";
-    /*gUserProfile.safetyPutFieldEntry(field, keyEnabled,true);
-            gUserProfile.safetyPutFieldEntry(field, keyType,typeDiaper_White);
-            gUserProfile.safetyPutFieldEntry(field, keyMaxLevel,6);*/
-    protected final String fieldDiaper=iDiaperInteractive.fieldDiaper,keyEnabled=iDiaperInteractive.keyEnabled,keyType=iDiaperInteractive.keyType,keyMaxLevel=iDiaperInteractive.keyMaxLevel;
-    protected boolean gEnabled=false;
-    protected String gType="";
-    protected int gMaxLevel=0;
+    /* field=fieldProfile;
+            gUserProfile.safetyCreateFieldEntry(field);
+            gUserProfile.safetyPutFieldEntry(field, keyProfileLocked,false);
+            gUserProfile.safetyPutFieldEntry(field, keyProfileAccess,nAccessPrivate);
+            gUserProfile.safetyPutFieldEntry(field, keyProfileLockedBy,0);
+            */
+    protected final String fieldProfile = iDiaperInteractive.fieldProfile,
+            keyProfileLocked=iDiaperInteractive.keyProfileLocked,
+            keyProfileAccess=iDiaperInteractive.keyProfileAccess,
+            keyProfileLockedBy=iDiaperInteractive.keyProfileLockedBy;
 
-    public entityDiaper(){
+    protected boolean gProfileLocked =false;
+    protected String gProfileAccess ="";
+    protected long gProfileLockedBy =0;
+
+
+    public entityProfile(){
         String fName="[constructor]";
         logger.info(fName);
     }
-    public entityDiaper(JSONObject jsonObject){
+    public entityProfile(JSONObject jsonObject){
         String fName="[constructor]";
         try {
            set(jsonObject);
@@ -30,12 +40,12 @@ public class entityDiaper {
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
         }
     }
-    public entityDiaper clear(){
+    public entityProfile clear(){
         String fName="[clear]";
         try {
-            gEnabled=false;
-            gType=DIAPERTYPE.White.getString();
-            gMaxLevel=6;
+            gProfileLocked =false;
+            gProfileAccess =ACCESSLEVEL.Private.getString();
+            gProfileLockedBy =0;
 
             return this;
         }catch (Exception e){
@@ -51,9 +61,9 @@ public class entityDiaper {
                 logger.info(fName+"jsonObject is null");
                 return false;
             }
-            if(jsonObject.has(fieldDiaper)){
+            if(jsonObject.has(fieldProfile)){
                 logger.info(fName+"has key fieldDiaper");
-                jsonObject=jsonObject.getJSONObject(fieldDiaper);
+                jsonObject=jsonObject.getJSONObject(fieldProfile);
             }
             logger.info(fName+"jsonObject="+jsonObject.toString());
             if(!jsonObject.isEmpty()){
@@ -74,9 +84,9 @@ public class entityDiaper {
         String fName="[getJSON]";
         try {
             JSONObject jsonObject=new JSONObject();
-            jsonObject.put(keyEnabled,gEnabled);
-            jsonObject.put(keyType,gType);
-            jsonObject.put(keyMaxLevel,gMaxLevel);
+            jsonObject.put(keyProfileLocked, gProfileLocked);
+            jsonObject.put(keyProfileAccess, gProfileAccess);
+            jsonObject.put(keyProfileLockedBy, gProfileLockedBy);
 
             logger.info("jsonObject="+jsonObject.toString());
             return jsonObject;
@@ -86,72 +96,57 @@ public class entityDiaper {
             return new JSONObject();
         }
     }
-    public boolean isEnabled(){
-        String fName="[isEnabled]";
+    public boolean isLocked(){
+        String fName="[isLocked]";
         try {
-            logger.info(fName+"value="+gEnabled);
-            return gEnabled;
+            logger.info(fName+"value="+ gProfileLocked);
+            return gProfileLocked;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
-    public String getTypeAsString(){
-        String fName="[getTypeAsString]";
+    public String getAccessAsString(){
+        String fName="[getAccess]";
         try {
-            logger.info(fName+"value="+gType);
-            return gType;
+            logger.info(fName+"value="+ gProfileAccess);
+            return gProfileAccess;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             return "";
         }
     }
-    public DIAPERTYPE getType(){
-        String fName="[getTypeAsString]";
+    public ACCESSLEVEL getAccess(){
+        String fName="[getAccess]";
         try {
-            logger.info(fName+"value="+gType);
-            DIAPERTYPE type=DIAPERTYPE.valueByString(gType);
-            if(type==null)type=DIAPERTYPE.INVALID;
-            return type;
+            logger.info(fName+"value="+ gProfileAccess);
+            ACCESSLEVEL accesslevel=ACCESSLEVEL.valueByString(gProfileAccess);
+            if(accesslevel==null)accesslevel=ACCESSLEVEL.INVALID;
+            return accesslevel;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            return DIAPERTYPE.INVALID;
+            return ACCESSLEVEL.INVALID;
         }
     }
-    public String getName(){
-        String fName="[getName]";
+    public long getLockedBy(){
+        String fName="[getLockedBy]";
         try {
-            logger.info(fName+"type="+gType);
-            DIAPERTYPE diapertype= DIAPERTYPE.valueByString(gType);
-            if(diapertype!=null){
-                return diapertype.getName();
-            }
-            return "";
+            logger.info(fName+"value="+ gProfileLockedBy);
+            return gProfileLockedBy;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            return "";
+            return 0L;
         }
     }
-    public int getMaxLevel(){
-        String fName="[getMaxLevel]";
-        try {
-            logger.info(fName+"value="+gMaxLevel);
-            return gMaxLevel;
-        }catch (Exception e){
-            logger.error(fName + ".exception=" + e);
-            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            return 0;
-        }
-    }
-    public entityDiaper setEnabled(boolean input){
-        String fName="[setEnabled]";
+    public entityProfile setLock(boolean input){
+        String fName="[setLock]";
         try {
             logger.info(fName+"input="+input);
-            gEnabled=input;
+            gProfileLocked =input;
             return this;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
@@ -159,12 +154,11 @@ public class entityDiaper {
             return null;
         }
     }
-    public entityDiaper setType(String input){
-        String fName="[setType]";
+    public entityProfile setAccess(String input){
+        String fName="[setAccess]";
         try {
             logger.info(fName+"input="+input);
-            if(input==null)input="";
-            gType=input;
+            gProfileAccess =input;
             return this;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
@@ -172,13 +166,12 @@ public class entityDiaper {
             return null;
         }
     }
-    public entityDiaper setType(DIAPERTYPE input){
-        String fName="[setType]";
+    public entityProfile setAccess(ACCESSLEVEL input){
+        String fName="[setAccess]";
         try {
             if(input==null){return null;}
             logger.info(fName+"input="+input);
-            setType(input.getString());
-            setMaxWetness(input.getWetness());
+            gProfileAccess =input.getString();
             return this;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
@@ -186,11 +179,23 @@ public class entityDiaper {
             return null;
         }
     }
-    public entityDiaper setMaxWetness(int input){
-        String fName="[setMaxLevel]";
+    public entityProfile setLockedBy(Member member){
+        String fName="[setLockedBy]";
         try {
-            logger.info(fName+"input="+input);
-            gMaxLevel=input;
+            logger.info(fName+"member="+member.getId());
+            gProfileLockedBy =member.getIdLong();
+            return this;
+        }catch (Exception e){
+            logger.error(fName + ".exception=" + e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            return null;
+        }
+    }
+    public entityProfile setLockedBy(long id){
+        String fName="[setLockedBy]";
+        try {
+            logger.info(fName+"id="+id);
+            gProfileLockedBy =id;
             return this;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
@@ -203,14 +208,14 @@ public class entityDiaper {
         try {
             logger.info(fName+"key="+key);
             switch (key){
-                case keyEnabled:
-                    gEnabled= (boolean) value;
+                case keyProfileLocked:
+                    gProfileLocked = (boolean) value;
                     break;
-                case keyType:
-                    gType = (String) value;
+                case keyProfileAccess:
+                    gProfileAccess = (String) value;
                     break;
-                case keyMaxLevel:
-                    gMaxLevel = (int) value;
+                case keyProfileLockedBy:
+                    gProfileLockedBy = (long) value;
                     break;
 
             }
@@ -226,14 +231,14 @@ public class entityDiaper {
         try {
             logger.info(fName+"key="+key);
             switch (key){
-                case keyEnabled:
-                    gEnabled= jsonObject.optBoolean(key);
+                case keyProfileLocked:
+                    gProfileLocked = jsonObject.optBoolean(key);
                     break;
-                case keyType:
-                    gType = jsonObject.optString(key);
+                case keyProfileAccess:
+                    gProfileAccess = jsonObject.optString(key);
                     break;
-                case keyMaxLevel:
-                    gMaxLevel = jsonObject.optInt(key);
+                case keyProfileLockedBy:
+                    gProfileLockedBy = jsonObject.optLong(key);
                     break;
 
             }
@@ -245,10 +250,36 @@ public class entityDiaper {
         }
     }
 
-    public entityDiaper setOff() {
-        String fName="[setOff]";
+    public entityProfile runaway() {
+        String fName="[runaway]";
         try {
-           setEnabled(false);setType("");
+            setLockedBy(0);setLock(false);setAccess(ACCESSLEVEL.Private);
+            logger.info(fName+"done");
+            return this;
+        }catch (Exception e){
+            logger.error(fName + ".exception=" + e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            return null;
+        }
+    }
+
+    public entityProfile lock(Member member) {
+        String fName="[lock]";
+        try {
+            setLockedBy(member);setLock(true);
+            logger.info(fName+"done");
+            return this;
+        }catch (Exception e){
+            logger.error(fName + ".exception=" + e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            return null;
+        }
+    }
+    public entityProfile unlock() {
+        String fName="[unlock]";
+        try {
+            setLockedBy(0);setLock(false);
+            logger.info(fName+"done");
             return this;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);

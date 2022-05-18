@@ -1,29 +1,30 @@
-package nsfw.diaper;
+package nsfw.diaper.modules.entities;
 
 import kong.unirest.json.JSONObject;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Iterator;
 
 
-public class entityWet {
+public class entityMessy {
     Logger logger = Logger.getLogger(getClass()); String cName="[entityWet]";
     /* field=fieldWet;
             gUserProfile.safetyCreateFieldEntry(field);
             gUserProfile.safetyPutFieldEntry(field, keyEnabled,true);
             gUserProfile.safetyPutFieldEntry(field, keyChance,4);
             gUserProfile.safetyPutFieldEntry(field, keyLevel,0);*/
-    final String fieldWet =iDiaperInteractive.fieldWet,keyEnabled=iDiaperInteractive.keyEnabled, keyChance =iDiaperInteractive.keyChance, keyLevel =iDiaperInteractive.keyLevel;
+    protected final String fieldMessy = iDiaperInteractive.fieldMessy,keyEnabled=iDiaperInteractive.keyEnabled, keyChance =iDiaperInteractive.keyChance, keyLevel =iDiaperInteractive.keyLevel;
     protected boolean gEnabled=false;
     protected int gChance=0, gLevel =0;
 
 
-    public entityWet(){
+    public entityMessy(){
         String fName="[constructor]";
         logger.info(fName);
     }
-    public entityWet(JSONObject jsonObject){
+    public entityMessy(JSONObject jsonObject){
         String fName="[constructor]";
         try {
            set(jsonObject);
@@ -32,10 +33,10 @@ public class entityWet {
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
         }
     }
-    public entityWet clear(){
+    public entityMessy clear(){
         String fName="[clear]";
         try {
-            gEnabled=true;
+            gEnabled=false;
             gChance=4;
             gLevel =0;
 
@@ -53,9 +54,9 @@ public class entityWet {
                 logger.info(fName+"jsonObject is null");
                 return false;
             }
-            if(jsonObject.has(fieldWet)){
+            if(jsonObject.has(fieldMessy)){
                 logger.info(fName+"has key fieldDiaper");
-                jsonObject=jsonObject.getJSONObject(fieldWet);
+                jsonObject=jsonObject.getJSONObject(fieldMessy);
             }
             logger.info(fName+"jsonObject="+jsonObject.toString());
             if(!jsonObject.isEmpty()){
@@ -121,7 +122,7 @@ public class entityWet {
             return 0;
         }
     }
-    public entityWet setEnabled(boolean input){
+    public entityMessy setEnabled(boolean input){
         String fName="[setEnabled]";
         try {
             logger.info(fName+"input="+input);
@@ -133,7 +134,7 @@ public class entityWet {
             return null;
         }
     }
-    public entityWet setChance(int input){
+    public entityMessy setChance(int input){
         String fName="[setChance]";
         try {
             logger.info(fName+"input="+input);
@@ -145,7 +146,7 @@ public class entityWet {
             return null;
         }
     }
-    public entityWet setLevel(int input){
+    public entityMessy setLevel(int input){
         String fName="[setLevel]";
         try {
             logger.info(fName+"input="+input);
@@ -204,10 +205,10 @@ public class entityWet {
         }
     }
 
-    public entityWet runaway() {
+    public entityMessy runaway() {
         String fName="[runaway]";
         try {
-            setEnabled(true);setChance(4);setLevel(0);
+            setEnabled(false);setChance(4);setLevel(0);
             logger.info(fName+"done");
             return this;
         }catch (Exception e){

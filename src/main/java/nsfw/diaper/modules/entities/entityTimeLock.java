@@ -1,6 +1,7 @@
-package nsfw.diaper;
+package nsfw.diaper.modules.entities;
 
 import kong.unirest.json.JSONObject;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive;
 import org.apache.log4j.Logger;
 
 import java.sql.Timestamp;
@@ -13,7 +14,7 @@ public class entityTimeLock {
     /*gUserProfile.safetyPutFieldEntry(field, keyEnabled,true);
             gUserProfile.safetyPutFieldEntry(field, keyType,typeDiaper_White);
             gUserProfile.safetyPutFieldEntry(field, keyMaxLevel,6);*/
-    protected final String fieldTimeLock=iDiaperInteractive.fieldTimeLock,keyEnabled=iDiaperInteractive.keyEnabled,keyDuration=iDiaperInteractive.keyDuration,keyMaxDuration=iDiaperInteractive.keyMaxDuration,
+    protected final String fieldTimeLock= iDiaperInteractive.fieldTimeLock,keyEnabled=iDiaperInteractive.keyEnabled,keyDuration=iDiaperInteractive.keyDuration,keyMaxDuration=iDiaperInteractive.keyMaxDuration,
             keyMinDuration=iDiaperInteractive.keyMinDuration,keyStartDuration=iDiaperInteractive.keyStartDuration,keyTimestamp=iDiaperInteractive.keyTimestamp;
     protected boolean gEnabled=false;
     protected long gDuration=0,gMaxDuration=0,gMinDuration=0,gStartDuration=60000*15,gTimestamp=0;

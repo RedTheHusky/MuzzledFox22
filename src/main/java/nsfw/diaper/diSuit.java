@@ -18,10 +18,15 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import nsfw.diaper.modules.dExtension;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive;
+import nsfw.diaper.modules.interfaces.iSuit;
+import nsfw.diaper.modules.interfaces.idDiaperPatreon;
 import org.apache.log4j.Logger;
 import restraints.in.iRestraints;
 
@@ -92,7 +97,7 @@ public class diSuit extends Command implements llMessageHelper, llGlobalHelper, 
         Runnable r = new runLocal(gEvent);
         new Thread(r).start();
     }
-    protected class runLocal extends  dExtension implements Runnable {
+    protected class runLocal extends dExtension implements Runnable {
         String cName="[runLocal]";String fName="runLocal";
         public runLocal(CommandEvent ev){
             logger.info(".run build");
@@ -144,16 +149,16 @@ public class diSuit extends Command implements llMessageHelper, llGlobalHelper, 
                     if(gItems[0].equalsIgnoreCase("help")){
                         rHelp("main");isInvalidCommand=false;}
                     if(!vEnabled){
-                        sendEmbed(sRTitle,"Its disabled!",llColorRed_Cinnabar);isInvalidCommand = false;
+                        sendEmbedInText(sRTitle,"Its disabled!",llColorRed_Cinnabar);isInvalidCommand = false;
                     }else
                     if(!gBDSMCommands.diaper.isAllowedChannel4Command(gTextChannel)){
-                        sendEmbed(sRTitle,"Not allowed channel!",llColorRed_Cinnabar);isInvalidCommand = false;
+                        sendEmbedInText(sRTitle,"Not allowed channel!",llColorRed_Cinnabar);isInvalidCommand = false;
                     }else
                     if(!gBDSMCommands.diaper.hasPermission2UseCommand(gMember)){
-                        sendEmbed(sRTitle,"Member not allowed to use this!",llColorRed_Cinnabar);isInvalidCommand = false;
+                        sendEmbedInText(sRTitle,"Member not allowed to use this!",llColorRed_Cinnabar);isInvalidCommand = false;
                     }else
                     if(gBDSMCommands.diaper.isMemberBanned2UseCommand(gMember)){
-                        sendEmbed(sRTitle,"Member not allowed to use this!",llColorRed_Cinnabar);isInvalidCommand = false;
+                        sendEmbedInText(sRTitle,"Member not allowed to use this!",llColorRed_Cinnabar);isInvalidCommand = false;
                     }
                     if(isInvalidCommand&&(gItems[0].contains("<!@")||gItems[0].contains("<@"))&&gItems[0].contains(">")){
                         logger.info(fName+".detect mention characters");
@@ -337,11 +342,11 @@ public class diSuit extends Command implements llMessageHelper, llGlobalHelper, 
                     if(!gIsOverride&&gNewUserProfile.cProfile.isLocked()){
                         logger.info(fName + ".can't take off do to locked");
                        sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.solo.cantTakeOffDueToLocked), llColorRed);
-                        sendEmbed(sRTitle,stringReplacer(iSuit.solo.cantTakeOffDueToLocked_public), llColorRed);
+                        sendEmbedInText(sRTitle,stringReplacer(iSuit.solo.cantTakeOffDueToLocked_public), llColorRed);
                     }else{
                         gNewUserProfile.cSuit.setOff();
                        sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.solo.takesOff), llColorBlue1);
-                        sendEmbed(sRTitle, stringReplacer(iSuit.solo.takesOff_public), llColorBlue1);
+                        sendEmbedInText(sRTitle, stringReplacer(iSuit.solo.takesOff_public), llColorBlue1);
                     }
                 }else{
                     logger.info(fName + ".suit is not on");
@@ -351,52 +356,52 @@ public class diSuit extends Command implements llMessageHelper, llGlobalHelper, 
             else if(command.equalsIgnoreCase(SUITTYPE.Eevee.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Eevee);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.solo.putOnEevee), llColors_Pokemon.llColorEevee);
-                sendEmbed(sRTitle,stringReplacer(iSuit.solo.putOnEevee_public), llColors_Pokemon.llColorEevee);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.solo.putOnEevee_public), llColors_Pokemon.llColorEevee);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Flareon.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Flareon);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.solo.putOnFlareon), llColors_Pokemon.llColorFlareon);
-                sendEmbed(sRTitle,stringReplacer(iSuit.solo.putOnFlareon_public), llColors_Pokemon.llColorFlareon);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.solo.putOnFlareon_public), llColors_Pokemon.llColorFlareon);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Jolteon.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Jolteon);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.solo.putOnJolteon), llColors_Pokemon.llColorPikachu_Jolteon);
-                sendEmbed(sRTitle,stringReplacer(iSuit.solo.putOnJolteon_public), llColors_Pokemon.llColorPikachu_Jolteon);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.solo.putOnJolteon_public), llColors_Pokemon.llColorPikachu_Jolteon);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Kitten.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Kitten);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.solo.putOnKitten), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iSuit.solo.putOnKitten_public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.solo.putOnKitten_public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Pikachu.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Pikachu);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.solo.putOnPikachu), llColors_Pokemon.llColorPikachu_Jolteon);
-                sendEmbed(sRTitle,stringReplacer(iSuit.solo.putOnPikachu_public), llColors_Pokemon.llColorPikachu_Jolteon);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.solo.putOnPikachu_public), llColors_Pokemon.llColorPikachu_Jolteon);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Puppy.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Puppy);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.solo.putOnPuppy), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iSuit.solo.putOnPuppy_public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.solo.putOnPuppy_public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Unicorn.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Unicorn);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.solo.putOnUnicorn), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iSuit.solo.putOnUnicorn_public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.solo.putOnUnicorn_public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Vaporeon.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Vaporeon);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.solo.putOnVaporeon), llColors_Pokemon.llColorVaporeon);
-                sendEmbed(sRTitle,stringReplacer(iSuit.solo.putOnVaporeon_public), llColors_Pokemon.llColorVaporeon);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.solo.putOnVaporeon_public), llColors_Pokemon.llColorVaporeon);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Wolf.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Wolf);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.solo.putOnWolf), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iSuit.solo.putOnWolf_public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.solo.putOnWolf_public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Sylveon.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Sylveon);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.solo.putOnSylveon) , llColors_Pokemon.llColorSylveon);
-                sendEmbed(sRTitle,stringReplacer(iSuit.solo.putOnSylveon_public), llColors_Pokemon.llColorSylveon);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.solo.putOnSylveon_public), llColors_Pokemon.llColorSylveon);
             }
             else if((gMember.getIdLong()== idDiaperPatreon.patreonUser_239748154046545920.userID||gNewUserProfile.getMember().getIdLong()== idDiaperPatreon.patreonUser_239748154046545920.userID||lsMemberIsBotOwner(gMember))
                &&(command.equalsIgnoreCase(idDiaperPatreon.patreonUser_239748154046545920.name)||command.equalsIgnoreCase(idDiaperPatreon.patreonUser_239748154046545920.command))
@@ -431,7 +436,7 @@ public class diSuit extends Command implements llMessageHelper, llGlobalHelper, 
                         }else{
                         gNewUserProfile.cSuit.setOff();
                        sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.target.pulloff_auth), llColorBlue1);
-                        sendEmbed(sRTitle, stringReplacer(iSuit.target.pullloff_public), llColorBlue1);
+                        sendEmbedInText(sRTitle, stringReplacer(iSuit.target.pullloff_public), llColorBlue1);
                     }
                 }else{
                     logger.info(fName + ".suit is not on");
@@ -441,52 +446,52 @@ public class diSuit extends Command implements llMessageHelper, llGlobalHelper, 
             else if(command.equalsIgnoreCase(SUITTYPE.Eevee.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Eevee);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.target.putonEevee_auth), llColors_Pokemon.llColorEevee);
-                sendEmbed(sRTitle,stringReplacer(iSuit.target.putonEevee_public), llColors_Pokemon.llColorEevee);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.target.putonEevee_public), llColors_Pokemon.llColorEevee);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Flareon.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Flareon);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.target.putonFlareon_auth), llColors_Pokemon.llColorFlareon);
-                sendEmbed(sRTitle,stringReplacer(iSuit.target.putonFlareon_public), llColors_Pokemon.llColorFlareon);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.target.putonFlareon_public), llColors_Pokemon.llColorFlareon);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Jolteon.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Jolteon);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.target.putonJolteon_auth), llColors_Pokemon.llColorPikachu_Jolteon);
-                sendEmbed(sRTitle,stringReplacer(iSuit.target.putonJolteon_public), llColors_Pokemon.llColorPikachu_Jolteon);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.target.putonJolteon_public), llColors_Pokemon.llColorPikachu_Jolteon);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Kitten.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Kitten);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.target.putonKitten_auth), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iSuit.target.putonKitten_public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.target.putonKitten_public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Pikachu.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Pikachu);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.target.putonPikachu_auth), llColors_Pokemon.llColorPikachu_Jolteon);
-                sendEmbed(sRTitle,stringReplacer(iSuit.target.putonPikachu_public), llColors_Pokemon.llColorPikachu_Jolteon);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.target.putonPikachu_public), llColors_Pokemon.llColorPikachu_Jolteon);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Puppy.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Puppy);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.target.putonPuppy_auth), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iSuit.target.putonPuppy_public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.target.putonPuppy_public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Unicorn.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Unicorn);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.target.putonUnicorn_auth), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iSuit.target.putonUnicorn_public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.target.putonUnicorn_public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Vaporeon.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Vaporeon);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.target.putonVaporeon_auth),llColors_Pokemon.llColorVaporeon);
-                sendEmbed(sRTitle,stringReplacer(iSuit.target.putonVaporeon_public), llColors_Pokemon.llColorVaporeon);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.target.putonVaporeon_public), llColors_Pokemon.llColorVaporeon);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Wolf.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Wolf);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.target.putonWolf_auth), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iSuit.target.putonWolf_public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.target.putonWolf_public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(SUITTYPE.Sylveon.getString())){
                 gNewUserProfile.cSuit.setEnabled(true).setType(SUITTYPE.Sylveon);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iSuit.target.putonSylveon_auth), llColors_Pokemon.llColorSylveon);
-                sendEmbed(sRTitle,stringReplacer(iSuit.target.putonSylveon_public), llColors_Pokemon.llColorSylveon);
+                sendEmbedInText(sRTitle,stringReplacer(iSuit.target.putonSylveon_public), llColors_Pokemon.llColorSylveon);
             }
             else if((gMember.getIdLong()== idDiaperPatreon.patreonUser_239748154046545920.userID||gNewUserProfile.getMember().getIdLong()== idDiaperPatreon.patreonUser_239748154046545920.userID||lsMemberIsBotOwner(gMember))
                             &&(command.equalsIgnoreCase(idDiaperPatreon.patreonUser_239748154046545920.name)||command.equalsIgnoreCase(idDiaperPatreon.patreonUser_239748154046545920.command))
@@ -552,6 +557,8 @@ public class diSuit extends Command implements llMessageHelper, llGlobalHelper, 
                 try {
                     logger.info(fName+"component.after="+messageComponentManager.messageBuildComponents.getJson());
                     messageComponentManager.selectContainer=messageComponentManager.messageBuildComponents.getComponent(0).getSelect();
+                    lcMessageBuildComponent.Button buttonClose=messageComponentManager.messageBuildComponents.getComponent(1).getButtonById("white_check_mark");
+                    if(gCurrentInteractionHook!=null)buttonClose.setDisable();
                     if(gMember.getIdLong()== idDiaperPatreon.patreonUser_239748154046545920.userID||gNewUserProfile.getMember().getIdLong()== idDiaperPatreon.patreonUser_239748154046545920.userID){
                         lsMessageHelper.lsMessageAddReactions(message, global.emojis.getEmoji(lsUnicodeEmotes.aliasStar));
                         lcMessageBuildComponent.SelectMenu.Option vip0=new lcMessageBuildComponent.SelectMenu.Option(idDiaperPatreon.patreonUser_239748154046545920.name,lsUnicodeEmotes.aliasStar);
@@ -599,14 +606,14 @@ public class diSuit extends Command implements llMessageHelper, llGlobalHelper, 
                 global.waiter.waitForEvent(SelectionMenuEvent.class,
                         e -> (e.getMessageId().equalsIgnoreCase(message.getId())),
                         e -> {
-                            if(gCurrentInteractionHook!=null)deferReplySet(e);
+                            if(gCurrentInteractionHook!=null)gComponentInteractionHook=lsMessageHelper.lsDeferReply(e,true);
                             try {
                                 String value=e.getValues().get(0);
                                 logger.warn(fName+"value="+value);
                                 llMessageDelete(message);
                                 String level="";
                                 switch (value){
-                                    case lsUnicodeEmotes.aliasZero: level=vOff;
+                                    case lsUnicodeEmotes.aliasZero: level=vOff;break;
                                     case lsUnicodeEmotes.aliasOne: level=SUITTYPE.Eevee.getString();break;
                                     case lsUnicodeEmotes.aliasTwo: level=SUITTYPE.Pikachu.getString();break;
                                     case lsUnicodeEmotes.aliasThree: level=SUITTYPE.Kitten.getString();break;
@@ -643,7 +650,7 @@ public class diSuit extends Command implements llMessageHelper, llGlobalHelper, 
                 global.waiter.waitForEvent(ButtonClickEvent.class,
                         e -> (e.getMessageId().equalsIgnoreCase(message.getId())),
                         e -> {
-                            if(gCurrentInteractionHook!=null)deferReplySet(e);
+                            if(gCurrentInteractionHook!=null)gComponentInteractionHook=lsMessageHelper.lsDeferReply(e,true);
                             try {
                                 String id=e.getButton().getId();
                                 logger.warn(fName+"id="+id);
@@ -666,49 +673,97 @@ public class diSuit extends Command implements llMessageHelper, llGlobalHelper, 
                                 llMessageDelete(message);
                             }
                         },intDefaultWaitingMinute, TimeUnit.MINUTES, () -> logger.info(fName+lsGlobalHelper.timeout_button));
-                global.waiter.waitForEvent(PrivateMessageReactionAddEvent.class,
-                        e -> (e.getMessageIdLong()==message.getIdLong()&&e.getUserIdLong()==gUser.getIdLong()),
-                        e -> {
-                            try {
-                                String name=e.getReactionEmote().getName();
-                                logger.warn(fName+"name="+name);
-                                String asCodepoints=e.getReactionEmote().getAsCodepoints();
-                                logger.warn(fName+"asCodepoints="+name);
-                                String level="";
-                                if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasInformationSource))){ level="info";}
-                                if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasZero))){ level=vOff;}
-                                if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasOne))){ level=SUITTYPE.Eevee.getString();}
-                                if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasTwo))){ level=SUITTYPE.Pikachu.getString();}
-                                if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasThree))){ level=SUITTYPE.Kitten.getString();}
-                                if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasFour))){ level=SUITTYPE.Jolteon.getString();}
-                                if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasFive))){ level=SUITTYPE.Flareon.getString();}
-                                if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasSix))){ level=SUITTYPE.Puppy.getString();}
-                                if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasSeven))){ level=SUITTYPE.Unicorn.getString();}
-                                if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasEight))){ level=SUITTYPE.Vaporeon.getString();}
-                                if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasNine))){ level=SUITTYPE.Wolf.getString();}
-                                if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA))){ level=SUITTYPE.Sylveon.getString();}
-                                if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasStar))){
-                                    if(gMember.getIdLong()== idDiaperPatreon.patreonUser_239748154046545920.userID||gNewUserProfile.getMember().getIdLong()== idDiaperPatreon.patreonUser_239748154046545920.userID){
-                                        level= idDiaperPatreon.patreonUser_239748154046545920.name;
-                                    }
-                                }
-                                if(level.equalsIgnoreCase("info")){
-                                    rHelp("main");
-                                }else
-                                if(gNewUserProfile.getMember().getIdLong()==gUser.getIdLong()){
-                                    rSuit(level);
-                                }else{
-                                    rSuit(mtarget,level);
-                                }
 
-                                llMessageDelete(message);
-                            }catch (Exception e3){
-                                logger.error(fName + ".exception=" + e3);
-                                logger.error(fName + ".exception:" + Arrays.toString(e3.getStackTrace()));
-                                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,sRTitle,e3.toString());
-                                llMessageDelete(message);
-                            }
-                        },intDefaultWaitingMinute, TimeUnit.MINUTES, () -> {llMessageDelete(message);logger.info(fName+lsGlobalHelper.timeout_reaction_add);});
+                if(message.isFromGuild()){
+                    global.waiter.waitForEvent(GuildMessageReactionAddEvent.class,
+                            e -> (e.getMessageIdLong()==message.getIdLong()&&e.getUserIdLong()==gUser.getIdLong()),
+                            e -> {
+                                try {
+                                    String name=e.getReactionEmote().getName();
+                                    logger.warn(fName+"name="+name);
+                                    String asCodepoints=e.getReactionEmote().getAsCodepoints();
+                                    logger.warn(fName+"asCodepoints="+name);
+                                    String level="";
+                                    if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasInformationSource))){ level="info";}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasZero))){ level=vOff;}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasOne))){ level=SUITTYPE.Eevee.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasTwo))){ level=SUITTYPE.Pikachu.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasThree))){ level=SUITTYPE.Kitten.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasFour))){ level=SUITTYPE.Jolteon.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasFive))){ level=SUITTYPE.Flareon.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasSix))){ level=SUITTYPE.Puppy.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasSeven))){ level=SUITTYPE.Unicorn.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasEight))){ level=SUITTYPE.Vaporeon.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasNine))){ level=SUITTYPE.Wolf.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA))){ level=SUITTYPE.Sylveon.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasStar))){
+                                        if(gMember.getIdLong()== idDiaperPatreon.patreonUser_239748154046545920.userID||gNewUserProfile.getMember().getIdLong()== idDiaperPatreon.patreonUser_239748154046545920.userID){
+                                            level= idDiaperPatreon.patreonUser_239748154046545920.name;
+                                        }
+                                    }
+                                    if(level.equalsIgnoreCase("info")){
+                                        rHelp("main");
+                                    }else
+                                    if(gNewUserProfile.getMember().getIdLong()==gUser.getIdLong()){
+                                        rSuit(level);
+                                    }else{
+                                        rSuit(mtarget,level);
+                                    }
+
+                                    llMessageDelete(message);
+                                }catch (Exception e3){
+                                    logger.error(fName + ".exception=" + e3);
+                                    logger.error(fName + ".exception:" + Arrays.toString(e3.getStackTrace()));
+                                    lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,sRTitle,e3.toString());
+                                    llMessageDelete(message);
+                                }
+                            },intDefaultWaitingMinute, TimeUnit.MINUTES, () -> {llMessageDelete(message);logger.info(fName+lsGlobalHelper.timeout_reaction_add);});
+                }else{
+                    global.waiter.waitForEvent(PrivateMessageReactionAddEvent.class,
+                            e -> (e.getMessageIdLong()==message.getIdLong()&&e.getUserIdLong()==gUser.getIdLong()),
+                            e -> {
+                                try {
+                                    String name=e.getReactionEmote().getName();
+                                    logger.warn(fName+"name="+name);
+                                    String asCodepoints=e.getReactionEmote().getAsCodepoints();
+                                    logger.warn(fName+"asCodepoints="+name);
+                                    String level="";
+                                    if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasInformationSource))){ level="info";}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasZero))){ level=vOff;}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasOne))){ level=SUITTYPE.Eevee.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasTwo))){ level=SUITTYPE.Pikachu.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasThree))){ level=SUITTYPE.Kitten.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasFour))){ level=SUITTYPE.Jolteon.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasFive))){ level=SUITTYPE.Flareon.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasSix))){ level=SUITTYPE.Puppy.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasSeven))){ level=SUITTYPE.Unicorn.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasEight))){ level=SUITTYPE.Vaporeon.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasNine))){ level=SUITTYPE.Wolf.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA))){ level=SUITTYPE.Sylveon.getString();}
+                                    else if(name.equalsIgnoreCase(global.emojis.getEmoji(lsUnicodeEmotes.aliasStar))){
+                                        if(gMember.getIdLong()== idDiaperPatreon.patreonUser_239748154046545920.userID||gNewUserProfile.getMember().getIdLong()== idDiaperPatreon.patreonUser_239748154046545920.userID){
+                                            level= idDiaperPatreon.patreonUser_239748154046545920.name;
+                                        }
+                                    }
+                                    if(level.equalsIgnoreCase("info")){
+                                        rHelp("main");
+                                    }else
+                                    if(gNewUserProfile.getMember().getIdLong()==gUser.getIdLong()){
+                                        rSuit(level);
+                                    }else{
+                                        rSuit(mtarget,level);
+                                    }
+
+                                    llMessageDelete(message);
+                                }catch (Exception e3){
+                                    logger.error(fName + ".exception=" + e3);
+                                    logger.error(fName + ".exception:" + Arrays.toString(e3.getStackTrace()));
+                                    lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,sRTitle,e3.toString());
+                                    llMessageDelete(message);
+                                }
+                            },intDefaultWaitingMinute, TimeUnit.MINUTES, () -> {llMessageDelete(message);logger.info(fName+lsGlobalHelper.timeout_reaction_add);});
+                }
+
 
             } catch (Exception e) {
                 logger.error(fName+".exception=" + e);
@@ -719,8 +774,7 @@ public class diSuit extends Command implements llMessageHelper, llGlobalHelper, 
         private void rSlashNT() {
             String fName = "[rSlashNT]";
             logger.info(fName);
-            slashReplyPleaseWait();
-            gCurrentInteractionHook=gSlashInteractionHook;
+            gCurrentInteractionHook=lsMessageHelper.lsDeferReply(gSlashCommandEvent,true);
             Member user=null;
             boolean subdirProvided=false;
             String typeValue="";boolean typeProvided=false;
@@ -842,7 +896,7 @@ public class diSuit extends Command implements llMessageHelper, llGlobalHelper, 
                     sendOrUpdatePrivateEmbed(strTitle,"Invalid command.",llColorRed);
                     return;
                 }
-                sendEmbed(embedBuilder);
+                sendEmbedInText(embedBuilder);
                 saveProfile();
             }else{
                 if(gNewUserProfile.isPetLockedBySomebody()){
@@ -926,7 +980,7 @@ public class diSuit extends Command implements llMessageHelper, llGlobalHelper, 
                     sendOrUpdatePrivateEmbed(strTitle,"Invalid command.",llColorRed);
                     return;
                 }
-                sendEmbed(embedBuilder);
+                sendEmbedInText(embedBuilder);
                 saveProfile();
             }
         }

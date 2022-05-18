@@ -1,7 +1,5 @@
 package models.ll;
 
-import restraints.models.ACCESSLEVELS;
-
 public interface llCommonKeys {
     String keyIcon ="icon",keyIconUrl ="iconUrl", keyIconId ="iconId", keySplash ="splash",keySplashUrl ="splashUrl", keySplashId ="splashId", keyBanner ="banner", keyBannerUrl ="bannerUrl", keyBannerId ="bannerUrl",keyAvatar="avatar",keyAvatarUrl="avatarUrl",keyAvatarId="avatarId";
 

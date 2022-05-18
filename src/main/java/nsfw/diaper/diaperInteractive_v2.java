@@ -24,6 +24,9 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import nsfw.diaper.modules.dExtension;
+import nsfw.diaper.modules.entities.entityCustomActions;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive;
 import org.apache.log4j.Logger;
 import restraints.in.*;
 
@@ -35,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 import static models.ls.lsMemberHelper.lsMemberIsBotOwner;
 
-public class diaperInteractive_v2 extends Command implements llMessageHelper, llGlobalHelper, llMemberHelper, llNetworkHelper,iDiaperInteractive {
+public class diaperInteractive_v2 extends Command implements llMessageHelper, llGlobalHelper, llMemberHelper, llNetworkHelper, iDiaperInteractive {
         Logger logger = Logger.getLogger(getClass()); String cName="[diaperInteractive2]";
 
       
@@ -73,7 +76,7 @@ public class diaperInteractive_v2 extends Command implements llMessageHelper, ll
         new Thread(r).start();
     }
 
-protected class runLocal extends  dExtension implements Runnable  {
+protected class runLocal extends dExtension implements Runnable  {
     String cName = "[runLocal]";
     public runLocal(CommandEvent ev) {
         logger.info(".run build");
@@ -410,7 +413,7 @@ protected class runLocal extends  dExtension implements Runnable  {
             embed.addField("Messy","Disabled",false);
         }
         if(gCurrentInteractionHook!=null)sendOrUpdatePrivateEmbed( sRTitle, "Diaper checked", llColorBlue1);
-        sendEmbed(embed);
+        sendEmbedInText(embed);
     }
 
 
@@ -538,7 +541,7 @@ protected class runLocal extends  dExtension implements Runnable  {
         embed.setDescription(desc);
         embed.setColor(color);
         if(gCurrentInteractionHook!=null)sendOrUpdatePrivateEmbed( sRTitle,"Swapped",llColorBlue1);
-        sendEmbed(embed);
+        sendEmbedInText(embed);
     }
     private void actionFirmPat(){
         String fName = "[actionFirmPat]";
@@ -563,7 +566,7 @@ protected class runLocal extends  dExtension implements Runnable  {
             logger.info(fName+"self");
             embed.setDescription("Can't firm pat yourself!");
             embed.setColor(llColorRed_Salmon);
-            sendEmbed(embed);
+            sendEmbedInText(embed);
             sendOrUpdatePrivateEmbed( sRTitle,"Firm pat given",llColorBlue1);
             return;
         }else{
@@ -618,7 +621,7 @@ protected class runLocal extends  dExtension implements Runnable  {
         desc+=" diapered butt bab.";
         embed.setDescription(desc);
         embed.setColor(color);
-        sendEmbed(embed);
+        sendEmbedInText(embed);
         if(gCurrentInteractionHook!=null)sendOrUpdatePrivateEmbed( sRTitle,"Firm pat given",llColorBlue1);
     }
     private void actionTickle(){
@@ -993,7 +996,7 @@ protected class runLocal extends  dExtension implements Runnable  {
         EmbedBuilder embed= new EmbedBuilder();
         embed.setDescription(desc).setTitle(sRTitle);
         embed.setColor(color);
-        sendEmbed(embed);
+        sendEmbedInText(embed);
     }
     private void actionChange(){
         String fName = "[actionChange]";
@@ -1030,11 +1033,11 @@ protected class runLocal extends  dExtension implements Runnable  {
         if(gTarget==null){
             logger.info(fName+"self");
             if(gCurrentInteractionHook!=null)sendOrUpdatePrivateEmbed(sRTitle,"Changed your diaper to a new fresh & dry one.", llColorGreen1);
-            sendEmbed(lsMessageHelper.lsGenerateEmbed(sRTitle,stringReplacer("!WEARER changes their diaper to a new fresh & dry one."), llColorGreen1));
+            sendEmbedInText(lsMessageHelper.lsGenerateEmbed(sRTitle,stringReplacer("!WEARER changes their diaper to a new fresh & dry one."), llColorGreen1));
         }else{
             logger.info(fName+"target");
             if(gCurrentInteractionHook!=null)sendOrUpdatePrivateEmbed(sRTitle,"Changed !TARGET's diaper to a new fresh & dry one.", llColorGreen1);
-            sendEmbed(lsMessageHelper.lsGenerateEmbed(sRTitle,stringReplacer("!USER changes !WEARER's diaper to a new fresh & dry one."), llColorGreen1));
+            sendEmbedInText(lsMessageHelper.lsGenerateEmbed(sRTitle,stringReplacer("!USER changes !WEARER's diaper to a new fresh & dry one."), llColorGreen1));
         }
     }
     private void selfWet(){
@@ -1279,7 +1282,7 @@ protected class runLocal extends  dExtension implements Runnable  {
         embed.setDescription(desc).setTitle(sRTitle);
         embed.setColor(llColorBlue1);
         sendOrUpdatePrivateEmbed(embed);
-        sendEmbed(embed);
+        sendEmbedInText(embed);
         if(gCurrentInteractionHook!=null)sendOrUpdatePrivateEmbed( sRTitle,"self wetted",llColorBlue1);
     }
     private void selfMessy(){
@@ -1336,7 +1339,7 @@ protected class runLocal extends  dExtension implements Runnable  {
         EmbedBuilder embed= new EmbedBuilder();
         embed.setDescription(desc);
         embed.setColor(llColorBlue1);
-        sendEmbed(embed);
+        sendEmbedInText(embed);
         if(gCurrentInteractionHook!=null)sendOrUpdatePrivateEmbed( sRTitle,"self messy",llColorBlue1);
     }
     private void actionCustom(int index){
@@ -1384,7 +1387,7 @@ protected class runLocal extends  dExtension implements Runnable  {
                 }
                 logger.info(fName+". text.after="+ text);
                 embed.setDescription( text);
-                sendEmbed(embed);
+                sendEmbedInText(embed);
                 if(gCurrentInteractionHook!=null)sendOrUpdatePrivateEmbed( sRTitle,"Done",llColorBlue1);
             }
         }catch (Exception e){
@@ -1638,7 +1641,8 @@ protected class runLocal extends  dExtension implements Runnable  {
             lcMessageBuildComponent.Button buttonChangeDiaper=messageComponentManager.messageBuildComponents.getComponent(0).getButtonById("roll_of_paper");
             lcMessageBuildComponent.Button buttonLockUnlock=messageComponentManager.messageBuildComponents.getComponent(0).getButtonById("!lock/unlock");
             lcMessageBuildComponent.Button buttonDiaper=messageComponentManager.messageBuildComponents.getComponent(0).getButtonById("paperclip");
-
+            lcMessageBuildComponent.Button buttonClose=messageComponentManager.messageBuildComponents.getComponent(3).getButtonById("white_check_mark");
+            if(gCurrentInteractionHook!=null)buttonClose.setDisable();
             if(gNewUserProfile.cProfile.isLocked()){
                 buttonChangeDiaper.setDisable();
                 buttonDiaper.setDisable();
@@ -1649,7 +1653,7 @@ protected class runLocal extends  dExtension implements Runnable  {
             lcMessageBuildComponent rowSelfAction=messageComponentManager.messageBuildComponents.getComponent(1);
             lcMessageBuildComponent.Button buttonPee=messageComponentManager.messageBuildComponents.getComponent(1).getButtonById("droplet");
             lcMessageBuildComponent.Button buttonPoop=messageComponentManager.messageBuildComponents.getComponent(1).getButtonById("poop");
-            if(gNewUserProfile.gMember.getIdLong()!=gMember.getIdLong()){
+            if(gNewUserProfile.getMember().getIdLong()!=gMember.getIdLong()){
                 rowSelfAction.setIgnored();
             }else{
                 if(!gNewUserProfile.cWet.isEnabled())buttonPee.setDisable();
@@ -1660,7 +1664,7 @@ protected class runLocal extends  dExtension implements Runnable  {
                 messageComponentManager.messageBuildComponents.getComponent(2).setIgnored();
             }
             lcMessageBuildComponent rowUtil=messageComponentManager.messageBuildComponents.getComponent(3);
-            if(!(gNewUserProfile.gMember.getIdLong()==gMember.getIdLong()||gNewUserProfile.hasUserOwnerAccess(gUser)||gNewUserProfile.hasUserSecOwnerAccess(gUser))){
+            if(!(gNewUserProfile.getMember().getIdLong()==gMember.getIdLong()||gNewUserProfile.hasUserOwnerAccess(gUser)||gNewUserProfile.hasUserSecOwnerAccess(gUser))){
                 rowUtil.getButtonById("alarm_clock").setDisable();
                 rowUtil.getButtonById("wrench").setDisable();
             }
@@ -1678,7 +1682,7 @@ protected class runLocal extends  dExtension implements Runnable  {
         global.waiter.waitForEvent(ButtonClickEvent.class,
                 e -> (e.getMessageId().equalsIgnoreCase(message.getId())),
                 e -> {
-                    if(gCurrentInteractionHook!=null)deferReplySet(e);
+                    if(gCurrentInteractionHook!=null)gComponentInteractionHook=lsMessageHelper.lsDeferReply(e,true);
                     try {
                         String id=e.getButton().getId();
                         logger.warn(fName+"id="+id);
@@ -2186,8 +2190,7 @@ protected class runLocal extends  dExtension implements Runnable  {
         String actionValue="";boolean actionProvided=false;
         EmbedBuilder embedBuilder=new EmbedBuilder();
         embedBuilder.setColor(llColorRed_Barn);
-        slashReplyPleaseWait();
-        gCurrentInteractionHook=gSlashInteractionHook;
+        gCurrentInteractionHook=lsMessageHelper.lsDeferReply(gSlashCommandEvent,true);
         loadValues();
         for(OptionMapping option:gSlashCommandEvent.getOptions()){
             switch (option.getName()){

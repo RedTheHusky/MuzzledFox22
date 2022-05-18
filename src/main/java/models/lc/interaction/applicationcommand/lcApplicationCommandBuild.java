@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import nsfw.diaper.iDiaperInteractive;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -130,7 +130,7 @@ public class lcApplicationCommandBuild {
 
         public static String getString(iDiaperInteractive.DIAPERTYPE level) {
             String fName = "[getString]";
-            Logger logger = Logger.getLogger(nsfw.diaper.iDiaperInteractive.class);
+            Logger logger = Logger.getLogger(iDiaperInteractive.class);
             try {
                 return level.getString();
             } catch (Exception e) {

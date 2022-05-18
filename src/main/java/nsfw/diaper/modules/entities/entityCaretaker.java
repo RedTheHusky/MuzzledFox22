@@ -1,24 +1,30 @@
-package nsfw.diaper;
+package nsfw.diaper.modules.entities;
 
 import kong.unirest.json.JSONObject;
+import net.dv8tion.jda.api.entities.Member;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import nsfw.diaper.iDiaperInteractive.SUITTYPE;
 
-public class entitySuit {
+
+public class entityCaretaker {
     Logger logger = Logger.getLogger(getClass()); String cName="[entityDiaper]";
-    protected final String fieldSuit=iDiaperInteractive.fieldSuit,keyEnabled=iDiaperInteractive.keyEnabled,keyType=iDiaperInteractive.keyType;
-    protected boolean gEnabled=false;
-    protected String gType="";
+    /*gUserProfile.safetyPutFieldEntry(field, keyEnabled,true);
+            gUserProfile.safetyPutFieldEntry(field, keyType,typeDiaper_White);
+            gUserProfile.safetyPutFieldEntry(field, keyMaxLevel,6);*/
+    protected final String keyCaretakerId= iDiaperInteractive.keyCaretakerId,keyCaretakerAccepted=iDiaperInteractive.keyCaretakerAccepted;
+    protected boolean gCaretakerAccepted=false;
+    protected String gCaretakerId="";
 
 
-    public entitySuit(){
+
+    public entityCaretaker(){
         String fName="[constructor]";
         logger.info(fName);
     }
-    public entitySuit(JSONObject jsonObject){
+    public entityCaretaker(JSONObject jsonObject){
         String fName="[constructor]";
         try {
            set(jsonObject);
@@ -27,16 +33,17 @@ public class entitySuit {
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
         }
     }
-    public boolean clear(){
+    public entityCaretaker clear(){
         String fName="[clear]";
         try {
-            gEnabled=false;
-            gType="";
-            return true;
+            gCaretakerAccepted=false;
+            gCaretakerId="";
+
+            return this;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            return false;
+            return null;
         }
     }
     public boolean set(JSONObject jsonObject){
@@ -46,9 +53,9 @@ public class entitySuit {
                 logger.info(fName+"jsonObject is null");
                 return false;
             }
-            if(jsonObject.has(fieldSuit)){
+            if(jsonObject.has(iDiaperInteractive.fieldCaretaker)){
                 logger.info(fName+"has key fieldDiaper");
-                jsonObject=jsonObject.getJSONObject(fieldSuit);
+                jsonObject=jsonObject.getJSONObject(iDiaperInteractive.fieldCaretaker);
             }
             logger.info(fName+"jsonObject="+jsonObject.toString());
             if(!jsonObject.isEmpty()){
@@ -69,8 +76,9 @@ public class entitySuit {
         String fName="[getJSON]";
         try {
             JSONObject jsonObject=new JSONObject();
-            jsonObject.put(keyEnabled,gEnabled);
-            jsonObject.put(keyType,gType);
+            jsonObject.put(keyCaretakerAccepted,gCaretakerAccepted);
+            jsonObject.put(keyCaretakerId,gCaretakerId);
+
 
             logger.info("jsonObject="+jsonObject.toString());
             return jsonObject;
@@ -80,62 +88,44 @@ public class entitySuit {
             return new JSONObject();
         }
     }
-    public boolean isEnabled(){
-        String fName="[isEnabled]";
+    public boolean isAccepted(){
+        String fName="[isAccepted]";
         try {
-            logger.info(fName+"value="+gEnabled);
-            return gEnabled;
+            logger.info(fName+"value="+gCaretakerAccepted);
+            return gCaretakerAccepted;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
-    public String getTypeAsString(){
-        String fName="[getTypeAsString]";
+    public String getCaretakerID(){
+        String fName="[getCaretakerID]";
         try {
-            logger.info(fName+"value="+gType);
-            return gType;
+            logger.info(fName+"value="+gCaretakerId);
+            return gCaretakerId;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             return "";
         }
     }
-    public SUITTYPE getType(){
-        String fName="[getType]";
+    public Long getCaretakerIDLong(){
+        String fName="[getCaretakerIDLong]";
         try {
-            logger.info(fName+"value="+gType);
-            SUITTYPE suittype=SUITTYPE.valueByString(getTypeAsString());
-            if(suittype==null)suittype=SUITTYPE.INVALID;
-            return suittype;
+            logger.info(fName+"value="+gCaretakerId);
+            return Long.parseLong(gCaretakerId);
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            return SUITTYPE.INVALID;
+            return 0L;
         }
     }
-    public String getName(){
-        String fName="[getName]";
-        try {
-            logger.info(fName+"type="+gType);
-            SUITTYPE suittype=SUITTYPE.valueByString(gType);
-            if(suittype!=null){
-                return suittype.getName();
-            }
-            return "";
-        }catch (Exception e){
-            logger.error(fName + ".exception=" + e);
-            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            return "";
-        }
-    }
-
-    public entitySuit setEnabled(boolean input){
-        String fName="[setEnabled]";
+    public entityCaretaker setAccepted(boolean input){
+        String fName="[setAccepted]";
         try {
             logger.info(fName+"input="+input);
-            gEnabled=input;
+            gCaretakerAccepted=input;
             return this;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
@@ -143,12 +133,38 @@ public class entitySuit {
             return null;
         }
     }
-    public entitySuit setType(String input){
-        String fName="[setType]";
+    public entityCaretaker setCaretakerId(Member input){
+        String fName="[setCaretakerId]";
+        try {
+            if(input==null){gCaretakerId="";return this;};
+            logger.info(fName+"input="+input);
+            gCaretakerId=input.getId();
+            return this;
+        }catch (Exception e){
+            logger.error(fName + ".exception=" + e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            return null;
+        }
+    }
+    public entityCaretaker setCaretakerId(long input){
+        String fName="[setCaretakerId]";
+        try {
+            logger.info(fName+"input="+input);
+            if(input<=0){gCaretakerId="";return this;}
+            gCaretakerId=String.valueOf(input);
+            return this;
+        }catch (Exception e){
+            logger.error(fName + ".exception=" + e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            return null;
+        }
+    }
+    public entityCaretaker setCaretakerId(String input){
+        String fName="[setCaretakerId]";
         try {
             logger.info(fName+"input="+input);
             if(input==null)input="";
-            gType=input;
+            gCaretakerId=input;
             return this;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
@@ -156,30 +172,16 @@ public class entitySuit {
             return null;
         }
     }
-    public entitySuit setType(SUITTYPE input){
-        String fName="[setType]";
-        try {
-            if(input==null){return null;}
-            logger.info(fName+"input="+input);
-            gType=input.getString();
-            return this;
-        }catch (Exception e){
-            logger.error(fName + ".exception=" + e);
-            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-
     public boolean put(String key,Object value){
         String fName="[put]";
         try {
             logger.info(fName+"key="+key);
             switch (key){
-                case keyEnabled:
-                    gEnabled= (boolean) value;
+                case keyCaretakerAccepted:
+                    gCaretakerAccepted= (boolean) value;
                     break;
-                case keyType:
-                    gType = (String) value;
+                case keyCaretakerId:
+                    gCaretakerId = (String) value;
                     break;
 
             }
@@ -195,13 +197,12 @@ public class entitySuit {
         try {
             logger.info(fName+"key="+key);
             switch (key){
-                case keyEnabled:
-                    gEnabled= jsonObject.getBoolean(key);
+                case keyCaretakerAccepted:
+                    gCaretakerAccepted= jsonObject.optBoolean(key);
                     break;
-                case keyType:
-                    gType = jsonObject.getString(key);
+                case keyCaretakerId:
+                    gCaretakerId = jsonObject.optString(key);
                     break;
-
 
             }
             return true;
@@ -212,15 +213,29 @@ public class entitySuit {
         }
     }
 
-    public entitySuit setOff() {
-        String fName="[setOff]";
+    public entityCaretaker runaway() {
+        String fName="[runaway]";
         try {
-            setEnabled(false);setType("");
+            setAccepted(false);setCaretakerId("");
+            logger.info(fName+"done");
             return this;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             return null;
+        }
+    }
+
+    public boolean hasCaretaker() {
+        String fName="[runaway]";
+        try {
+            if(gCaretakerId==null)return false;
+            if(gCaretakerId.isBlank())return false;
+            return true;
+        }catch (Exception e){
+            logger.error(fName + ".exception=" + e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            return false;
         }
     }
 }

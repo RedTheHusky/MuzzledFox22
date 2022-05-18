@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.events.RawGatewayEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import nsfw.diaper.iDiaperInteractive;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive;
 import org.apache.log4j.Logger;
 
 import javax.annotation.Nullable;

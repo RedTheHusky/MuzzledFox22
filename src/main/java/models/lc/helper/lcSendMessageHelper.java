@@ -661,8 +661,8 @@ public class lcSendMessageHelper {
             return null;
         }
     }
-    public Message getMessage(){
-        String fName="[getMessage]";
+    public Message getMessage2Edit(){
+        String fName="[getMessage2Edit]";
         try{
             return this.message2Edit;
         } catch (Exception e) {
@@ -830,6 +830,7 @@ public class lcSendMessageHelper {
         try{
             sentMessage=null;
             if(_prepare2Send()==null)return  null;
+            if(interactionHook==null)throw  new Exception("Is null the channel");
             if(interactionHook.getInteraction().isAcknowledged()){
                 sentMessage=interactionHook.sendMessage(message2Send).complete();
             }else{
@@ -850,6 +851,7 @@ public class lcSendMessageHelper {
         try{
             sentMessage=null;
             if(_prepare2Send()==null)return  null;
+            if(messageChannel==null)throw  new Exception("Is null the channel");
             sentMessage=messageChannel.sendMessage(message2Send).complete();
             if(sentMessage==null)throw  new Exception("Failed to send messages");
             clearInput();
@@ -866,6 +868,7 @@ public class lcSendMessageHelper {
         try{
             sentMessage=null;
             if(_prepare2Send()==null)return  null;
+            if(textChannel==null)throw  new Exception("Is null the channel");
             sentMessage=textChannel.sendMessage(message2Send).complete();
             if(sentMessage==null)throw  new Exception("Failed to send messages");
             clearInput();
@@ -882,6 +885,7 @@ public class lcSendMessageHelper {
         try{
             sentMessage=null;
             if(_prepare2Send()==null)return  null;
+            if(privateChannel==null)throw  new Exception("Is null the channel");
             sentMessage=privateChannel.sendMessage(message2Send).complete();
             if(sentMessage==null)throw  new Exception("Failed to send messages");
             clearInput();
@@ -939,6 +943,7 @@ public class lcSendMessageHelper {
             if(editedMessage==null)throw  new Exception("Failed to edit messages");
             clearInput();
             logger.info(fName+"success edit");
+            logger.info("message_id="+editedMessage.getId());
             return editedMessage;
         } catch (Exception e) {
             logger.error(fName+".exception=" + e);
@@ -961,9 +966,17 @@ public class lcSendMessageHelper {
             }
             if(sentMessage==null&&editedMessage==null)throw  new Exception("Failed to send&&edit messages");
             clearInput();
-            if(editedMessage!=null) logger.info(fName+"success edit");
-            if(sentMessage!=null) logger.info(fName+"success sent");
-            return editedMessage;
+            if(editedMessage!=null) {
+                logger.info(fName+"success edit");
+                logger.info("message_id="+editedMessage.getId());
+                return editedMessage;
+            }
+            if(sentMessage!=null) {
+                logger.info(fName+"success sent");
+                logger.info("message_id="+sentMessage.getId());
+                return sentMessage;
+            }
+            throw  new Exception("Failed to get any message");
         } catch (Exception e) {
             logger.error(fName+".exception=" + e);
             logger.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -999,7 +1012,42 @@ public class lcSendMessageHelper {
             editedMessage=a.complete();
             if(editedMessage==null)throw  new Exception("Failed to edit messages");
             clearInput();
+            logger.info("message_id="+editedMessage.getId());
             return editedMessage;
+        } catch (Exception e) {
+            logger.error(fName+".exception=" + e);
+            logger.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
+            return null;
+        }
+    }
+    public Message getEditMessage(){
+        String fName="[getEditMessage]";
+        try{
+            return editedMessage;
+        } catch (Exception e) {
+            logger.error(fName+".exception=" + e);
+            logger.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
+            return null;
+        }
+    }
+
+    public Message getMessage(){
+        String fName="[getMessage]";
+        try{
+            if(editedMessage!=null){
+                logger.info(fName+"returned editedMessage="+editedMessage.getId());
+                return editedMessage;
+            }
+            if(sentMessage!=null){
+                logger.info(fName+"returned sentMessage="+sentMessage.getId());
+                return sentMessage;
+            }
+            if(message2Edit!=null){
+                logger.info(fName+"returned message2Edit="+message2Edit.getId());
+                return message2Edit;
+            }
+            logger.info(fName+" nothing to return");
+            return  null;
         } catch (Exception e) {
             logger.error(fName+".exception=" + e);
             logger.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));

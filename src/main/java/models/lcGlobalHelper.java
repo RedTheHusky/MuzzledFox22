@@ -9,7 +9,6 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 import models.lc.BannedGuilds;
-import models.lc.helper.lcSendMessageHelper;
 import models.lc.json.*;
 import models.lc.UnicodeEmojis;
 import models.lc.json.profile.lcJSONGuildProfile;
@@ -56,6 +55,7 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
     }
     public String logPreference="";
     public EventWaiter waiter; public ScheduledExecutorService waiterThreadpool;
+    public ScheduledExecutorService schedule;
     public lcSqlConnEntity sql;
     //public CommandClientBuilder commandclient;
     public CommandClient commandClientBuilt;
@@ -347,6 +347,26 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
             /*logger.warn(cName + fName + ".done");
             logger.warn(cName + fName + ".waiterThreadpool.isShutdown="+waiterThreadpool.isShutdown());
             logger.warn(cName + fName + ".waiterThreadpool.isTerminated="+waiterThreadpool.isTerminated());*/
+        }catch (Exception e){
+            logger.error(cName + fName + ".exception:" + e);
+        }
+    }
+    public void setScheduleThreadpool(){
+        String fName="[setScheduleThreadpool]";
+        logger.info(cName+fName);
+        try{
+            int count=1;
+            schedule =Executors.newScheduledThreadPool(count);
+            logger.warn(cName + fName + ".done");
+        }catch (Exception e){
+            logger.error(cName + fName + ".exception:" + e);
+        }
+    }
+    public void endScheduleThreadpool(){
+        String fName="[endScheduleThreadpool]";
+        logger.info(cName+fName);
+        try{
+            schedule.shutdownNow();
         }catch (Exception e){
             logger.error(cName + fName + ".exception:" + e);
         }

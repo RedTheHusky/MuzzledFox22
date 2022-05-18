@@ -2,13 +2,13 @@ package nsfw.diaper;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
+import models.lc.interaction.messagecomponent.lcMessageBuildComponent;
 import models.lcGlobalHelper;
 import models.ll.colors.llColors_Pokemon;
 import models.ll.llCommonKeys;
 import models.ll.llMemberHelper;
 import models.ll.llMessageHelper;
 import models.llGlobalHelper;
-import models.ls.lsMemberHelper;
 import models.ls.lsMessageHelper;
 import models.ls.lsUnicodeEmotes;
 import models.ls.lsUsefullFunctions;
@@ -23,8 +23,11 @@ import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEv
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import nsfw.diaper.modules.dExtension;
+import nsfw.diaper.modules.interfaces.iDiaper;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive;
+import nsfw.diaper.modules.interfaces.iSuit;
 import org.apache.log4j.Logger;
-import restraints.in.iRdStr;
 
 import java.util.Arrays;
 import java.util.List;
@@ -92,7 +95,7 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
         Runnable r = new runLocal(gEvent);
         new Thread(r).start();
     }
-    protected class runLocal extends  dExtension implements Runnable {
+    protected class runLocal extends dExtension implements Runnable {
         public runLocal(CommandEvent ev){
             loggerExt.info(".run build");
             launch(gGlobal,sRTitle,ev);
@@ -308,11 +311,11 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
                     if(!gIsOverride&&gNewUserProfile.cProfile.isLocked()){
                         loggerExt.info(fName + ".can't take off do to locked");
                        sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.cantTakeOffWhileLocked), llColorRed);
-                        sendEmbed(sRTitle,stringReplacer(iDiaper.solo.cantTakeOffWhileLocked_Public), llColorRed);
+                        sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.cantTakeOffWhileLocked_Public), llColorRed);
                     }else{
                         gNewUserProfile.cDIAPER.setOff();
                        sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.managedToTakeoff), llColorBlue1);
-                        sendEmbed(sRTitle, stringReplacer(iDiaper.solo.managedToTakeOff_Public), llColorBlue1);
+                        sendEmbedInText(sRTitle, stringReplacer(iDiaper.solo.managedToTakeOff_Public), llColorBlue1);
                     }
                 }else{
                     loggerExt.info(fName + ".suit is not on");
@@ -322,72 +325,72 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
             else if(command.equalsIgnoreCase(DIAPERTYPE.White.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.White);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnClassic), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnClassic_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.youPutOnClassic_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Pink.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Pink);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnPink), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnPink_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.youPutOnPink_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.WhitePlastic.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.WhitePlastic);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnPlastic), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnPlastic_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.youPutOnPlastic_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.PinkPlastic.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.PinkPlastic);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnPlasticPink), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnPlasticPink_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.youPutOnPlasticPink_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.SwimDiapers.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.SwimDiapers);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnSwim), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnSwim_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.youPutOnSwim_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Briefs4Overnight.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Briefs4Overnight);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnOvernight) , llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnOvernight_Public) , llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.youPutOnOvernight_Public) , llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.BriefsWithClothBacking.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.BriefsWithClothBacking);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnBriefsWithCloth), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnBriefsWithCloth_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.youPutOnBriefsWithCloth_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.BriefsWithPlasticBacking.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.BriefsWithPlasticBacking);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnBriefsWithPlastic), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnBriefsWithPlastic_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.youPutOnBriefsWithPlastic_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.PullUps.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.PullUps);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnPullUps), llColorBlue1);
-                sendEmbed(sRTitle, stringReplacer(iDiaper.solo.youPutOnPullUps_Public), llColorBlue1);
+                sendEmbedInText(sRTitle, stringReplacer(iDiaper.solo.youPutOnPullUps_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Eevee.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Eevee);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnEevee), llColors_Pokemon.llColorEevee);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnEevee_Public),llColors_Pokemon.llColorEevee);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.youPutOnEevee_Public),llColors_Pokemon.llColorEevee);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Paws.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Paws);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnPaws), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnPaws_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.youPutOnPaws_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Pikachu.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Pikachu);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnPikachu),llColors_Pokemon.llColorPikachu_Jolteon);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnPikachu_Public),llColors_Pokemon.llColorPikachu_Jolteon);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.youPutOnPikachu_Public),llColors_Pokemon.llColorPikachu_Jolteon);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Peekabu.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Peekabu);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnPeekabu), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnPeekabu_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.youPutOnPeekabu_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Unicorn.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Unicorn);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnUnicorn), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.solo.youPutOnUnicorn_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.solo.youPutOnUnicorn_Public), llColorBlue1);
             }
             saveProfile();
         }
@@ -416,7 +419,7 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
                        }else{
                         gNewUserProfile.cDIAPER.setOff();
                        sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.targetTakenOffDiaper), llColorBlue1);
-                        sendEmbed(sRTitle, stringReplacer(iDiaper.target.targetTakenOffDiaper_Public), llColorBlue1);
+                        sendEmbedInText(sRTitle, stringReplacer(iDiaper.target.targetTakenOffDiaper_Public), llColorBlue1);
                     }
                 }else{
                     loggerExt.info(fName + ".suit is not on");
@@ -427,85 +430,85 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.White);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.putOnClassic_Auth), llColorBlue1);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle,stringReplacer(iDiaper.target.putOnClassic_Target), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnClassic_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnClassic_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Pink.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Pink);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPink_Auth), llColorBlue1);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle,stringReplacer(iDiaper.target.putOnPink_Target), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPink_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnPink_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.WhitePlastic.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.WhitePlastic);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPlastic_Auth), llColorBlue1);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle,stringReplacer(iDiaper.target.putOnPlastic_Target), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPlastic_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnPlastic_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.PinkPlastic.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.PinkPlastic);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPlasticPink_Auth), llColorBlue1);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle,stringReplacer(iDiaper.target.putOnPlasticPink_Target), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPlasticPink_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnPlasticPink_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.SwimDiapers.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.SwimDiapers);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.putOnSwim_Auth), llColorBlue1);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle,stringReplacer(iDiaper.target.putOnSwim_Target), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnSwim_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnSwim_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Briefs4Overnight.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Briefs4Overnight);
                sendOrUpdatePrivateEmbed(sRTitle,  stringReplacer(iDiaper.target.putOnOvernight_Auth), llColorBlue1);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle, stringReplacer(iDiaper.target.putOnOvernight_Target), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnOvernight_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnOvernight_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.BriefsWithClothBacking.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.BriefsWithClothBacking);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.putOnBriefsWithCloth_Auth), llColorBlue1);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle,stringReplacer(iDiaper.target.putOnBriefsWithCloth_Target), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnBriefsWithCloth_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnBriefsWithCloth_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.BriefsWithPlasticBacking.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.BriefsWithPlasticBacking);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.putOnBriefsWithPlastic_Auth), llColorBlue1);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle,stringReplacer(iDiaper.target.putOnBriefsWithPlastic_Target), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnBriefsWithPlastic_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnBriefsWithPlastic_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.PullUps.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.PullUps);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPullUps_Auth), llColorBlue1);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle,stringReplacer(iDiaper.target.putOnPullUps_Target), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPullUps_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnPullUps_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Eevee.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Eevee);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.putOnEevee_Auth), llColors_Pokemon.llColorEevee);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle,stringReplacer(iDiaper.target.putOnEevee_Target),llColors_Pokemon.llColorEevee);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnEevee_Public),llColors_Pokemon.llColorEevee);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnEevee_Public),llColors_Pokemon.llColorEevee);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Paws.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Paws);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPaws_Auth), llColorBlue1);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle,stringReplacer(iDiaper.target.putOnPaws_Target), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPaws_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnPaws_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Pikachu.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Pikachu);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPikachu_Auth), llColors_Pokemon.llColorPikachu_Jolteon);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle, stringReplacer(iDiaper.target.putOnPikachu_Target), llColors_Pokemon.llColorPikachu_Jolteon);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPink_Public), llColors_Pokemon.llColorPikachu_Jolteon);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnPink_Public), llColors_Pokemon.llColorPikachu_Jolteon);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Peekabu.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Peekabu);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPeekabu_Auth), llColorBlue1);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle,stringReplacer(iDiaper.target.putOnPeekabu_Target), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnPeekabu_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnPeekabu_Public), llColorBlue1);
             }
             else if(command.equalsIgnoreCase(DIAPERTYPE.Unicorn.getString())){
                 gNewUserProfile.cDIAPER.setEnabled(true).setType(DIAPERTYPE.Unicorn);
                sendOrUpdatePrivateEmbed(sRTitle,stringReplacer(iDiaper.target.putOnUnicorn_Auth), llColorBlue1);
                 llSendQuickEmbedMessage(mtarget.getUser(),sRTitle,stringReplacer(iDiaper.target.putOnUnicorn_Target), llColorBlue1);
-                sendEmbed(sRTitle,stringReplacer(iDiaper.target.putOnUnicorn_Public), llColorBlue1);
+                sendEmbedInText(sRTitle,stringReplacer(iDiaper.target.putOnUnicorn_Public), llColorBlue1);
             }
             saveProfile();
 
@@ -521,8 +524,8 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
                 embed.setColor(llColorBlue1);
                 String desc="";
                 embed.setColor(llColorOrange);
-                if(gNewUserProfile.gMember.getIdLong()!=gMember.getIdLong()){
-                    embed.setTitle(gNewUserProfile.gMember.getUser().getName()+"'s"+ sRTitle+" Menu");
+                if(gNewUserProfile.getMember().getIdLong()!=gMember.getIdLong()){
+                    embed.setTitle(gNewUserProfile.getMember().getUser().getName()+"'s"+ sRTitle+" Menu");
                 }else{
                     embed.setTitle(sRTitle+" Menu");
                 }
@@ -570,6 +573,8 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
                 try {
                     logger.info(fName+"component.after="+messageComponentManager.messageBuildComponents.getJson());
                     messageComponentManager.selectContainer=messageComponentManager.messageBuildComponents.getComponent(0).getSelect();
+                    lcMessageBuildComponent.Button buttonClose=messageComponentManager.messageBuildComponents.getComponent(1).getButtonById("white_check_mark");
+                    if(gCurrentInteractionHook!=null)buttonClose.setDisable();
                     if(!gNewUserProfile.cDIAPER.isEnabled()){
                         messageComponentManager.selectContainer.setDefaultOptionByValue(lsUnicodeEmotes.aliasZero);
                     }else{
@@ -610,7 +615,7 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
                 global.waiter.waitForEvent(SelectionMenuEvent.class,
                         e -> (e.getMessageId().equalsIgnoreCase(message.getId())),
                         e -> {
-                            if(gCurrentInteractionHook!=null)deferReplySet(e);
+                            if(gCurrentInteractionHook!=null)gComponentInteractionHook=lsMessageHelper.lsDeferReply(e,true);
                             try {
                                 String value=e.getValues().get(0);
                                 logger.warn(fName+"value="+value);
@@ -636,7 +641,7 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
                                 if(level.equalsIgnoreCase("info")){
                                     rHelp("main");
                                 }else
-                                if(gNewUserProfile.gMember.getIdLong()==gUser.getIdLong()){
+                                if(gNewUserProfile.getMember().getIdLong()==gUser.getIdLong()){
                                     rDiaper(level);
                                 }else{
                                     rDiaper(mtarget,level);
@@ -653,7 +658,7 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
                 global.waiter.waitForEvent(ButtonClickEvent.class,
                         e -> (e.getMessageId().equalsIgnoreCase(message.getId())),
                         e -> {
-                            if(gCurrentInteractionHook!=null)deferReplySet(e);
+                            if(gCurrentInteractionHook!=null)gComponentInteractionHook=lsMessageHelper.lsDeferReply(e,true);
                             try {
                                 String id=e.getButton().getId();
                                 logger.warn(fName+"id="+id);
@@ -705,7 +710,7 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
                                 if(level.equalsIgnoreCase("info")){
                                     rHelp("main");
                                 }else
-                                if(gNewUserProfile.gMember.getIdLong()==gUser.getIdLong()){
+                                if(gNewUserProfile.getMember().getIdLong()==gUser.getIdLong()){
                                     rDiaper(level);
                                 }else{
                                     rDiaper(mtarget,level);
@@ -729,8 +734,7 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
         private void rSlashNT() {
             String fName = "[rSlashNT]";
             logger.info(fName);
-            slashReplyPleaseWait();
-            gCurrentInteractionHook=gSlashInteractionHook;
+            gCurrentInteractionHook=lsMessageHelper.lsDeferReply(gSlashCommandEvent,true);
             Member user=null;
             boolean subdirProvided=false;
             String typeValue="";boolean typeProvided=false;
@@ -772,7 +776,7 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
             if(gTarget==null){
                 if(gNewUserProfile.isPetLockedBySomebody()){
                     logger.info(fName + ".can't use do to locked by somebody");
-                    sendOrUpdatePrivateEmbed(strTitle,iSuit.solo.cantDueToLockedBy,llColorRed);
+                    sendOrUpdatePrivateEmbed(strTitle, iSuit.solo.cantDueToLockedBy,llColorRed);
                     return;
                 }
                 if(!gNewUserProfile.hasPetGotAccess2Restrain()){
@@ -869,7 +873,7 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
                     sendOrUpdatePrivateEmbed(strTitle,"Invalid command.",llColorRed);
                     return;
                 }
-                sendEmbed(embedBuilder);
+                sendEmbedInText(embedBuilder);
                 saveProfile();
             }else{
                 if(gNewUserProfile.isPetLockedBySomebody()){
@@ -971,7 +975,7 @@ public class diDiaper extends Command implements llMessageHelper, llGlobalHelper
                     sendOrUpdatePrivateEmbed(strTitle,"Invalid command.",llColorRed);
                     return;
                 }
-                sendEmbed(embedBuilder);
+                sendEmbedInText(embedBuilder);
                 saveProfile();
             }
         }

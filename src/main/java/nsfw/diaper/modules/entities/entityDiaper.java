@@ -1,29 +1,28 @@
-package nsfw.diaper;
+package nsfw.diaper.modules.entities;
 
 import kong.unirest.json.JSONObject;
-import net.dv8tion.jda.api.entities.Member;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive.DIAPERTYPE;
 
-
-public class entityCaretaker {
+public class entityDiaper {
     Logger logger = Logger.getLogger(getClass()); String cName="[entityDiaper]";
     /*gUserProfile.safetyPutFieldEntry(field, keyEnabled,true);
             gUserProfile.safetyPutFieldEntry(field, keyType,typeDiaper_White);
             gUserProfile.safetyPutFieldEntry(field, keyMaxLevel,6);*/
-    protected final String keyCaretakerId=iDiaperInteractive.keyCaretakerId,keyCaretakerAccepted=iDiaperInteractive.keyCaretakerAccepted;
-    protected boolean gCaretakerAccepted=false;
-    protected String gCaretakerId="";
+    protected final String fieldDiaper= iDiaperInteractive.fieldDiaper,keyEnabled=iDiaperInteractive.keyEnabled,keyType=iDiaperInteractive.keyType,keyMaxLevel=iDiaperInteractive.keyMaxLevel;
+    protected boolean gEnabled=false;
+    protected String gType="";
+    protected int gMaxLevel=0;
 
-
-
-    public entityCaretaker(){
+    public entityDiaper(){
         String fName="[constructor]";
         logger.info(fName);
     }
-    public entityCaretaker(JSONObject jsonObject){
+    public entityDiaper(JSONObject jsonObject){
         String fName="[constructor]";
         try {
            set(jsonObject);
@@ -32,11 +31,12 @@ public class entityCaretaker {
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
         }
     }
-    public entityCaretaker clear(){
+    public entityDiaper clear(){
         String fName="[clear]";
         try {
-            gCaretakerAccepted=false;
-            gCaretakerId="";
+            gEnabled=false;
+            gType=DIAPERTYPE.White.getString();
+            gMaxLevel=6;
 
             return this;
         }catch (Exception e){
@@ -52,9 +52,9 @@ public class entityCaretaker {
                 logger.info(fName+"jsonObject is null");
                 return false;
             }
-            if(jsonObject.has(iDiaperInteractive.fieldCaretaker)){
+            if(jsonObject.has(fieldDiaper)){
                 logger.info(fName+"has key fieldDiaper");
-                jsonObject=jsonObject.getJSONObject(iDiaperInteractive.fieldCaretaker);
+                jsonObject=jsonObject.getJSONObject(fieldDiaper);
             }
             logger.info(fName+"jsonObject="+jsonObject.toString());
             if(!jsonObject.isEmpty()){
@@ -75,9 +75,9 @@ public class entityCaretaker {
         String fName="[getJSON]";
         try {
             JSONObject jsonObject=new JSONObject();
-            jsonObject.put(keyCaretakerAccepted,gCaretakerAccepted);
-            jsonObject.put(keyCaretakerId,gCaretakerId);
-
+            jsonObject.put(keyEnabled,gEnabled);
+            jsonObject.put(keyType,gType);
+            jsonObject.put(keyMaxLevel,gMaxLevel);
 
             logger.info("jsonObject="+jsonObject.toString());
             return jsonObject;
@@ -87,44 +87,72 @@ public class entityCaretaker {
             return new JSONObject();
         }
     }
-    public boolean isAccepted(){
-        String fName="[isAccepted]";
+    public boolean isEnabled(){
+        String fName="[isEnabled]";
         try {
-            logger.info(fName+"value="+gCaretakerAccepted);
-            return gCaretakerAccepted;
+            logger.info(fName+"value="+gEnabled);
+            return gEnabled;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
-    public String getCaretakerID(){
-        String fName="[getCaretakerID]";
+    public String getTypeAsString(){
+        String fName="[getTypeAsString]";
         try {
-            logger.info(fName+"value="+gCaretakerId);
-            return gCaretakerId;
+            logger.info(fName+"value="+gType);
+            return gType;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             return "";
         }
     }
-    public Long getCaretakerIDLong(){
-        String fName="[getCaretakerIDLong]";
+    public DIAPERTYPE getType(){
+        String fName="[getTypeAsString]";
         try {
-            logger.info(fName+"value="+gCaretakerId);
-            return Long.parseLong(gCaretakerId);
+            logger.info(fName+"value="+gType);
+            DIAPERTYPE type=DIAPERTYPE.valueByString(gType);
+            if(type==null)type=DIAPERTYPE.INVALID;
+            return type;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            return 0L;
+            return DIAPERTYPE.INVALID;
         }
     }
-    public entityCaretaker setAccepted(boolean input){
-        String fName="[setAccepted]";
+    public String getName(){
+        String fName="[getName]";
+        try {
+            logger.info(fName+"type="+gType);
+            DIAPERTYPE diapertype= DIAPERTYPE.valueByString(gType);
+            if(diapertype!=null){
+                return diapertype.getName();
+            }
+            return "";
+        }catch (Exception e){
+            logger.error(fName + ".exception=" + e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            return "";
+        }
+    }
+    public int getMaxLevel(){
+        String fName="[getMaxLevel]";
+        try {
+            logger.info(fName+"value="+gMaxLevel);
+            return gMaxLevel;
+        }catch (Exception e){
+            logger.error(fName + ".exception=" + e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            return 0;
+        }
+    }
+    public entityDiaper setEnabled(boolean input){
+        String fName="[setEnabled]";
         try {
             logger.info(fName+"input="+input);
-            gCaretakerAccepted=input;
+            gEnabled=input;
             return this;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
@@ -132,38 +160,38 @@ public class entityCaretaker {
             return null;
         }
     }
-    public entityCaretaker setCaretakerId(Member input){
-        String fName="[setCaretakerId]";
-        try {
-            if(input==null){gCaretakerId="";return this;};
-            logger.info(fName+"input="+input);
-            gCaretakerId=input.getId();
-            return this;
-        }catch (Exception e){
-            logger.error(fName + ".exception=" + e);
-            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public entityCaretaker setCaretakerId(long input){
-        String fName="[setCaretakerId]";
-        try {
-            logger.info(fName+"input="+input);
-            if(input<=0){gCaretakerId="";return this;}
-            gCaretakerId=String.valueOf(input);
-            return this;
-        }catch (Exception e){
-            logger.error(fName + ".exception=" + e);
-            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public entityCaretaker setCaretakerId(String input){
-        String fName="[setCaretakerId]";
+    public entityDiaper setType(String input){
+        String fName="[setType]";
         try {
             logger.info(fName+"input="+input);
             if(input==null)input="";
-            gCaretakerId=input;
+            gType=input;
+            return this;
+        }catch (Exception e){
+            logger.error(fName + ".exception=" + e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            return null;
+        }
+    }
+    public entityDiaper setType(DIAPERTYPE input){
+        String fName="[setType]";
+        try {
+            if(input==null){return null;}
+            logger.info(fName+"input="+input);
+            setType(input.getString());
+            setMaxWetness(input.getWetness());
+            return this;
+        }catch (Exception e){
+            logger.error(fName + ".exception=" + e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            return null;
+        }
+    }
+    public entityDiaper setMaxWetness(int input){
+        String fName="[setMaxLevel]";
+        try {
+            logger.info(fName+"input="+input);
+            gMaxLevel=input;
             return this;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
@@ -176,11 +204,14 @@ public class entityCaretaker {
         try {
             logger.info(fName+"key="+key);
             switch (key){
-                case keyCaretakerAccepted:
-                    gCaretakerAccepted= (boolean) value;
+                case keyEnabled:
+                    gEnabled= (boolean) value;
                     break;
-                case keyCaretakerId:
-                    gCaretakerId = (String) value;
+                case keyType:
+                    gType = (String) value;
+                    break;
+                case keyMaxLevel:
+                    gMaxLevel = (int) value;
                     break;
 
             }
@@ -196,11 +227,14 @@ public class entityCaretaker {
         try {
             logger.info(fName+"key="+key);
             switch (key){
-                case keyCaretakerAccepted:
-                    gCaretakerAccepted= jsonObject.optBoolean(key);
+                case keyEnabled:
+                    gEnabled= jsonObject.optBoolean(key);
                     break;
-                case keyCaretakerId:
-                    gCaretakerId = jsonObject.optString(key);
+                case keyType:
+                    gType = jsonObject.optString(key);
+                    break;
+                case keyMaxLevel:
+                    gMaxLevel = jsonObject.optInt(key);
                     break;
 
             }
@@ -212,29 +246,15 @@ public class entityCaretaker {
         }
     }
 
-    public entityCaretaker runaway() {
-        String fName="[runaway]";
+    public entityDiaper setOff() {
+        String fName="[setOff]";
         try {
-            setAccepted(false);setCaretakerId("");
-            logger.info(fName+"done");
+           setEnabled(false);setType("");
             return this;
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             return null;
-        }
-    }
-
-    public boolean hasCaretaker() {
-        String fName="[runaway]";
-        try {
-            if(gCaretakerId==null)return false;
-            if(gCaretakerId.isBlank())return false;
-            return true;
-        }catch (Exception e){
-            logger.error(fName + ".exception=" + e);
-            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            return false;
         }
     }
 }

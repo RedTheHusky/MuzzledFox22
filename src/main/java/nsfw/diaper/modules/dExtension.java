@@ -1,25 +1,21 @@
-package nsfw.diaper;
+package nsfw.diaper.modules;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import models.lc.helper.lcSendMessageHelper;
+import models.lc.interaction.messagecomponent.lcMessageBuildComponent;
 import models.lc.interaction.messagecomponent.lcSharedMessageComponentManager;
-import models.lc.interaction.slash.lcSlashInteractionReceive;
 import models.lcGlobalHelper;
-import models.ll.colors.llColors;
 import models.ls.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import nsfw.diaper.modules.entities.entityDiaperUserProfile;
 import org.apache.log4j.Logger;
-import restraints.in.iRdStr;
-import restraints.in.iRestraints;
-import restraints.models.entityRDUserProfile;
 import restraints.models.lcBDSMGuildProfiles;
 
 import java.awt.*;
@@ -27,9 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class dExtension {
-    Logger loggerExt = Logger.getLogger("diaperExtension");
+    public Logger loggerExt = Logger.getLogger("diaperExtension");
 
-    lcGlobalHelper global;
+    public lcGlobalHelper global;
 
     protected dExtension(){
        
@@ -44,7 +40,7 @@ public class dExtension {
     public  Message gMessage;
     public EventWaiter gWaiter;
     public String gTitle="";
-    lcBDSMGuildProfiles gBDSMCommands;
+    public lcBDSMGuildProfiles gBDSMCommands=new lcBDSMGuildProfiles();
 
     public void launch(lcGlobalHelper global,CommandEvent ev){
         String fName="[runLocal]";
@@ -324,7 +320,6 @@ public class dExtension {
         gUser = gSlashCommandEvent.getUser();
         loggerExt.info(fName + ".gUser:" + gUser.getId() + "|" + gUser.getName());
         gWaiter= this.global.waiter;
-        gBDSMCommands =new lcBDSMGuildProfiles(this.global,gGuild);gBDSMCommands.diaper.init();
         gTitle=title;
         messageComponentManager.set(this.global,gTextChannel,gTitle,gUser);
         if(gSlashCommandEvent.isFromGuild()){
@@ -333,11 +328,12 @@ public class dExtension {
             loggerExt.info(fName + ".gGuild:" + gGuild.getId() + "|" + gGuild.getName());
             gTextChannel = gSlashCommandEvent.getTextChannel();
             loggerExt.info(fName + ".gTextChannel:" + gTextChannel.getId() + "|" + gTextChannel.getName());
+            gBDSMCommands =new lcBDSMGuildProfiles(this.global,gGuild);gBDSMCommands.diaper.init();
             updateIsAdult();
         }
     }
 
-    entityDiaperUserProfile gNewUserProfile=new entityDiaperUserProfile();
+    public entityDiaperUserProfile gNewUserProfile=new entityDiaperUserProfile();
     /*String caretakerID=""; Boolean caretakerAccepted =false;String access="";Boolean diaperLocked=false;
     Boolean wetEnabled=false; int wetChance=0; int wetLevel=0,wetMaxLevel=6;
     Boolean messyEnabled=false; int messyChance=0; int messyLevel=0;
@@ -428,20 +424,20 @@ public class dExtension {
         loggerExt.info(fName+"is safe");
     }
 
-    String gFileMainPath="resources/json/diaper/";
+    public String gFileMainPath="resources/json/diaper/";
     public lcSharedMessageComponentManager messageComponentManager=new lcSharedMessageComponentManager();
-    public Message sendEmbed(String title,String desc, Color color){
+    public Message sendEmbedInText(String title, String desc, Color color){
         String fName="[sendEmbed -values]";
         loggerExt.info(fName + ".executed");
         try {
-            return sendEmbed(lsMessageHelper.lsGenerateEmbed(title,desc,color));
+            return sendEmbedInText(lsMessageHelper.lsGenerateEmbed(title,desc,color));
         }catch (Exception e){
             loggerExt.error(fName + ".exception=" + e);
             loggerExt.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
-    public Message sendEmbed(EmbedBuilder embedBuilder){
+    public Message sendEmbedInText(EmbedBuilder embedBuilder){
         String fName="[sendEmbed -embed]";
         loggerExt.info(fName + ".executed");
         try {
@@ -505,326 +501,49 @@ public class dExtension {
     }
 
     public InteractionHook  gCurrentInteractionHook,gComponentInteractionHook,gSlashInteractionHook;
-    public void deferReplySet(SelectionMenuEvent selectionMenuEvent){
-        String fName="[deferReplySet -selectionMenuEvent]";
-        try{
-            loggerExt.info(fName);
-            InteractionHook interactionHook=lsMessageHelper.lsDeferReply(selectionMenuEvent,true);
-            if(interactionHook!=null){
-                gComponentInteractionHook=interactionHook;
-            }
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-        }
-    }
-    public void deferReplySet(ButtonClickEvent buttonClickEvent){
-        String fName="[deferReplySet -buttonClickEvent]";
-        try{
-            loggerExt.info(fName);
-            InteractionHook interactionHook=lsMessageHelper.lsDeferReply(buttonClickEvent,true);
-            if(interactionHook!=null){
-                gComponentInteractionHook=interactionHook;
-            }
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-        }
-    }
-    public void deferReplySet(SlashCommandEvent slashCommandEvent){
-        String fName="[deferReplySet -slashCommandEvent]";
-        try{
-            loggerExt.info(fName);
-            InteractionHook interactionHook=lsMessageHelper.lsDeferReply(slashCommandEvent,true);
-            if(interactionHook!=null){
-                gSlashInteractionHook=interactionHook;
-            }
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-        }
-    }
-    public void slashReplyCheckDm(){
-        String fName="[slashReplyPleaseWait]";
-        try{
-            loggerExt.info(fName);
-            if(gSlashCommandEvent==null){loggerExt.warn(fName+" not a slash as gSlashCommandEvent is null"); return;}
-            if(gSlashInteractionHook !=null){loggerExt.warn(fName+" gInteractionHook already defined");return;}
-            EmbedBuilder embedBuilder=new EmbedBuilder();
-            embedBuilder.setDescription(iRdStr.strOpeningDMMenu).setColor(llColors.llColorPurple2);
-            InteractionHook interactionHook=gSlashCommandEvent.replyEmbeds(embedBuilder.build()).setEphemeral(true).complete();
-            if(interactionHook!=null){
-                gSlashInteractionHook=interactionHook;
-            }
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-        }
-    }
-    public void slashReplyPleaseWait(){
-        String fName="[slashReplyPleaseWait]";
-        try{
-            loggerExt.info(fName);
-            if(gSlashCommandEvent==null){loggerExt.warn(fName+" not a slash as gSlashCommandEvent is null"); return;}
-            if(gSlashInteractionHook !=null){loggerExt.warn(fName+" gInteractionHook already defined");return;}
-            EmbedBuilder embedBuilder=new EmbedBuilder();
-            embedBuilder.setDescription(iRdStr.strPleaseWait).setColor(llColors.llColorPurple2);
-            InteractionHook interactionHook=gSlashCommandEvent.replyEmbeds(embedBuilder.build()).setEphemeral(true).complete();
-            if(interactionHook!=null){
-                gSlashInteractionHook=interactionHook;
-            }
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-        }
-    }
-    public Message sendPrivateEmbed(EmbedBuilder embedBuilder){
-        String fName="[sendPrivateEmbed]";
-        try{
-            loggerExt.info(fName);
-            return  sendPrivateEmbed(embedBuilder,gCurrentInteractionHook);
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendPrivateEmbed(EmbedBuilder embedBuilder, java.util.List<ActionRow> actionRows){
-        String fName="[sendPrivateEmbed]";
-        try{
-            loggerExt.info(fName);
-            return  sendPrivateEmbed(embedBuilder,gCurrentInteractionHook,actionRows);
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendPrivateEmbed(String title, String description,Color color){
-        String fName="[sendPrivateEmbed]";
-        try{
-            loggerExt.info(fName);
-            return  sendPrivateEmbed(title,description,color,gCurrentInteractionHook);
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendPrivateEmbed(EmbedBuilder embedBuilder,InteractionHook interactionHook){
-        String fName="[sendPrivateEmbed]";
-        try{
-            loggerExt.info(fName);
-            Message message=null;
-            if(interactionHook!=null){
-                if(interactionHook.getInteraction().isAcknowledged()){
-                    message=lsMessageHelper.lsSendEphemeralEmbed(interactionHook,embedBuilder);
-                }else{
-                    message=lsMessageHelper.lsEditOriginEmbed(interactionHook,embedBuilder);
-                }
-            }
-            if(message==null){
-                message=lsMessageHelper.lsSendEmbed(gUser,embedBuilder);
-            }
-            loggerExt.info(fName+"message="+message.getIdLong());
-            return  message;
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendPrivateEmbed(EmbedBuilder embedBuilder,InteractionHook interactionHook, java.util.List<ActionRow> actionRows){
-        String fName="[sendPrivateEmbed]";
-        try{
-            loggerExt.info(fName);
-            Message message=null;
-            if(interactionHook!=null){
-                if(interactionHook.getInteraction().isAcknowledged()){
-                    message=lsMessageHelper.lsSendEphemeralEmbed(interactionHook,embedBuilder,actionRows);
-                }else{
-                    message=lsMessageHelper.lsEditOriginEmbed(interactionHook,embedBuilder,actionRows);
-                }
-            }
-            if(message==null){
-                message=lsMessageHelper.lsSendEmbed(gUser,embedBuilder,actionRows);
-            }
-            loggerExt.info(fName+"message="+message.getIdLong());
-            return  message;
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendPrivateEmbed(String title, String description,Color color,InteractionHook interactionHook){
-        String fName="[sendPrivateEmbed]";
-        try{
-            loggerExt.info(fName);
-            EmbedBuilder embedBuilder=lsMessageHelper.lsGenerateEmbed(title,description,color);
-            return  sendPrivateEmbed(embedBuilder,interactionHook);
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendOrUpdatePrivateEmbed(EmbedBuilder embedBuilder){
-        String fName="[sendOrUpdatePrivateEmbed]";
-        try{
-            loggerExt.info(fName);
-            return  sendOrUpdatePrivateEmbed(embedBuilder,gCurrentInteractionHook);
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendOrUpdatePrivateEmbed(EmbedBuilder embedBuilder, java.util.List<ActionRow> actionRows){
-        String fName="[sendOrUpdatePrivateEmbed]";
-        try{
-            loggerExt.info(fName);
-            return  sendOrUpdatePrivateEmbed(embedBuilder,gCurrentInteractionHook,actionRows);
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendOrUpdatePrivateEmbed(String title, String description,Color color){
-        String fName="[sendOrUpdatePrivateEmbed]";
-        try{
-            loggerExt.info(fName);
-            return  sendOrUpdatePrivateEmbed(title,description,color,gCurrentInteractionHook);
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendOrUpdatePrivateEmbed(EmbedBuilder embedBuilder,InteractionHook interactionHook){
-        String fName="[sendOrUpdatePrivateEmbed]";
-        try{
-            loggerExt.info(fName);
-            Message message=null;
-            if(interactionHook!=null){
-                message=lsMessageHelper.lsEditOriginEmbed(interactionHook,embedBuilder);
-            }
-            if(message==null){
-                message=lsMessageHelper.lsSendEmbed(gUser,embedBuilder);
-            }
-            loggerExt.info(fName+"message="+message.getIdLong());
-            return  message;
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-
-    public Message sendOrUpdatePrivateEmbed(EmbedBuilder embedBuilder,InteractionHook interactionHook, List<ActionRow> actionRows){
-        String fName="[sendOrUpdatePrivateEmbed]";
-        try{
-            loggerExt.info(fName);
-            Message message=null;
-            if(interactionHook!=null){
-                message=lsMessageHelper.lsEditOriginEmbed(interactionHook,embedBuilder,actionRows);
-            }
-            if(message==null){
-                message=lsMessageHelper.lsSendEmbed(gUser,embedBuilder,actionRows);
-            }
-            loggerExt.info(fName+"message="+message.getIdLong());
-            return  message;
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendOrUpdatePrivateEmbed(String title, String description,Color color,InteractionHook interactionHook){
-        String fName="[sendOrUpdatePrivateEmbed]";
-        try{
-            loggerExt.info(fName);
-            EmbedBuilder embedBuilder=lsMessageHelper.lsGenerateEmbed(title,description,color);
-            return  sendOrUpdatePrivateEmbed(embedBuilder,interactionHook);
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendOrUpdatePrivateEmbed_withtoMessageSelfCommandAction(String title, String description,Color color){
-        String fName="[sendOrUpdatePrivateEmbed]";
-        try{
-            loggerExt.info(fName);
-            return  sendOrUpdatePrivateEmbed_withtoMessageSelfCommandAction(title,description,color,gCurrentInteractionHook);
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendOrUpdatePrivateEmbed_withtoMessageSelfCommandAction(String title, String description,Color color,InteractionHook interactionHook){
-        String fName="[sendOrUpdatePrivateEmbed_withtoMessageSelfCommandAction]";
-        try{
-            loggerExt.info(fName);
-            EmbedBuilder embedBuilder=lsMessageHelper.lsGenerateEmbed(title,description,color);
-            return  sendOrUpdatePrivateEmbed_withtoMessageSelfCommandAction(embedBuilder,interactionHook);
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendOrUpdatePrivateEmbed_withtoMessageSelfCommandAction(EmbedBuilder embedBuilder){
-        String fName="[sendOrUpdatePrivateEmbed_withtoMessageSelfCommandAction]";
-        try{
-            loggerExt.info(fName);
-            return  sendOrUpdatePrivateEmbed(embedBuilder,gCurrentInteractionHook);
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message sendOrUpdatePrivateEmbed_withtoMessageSelfCommandAction(EmbedBuilder embedBuilder,InteractionHook interactionHook){
-        String fName="[sendOrUpdatePrivateEmbed_withtoMessageSelfCommandAction]";
-        try{
-            loggerExt.info(fName);
-            Message message=null;
-            if(interactionHook!=null){
-                message=lsMessageHelper.lsEditOriginEmbed(interactionHook,embedBuilder);
-            }
-            if(message==null){
-                message=lsMessageHelper.lsSendEmbed(gUser,embedBuilder);
-            }
-            loggerExt.info(fName+"message="+message.getIdLong());
-            return  message;
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
-    public Message removeAction(Message message){
-        String fName="[removeAction]";
-        try{
-            loggerExt.info(fName);
-            message.clearReactions().complete();
-            message=message.editMessageComponents().complete();
-            return message;
-        } catch (Exception e) {
-            loggerExt.error(fName+".exception=" + e);
-            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-            return null;
-        }
-    }
     public String textAdd(String source,String add){
         String fName="[stextAdd]";
         try{
             loggerExt.info(fName);
             if(!source.isBlank())source+="\n"+add;
             return  source;
+        } catch (Exception e) {
+            loggerExt.error(fName+".exception=" + e);
+            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
+            return  null;
+        }
+    }
+    public lcSendMessageHelper messageHelper=new lcSendMessageHelper();
+    public Message   sendOrUpdatePrivateEmbed(String title, String content,Color color){
+        String fName="[sendOrUpdatePrivateEmbed]";
+        try{
+            loggerExt.info(fName);
+            messageHelper.setPrivateChannel(gUser).setInteractionHook(gCurrentInteractionHook);
+            return messageHelper.clearData().setActionRowsClearFlag(true).setEmbed(lsMessageHelper.lsGenerateEmbed(title,content,color).build()).editOriginalInteractionHookOrBackupSend();
+        } catch (Exception e) {
+            loggerExt.error(fName+".exception=" + e);
+            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
+            return  null;
+        }
+    }
+    public Message   sendOrUpdatePrivateEmbed(EmbedBuilder embedBuilder){
+        String fName="[sendOrUpdatePrivateEmbed]";
+        try{
+            loggerExt.info(fName);
+            messageHelper.setPrivateChannel(gUser).setInteractionHook(gCurrentInteractionHook);
+            return messageHelper.clearData().setActionRowsClearFlag(true).setEmbed(embedBuilder.build()).editOriginalInteractionHookOrBackupSend();
+        } catch (Exception e) {
+            loggerExt.error(fName+".exception=" + e);
+            loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
+            return  null;
+        }
+    }
+    public Message   sendOrUpdatePrivateEmbed(EmbedBuilder embedBuilder, List<ActionRow> actionRows ){
+        String fName="[sendOrUpdatePrivateEmbed]";
+        try{
+            loggerExt.info(fName);
+            messageHelper.setPrivateChannel(gUser).setInteractionHook(gCurrentInteractionHook);
+            return messageHelper.clearData().setEmbed(embedBuilder.build()).setActionRows(actionRows).editOriginalInteractionHookOrBackupSend();
         } catch (Exception e) {
             loggerExt.error(fName+".exception=" + e);
             loggerExt.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));

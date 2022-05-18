@@ -3,7 +3,6 @@ package nsfw.diaper;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import models.lc.lcBasicFeatureControl;
-import models.lc.interaction.slash.lcSlashInteractionReceive;
 import models.lcGlobalHelper;
 import models.ll.colors.llColors;
 import models.ll.colors.llColors_Red;
@@ -22,8 +21,9 @@ import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEv
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import nsfw.diaper.modules.dExtension;
+import nsfw.diaper.modules.interfaces.iDiaperInteractive;
 import org.apache.log4j.Logger;
-import restraints.in.iRdStr;
 import restraints.in.iRestraints;
 
 import java.sql.Timestamp;
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 import static models.ls.lsMemberHelper.lsMemberIsBotOwner;
 
-public class diTimelock extends Command implements llMessageHelper, llGlobalHelper, llMemberHelper, iDiaperInteractive{
+public class diTimelock extends Command implements llMessageHelper, llGlobalHelper, llMemberHelper, iDiaperInteractive {
     lcGlobalHelper gGlobal;
     Logger logger = Logger.getLogger(getClass());
     String gCommand="ditimelock";
@@ -102,7 +102,7 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
         Runnable r = new runLocal(gEvent);
         new Thread(r).start();
     }
-    protected class runLocal extends  dExtension implements Runnable {
+    protected class runLocal extends dExtension implements Runnable {
         String cName="[runLocal]";
         public runLocal(CommandEvent ev){
             loggerExt.info(".run build");
@@ -583,7 +583,7 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                     llSendQuickEmbedMessage(gUser, sRTitle, "Failed to write in Db!", llColorRed);
                     return;
                 }
-                sendEmbed( sRTitle, "Starting duration for "+gMember.getAsMention()+" set to:"+lsUsefullFunctions.displayDuration(timeset), llColorPurple1);
+                sendEmbedInText( sRTitle, "Starting duration for "+gMember.getAsMention()+" set to:"+lsUsefullFunctions.displayDuration(timeset), llColorPurple1);
             } catch(Exception ex){
                 loggerExt.error(".exception=" + ex);
                 loggerExt.error(".exception:" + Arrays.toString(ex.getStackTrace()));
@@ -637,9 +637,9 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                     return;
                 }
                 if(timeset==0){
-                    sendEmbed( sRTitle, "Minimum duration disabled for "+gMember.getAsMention()+".", llColorPurple1);
+                    sendEmbedInText( sRTitle, "Minimum duration disabled for "+gMember.getAsMention()+".", llColorPurple1);
                 }else{
-                    sendEmbed( sRTitle, "Minimum duration for "+gMember.getAsMention()+" set to:"+lsUsefullFunctions.displayDuration(timeset), llColorPurple1);
+                    sendEmbedInText( sRTitle, "Minimum duration for "+gMember.getAsMention()+" set to:"+lsUsefullFunctions.displayDuration(timeset), llColorPurple1);
                 }
 
             } catch(Exception ex){
@@ -695,9 +695,9 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                     return;
                 }
                 if(timeset==0){
-                    sendEmbed( sRTitle, "Maximum duration disabled for "+gMember.getAsMention()+".", llColorPurple1);
+                    sendEmbedInText( sRTitle, "Maximum duration disabled for "+gMember.getAsMention()+".", llColorPurple1);
                 }else{
-                    sendEmbed( sRTitle, "Maximum duration for "+gMember.getAsMention()+" set to:"+lsUsefullFunctions.displayDuration(timeset), llColorPurple1);
+                    sendEmbedInText( sRTitle, "Maximum duration for "+gMember.getAsMention()+" set to:"+lsUsefullFunctions.displayDuration(timeset), llColorPurple1);
                 }
             } catch(Exception ex){
                 loggerExt.error(".exception=" + ex);
@@ -744,7 +744,7 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                     llSendQuickEmbedMessage(gUser, sRTitle, "Failed to write in Db!", llColorRed);
                     return;
                 }
-                sendEmbed(sRTitle,"Timelock started for "+gMember.getAsMention()+".\nDuration: "+lsUsefullFunctions.displayDuration(gNewUserProfile.cTimelock.getStartDuration()), llColorPink1);
+                sendEmbedInText(sRTitle,"Timelock started for "+gMember.getAsMention()+".\nDuration: "+lsUsefullFunctions.displayDuration(gNewUserProfile.cTimelock.getStartDuration()), llColorPink1);
             }catch (Exception e){
                 loggerExt.error(fName + ".exception=" + e);
                 loggerExt.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -794,9 +794,9 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                     llSendQuickEmbedMessage(gUser, sRTitle, "Failed to write in Db!", llColorRed);
                     return;
                 }
-                sendEmbed(sRTitle,"Added "+lsUsefullFunctions.displayDuration(timeset)+" to "+gMember.getAsMention()+"'s duration.\nUpdated duration: "+lsUsefullFunctions.displayDuration(diff), llColorPink1);
+                sendEmbedInText(sRTitle,"Added "+lsUsefullFunctions.displayDuration(timeset)+" to "+gMember.getAsMention()+"'s duration.\nUpdated duration: "+lsUsefullFunctions.displayDuration(diff), llColorPink1);
             } catch(Exception ex){
-                sendEmbed(sRTitle,"Failed to add duration!", llColorRed);
+                sendEmbedInText(sRTitle,"Failed to add duration!", llColorRed);
                 loggerExt.error(".exception=" + ex);
                 loggerExt.error(".exception:" + Arrays.toString(ex.getStackTrace()));
             }
@@ -838,9 +838,9 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                     llSendQuickEmbedMessage(gUser, sRTitle, "Failed to write in Db!", llColorRed);
                     return;
                 }
-                sendEmbed(sRTitle,"Removed "+lsUsefullFunctions.displayDuration(timeset)+" from "+gMember.getAsMention()+"'s duration.\nUpdated duration: "+lsUsefullFunctions.displayDuration(diff), llColorPink1);
+                sendEmbedInText(sRTitle,"Removed "+lsUsefullFunctions.displayDuration(timeset)+" from "+gMember.getAsMention()+"'s duration.\nUpdated duration: "+lsUsefullFunctions.displayDuration(diff), llColorPink1);
             } catch(Exception ex){
-                sendEmbed(sRTitle,"Failed to sub duration!", llColorRed);
+                sendEmbedInText(sRTitle,"Failed to sub duration!", llColorRed);
                 loggerExt.error(".exception=" + ex);
                 loggerExt.error(".exception:" + Arrays.toString(ex.getStackTrace()));
             }
@@ -1024,7 +1024,7 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                     llSendQuickEmbedMessage(gUser, sRTitle, "Failed to write in Db!", llColorRed);
                     return;
                 }
-                sendEmbed( sRTitle, "Starting duration for "+mtarget.getAsMention()+" set to "+lsUsefullFunctions.displayDuration(timeset)+" by "+gMember.getAsMention()+".", llColorPurple1);
+                sendEmbedInText( sRTitle, "Starting duration for "+mtarget.getAsMention()+" set to "+lsUsefullFunctions.displayDuration(timeset)+" by "+gMember.getAsMention()+".", llColorPurple1);
             } catch(Exception ex){
                 loggerExt.error(".exception=" + ex);
                 loggerExt.error(".exception:" + Arrays.toString(ex.getStackTrace()));
@@ -1046,9 +1046,9 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                     return;
                 }
                 if(timeset==0){
-                    sendEmbed( sRTitle, "Minimum duration for "+mtarget.getAsMention()+" disabled by "+gMember.getAsMention()+".", llColorPurple1);
+                    sendEmbedInText( sRTitle, "Minimum duration for "+mtarget.getAsMention()+" disabled by "+gMember.getAsMention()+".", llColorPurple1);
                 }else{
-                    sendEmbed( sRTitle, "Minimum duration for "+mtarget.getAsMention()+" set to "+lsUsefullFunctions.displayDuration(timeset)+" by "+gMember.getAsMention()+".", llColorPurple1);
+                    sendEmbedInText( sRTitle, "Minimum duration for "+mtarget.getAsMention()+" set to "+lsUsefullFunctions.displayDuration(timeset)+" by "+gMember.getAsMention()+".", llColorPurple1);
                 }
 
             } catch(Exception ex){
@@ -1072,9 +1072,9 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                     return;
                 }
                 if(timeset==0){
-                    sendEmbed( sRTitle, "Maximum duration for "+mtarget.getAsMention()+" disabled by "+gMember.getAsMention()+".", llColorPurple1);
+                    sendEmbedInText( sRTitle, "Maximum duration for "+mtarget.getAsMention()+" disabled by "+gMember.getAsMention()+".", llColorPurple1);
                 }else{
-                    sendEmbed( sRTitle, "Maximum duration for "+mtarget.getAsMention()+" set to "+lsUsefullFunctions.displayDuration(timeset)+" by "+gMember.getAsMention()+".", llColorPurple1);
+                    sendEmbedInText( sRTitle, "Maximum duration for "+mtarget.getAsMention()+" set to "+lsUsefullFunctions.displayDuration(timeset)+" by "+gMember.getAsMention()+".", llColorPurple1);
                 }
             } catch(Exception ex){
                 loggerExt.error(".exception=" + ex);
@@ -1103,7 +1103,7 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                     llSendQuickEmbedMessage(gUser, sRTitle, "Failed to write in Db!", llColorRed);
                     return;
                 }
-                sendEmbed(sRTitle,"Timelock started for "+mtarget.getAsMention()+" by "+gMember.getAsMention()+".\nDuration: "+lsUsefullFunctions.displayDuration(gNewUserProfile.cTimelock.getStartDuration()), llColorPink1);
+                sendEmbedInText(sRTitle,"Timelock started for "+mtarget.getAsMention()+" by "+gMember.getAsMention()+".\nDuration: "+lsUsefullFunctions.displayDuration(gNewUserProfile.cTimelock.getStartDuration()), llColorPink1);
             }catch (Exception e){
                 loggerExt.error(fName + ".exception=" + e);
                 loggerExt.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -1146,7 +1146,7 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                 }
                 addDurationSave(mtarget,timeset);
                } catch(Exception ex){
-                sendEmbed(sRTitle,"Failed to add duration!", llColorRed);
+                sendEmbedInText(sRTitle,"Failed to add duration!", llColorRed);
                 loggerExt.error(".exception=" + ex);
                 loggerExt.error(".exception:" + Arrays.toString(ex.getStackTrace()));
             }
@@ -1191,7 +1191,7 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                 }
                 subDurationSave(mtarget,timeset);
                } catch(Exception ex){
-                sendEmbed(sRTitle,"Failed to sub duration!", llColorRed);
+                sendEmbedInText(sRTitle,"Failed to sub duration!", llColorRed);
                 loggerExt.error(".exception=" + ex);
                 loggerExt.error(".exception:" + Arrays.toString(ex.getStackTrace()));
             }
@@ -1212,9 +1212,9 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                     llSendQuickEmbedMessage(gUser, sRTitle, "Failed to write in Db!", llColorRed);
                     return;
                 }
-                sendEmbed(sRTitle,"Added "+lsUsefullFunctions.displayDuration(timeset)+" to "+mtarget.getAsMention()+"'s duration by "+gMember.getAsMention()+".\nUpdated duration: "+lsUsefullFunctions.displayDuration(diff), llColorPink1);
+                sendEmbedInText(sRTitle,"Added "+lsUsefullFunctions.displayDuration(timeset)+" to "+mtarget.getAsMention()+"'s duration by "+gMember.getAsMention()+".\nUpdated duration: "+lsUsefullFunctions.displayDuration(diff), llColorPink1);
             } catch(Exception ex){
-                sendEmbed(sRTitle,"Failed to add duration!", llColorRed);
+                sendEmbedInText(sRTitle,"Failed to add duration!", llColorRed);
                 loggerExt.error(".exception=" + ex);
                 loggerExt.error(".exception:" + Arrays.toString(ex.getStackTrace()));
             }
@@ -1235,9 +1235,9 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
                     llSendQuickEmbedMessage(gUser, sRTitle, "Failed to write in Db!", llColorRed);
                     return;
                 }
-                sendEmbed(sRTitle,"Removed "+lsUsefullFunctions.displayDuration(timeset)+" from "+mtarget.getAsMention()+"'s duration by "+gMember.getAsMention()+".\nUpdated duration: "+lsUsefullFunctions.displayDuration(diff), llColorPink1);
+                sendEmbedInText(sRTitle,"Removed "+lsUsefullFunctions.displayDuration(timeset)+" from "+mtarget.getAsMention()+"'s duration by "+gMember.getAsMention()+".\nUpdated duration: "+lsUsefullFunctions.displayDuration(diff), llColorPink1);
             } catch(Exception ex){
-                sendEmbed(sRTitle,"Failed to sub duration!", llColorRed);
+                sendEmbedInText(sRTitle,"Failed to sub duration!", llColorRed);
                 loggerExt.error(".exception=" + ex);
                 loggerExt.error(".exception:" + Arrays.toString(ex.getStackTrace()));
             }
@@ -1481,7 +1481,7 @@ public class diTimelock extends Command implements llMessageHelper, llGlobalHelp
             String fName = "[rSlashNT]";
             logger.info(fName);
             Member user=null;
-            slashReplyCheckDm();
+            gCurrentInteractionHook=lsMessageHelper.lsDeferReply(gSlashCommandEvent,true);
             for(OptionMapping option:gSlashCommandEvent.getOptions()){
                 switch (option.getName()){
                     case llCommonKeys.SlashCommandReceive.user:

@@ -1,4 +1,4 @@
-package nsfw.diaper;
+package nsfw.diaper.modules.interfaces;
 
 public interface iDiaper {
     interface solo {

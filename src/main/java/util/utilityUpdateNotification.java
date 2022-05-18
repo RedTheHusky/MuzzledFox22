@@ -133,6 +133,24 @@ public class utilityUpdateNotification extends Command implements  llGlobalHelpe
                                 post2Text();
                                 isInvalidCommand = false;
                                 break;
+                            case "post":
+                                if(items.length>=2){
+                                    switch (items[1].toLowerCase()){
+                                        case "general":
+                                            postGeneralNews("");
+                                            isInvalidCommand=false;
+                                            break;
+                                        case "auto":
+                                            postSpamNews("");
+                                            isInvalidCommand=false;
+                                            break;
+                                        case "manual":
+                                            postTriggerNews("");
+                                            isInvalidCommand=false;
+                                            break;
+                                    }
+                                }
+                                break;
                             case "set":
                                 if(items.length>=2){
                                     switch (items[1].toLowerCase()){
@@ -151,54 +169,54 @@ public class utilityUpdateNotification extends Command implements  llGlobalHelpe
                                             break;
                                         case "general":
                                             if(items.length>=3)
-                                            switch (items[2].toLowerCase()){
-                                                case "channel":
-                                                    if(items.length>=4){
-                                                        generalnewsconfigSetChannel(items[3]);
-                                                    }else{
-                                                        manualnewsconfigSetChannel("clear");
-                                                    }
-                                                    isInvalidCommand = false;
-                                                    break;
-                                            }
+                                                switch (items[2].toLowerCase()){
+                                                    case "channel":
+                                                        if(items.length>=4){
+                                                            generalnewsconfigSetChannel(items[3]);
+                                                        }else{
+                                                            manualnewsconfigSetChannel("clear");
+                                                        }
+                                                        isInvalidCommand = false;
+                                                        break;
+                                                }
                                             break;
                                         case "auto":
                                             if(items.length>=3)
-                                            switch (items[2].toLowerCase()){
-                                                case "disable":
-                                                    if(items.length>=4){
-                                                        spamnewsconfigSetDisable(items[3]);
+                                                switch (items[2].toLowerCase()){
+                                                    case "disable":
+                                                        if(items.length>=4){
+                                                            spamnewsconfigSetDisable(items[3]);
+                                                            isInvalidCommand = false;
+                                                        }
+                                                        break;
+                                                    case "channel":
+                                                        if(items.length>=4){
+                                                            spamnewsconfigSetChannel(items[3]);
+                                                        }else{
+                                                            manualnewsconfigSetChannel("clear");
+                                                        }
                                                         isInvalidCommand = false;
-                                                    }
-                                                    break;
-                                                case "channel":
-                                                    if(items.length>=4){
-                                                        spamnewsconfigSetChannel(items[3]);
-                                                    }else{
-                                                        manualnewsconfigSetChannel("clear");
-                                                    }
-                                                    isInvalidCommand = false;
-                                                    break;
-                                            }
+                                                        break;
+                                                }
                                             break;
                                         case "manual":
                                             if(items.length>=3)
-                                            switch (items[2].toLowerCase()){
-                                                case "disable":
-                                                    if(items.length>=4){
-                                                        manualnewsconfigSetDisable(items[3]);
+                                                switch (items[2].toLowerCase()){
+                                                    case "disable":
+                                                        if(items.length>=4){
+                                                            manualnewsconfigSetDisable(items[3]);
+                                                            isInvalidCommand = false;
+                                                        }
+                                                        break;
+                                                    case "channel":
+                                                        if(items.length>=4){
+                                                            manualnewsconfigSetChannel(items[3]);
+                                                        }else{
+                                                            manualnewsconfigSetChannel("clear");
+                                                        }
                                                         isInvalidCommand = false;
-                                                    }
-                                                    break;
-                                                case "channel":
-                                                    if(items.length>=4){
-                                                        manualnewsconfigSetChannel(items[3]);
-                                                    }else{
-                                                        manualnewsconfigSetChannel("clear");
-                                                    }
-                                                    isInvalidCommand = false;
-                                                    break;
-                                            }
+                                                        break;
+                                                }
                                             break;
                                     }
                                 }
@@ -256,7 +274,7 @@ public class utilityUpdateNotification extends Command implements  llGlobalHelpe
             EmbedBuilder embed=new EmbedBuilder();
             //"[general/auto/manual]"
             embed.setTitle(gTitle);embed.setColor(llColors.llColorBlue1);
-            embed.addField("News options","`get`, view the settings\n`set [all/general/auto/manual] channel [@channel]`, redirects all news to @channel\n`set [all/general/auto/manual] channel`, clears channel restriction, allowing to be sent to any channel\n`set [auto/manual] disable [true/false]`, sets to disable to send news to guild's text channels\n`reset [all/general/auto/manual]`, the command is obvious",false);
+            embed.addField("News options","`get`, view the settings\n`post [general/auto/manual]` post special message\n`set [all/general/auto/manual] channel [@channel]`, redirects all news to @channel\n`set [all/general/auto/manual] channel`, clears channel restriction, allowing to be sent to any channel\n`set [auto/manual] disable [true/false]`, sets to disable to send news to guild's text channels\n`reset [all/general/auto/manual]`, the command is obvious",false);
             embed.addField("Definition of [general/auto/manual]","`general`, is the news thats sent to all guilds, while it can't be disabled it can be redirected\n`auto`, news that's triggered by any commands to the bot or gag instance, there is a timeout between posts\n`manual`, news that needs to be triggered by user",false);
             embed.addField("Send news","private:post2private, post2dm\npublic: post2public",false);
             if(gGlobal.isPartOfTeam(gMember)){
@@ -889,6 +907,283 @@ public class utilityUpdateNotification extends Command implements  llGlobalHelpe
                 logger.error(cName +fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
             }
         }
+        private void postGeneralNews(String value){
+            String fName="[postGeneralNews]";
+            logger.info(fName);
+            try{
+                EmbedBuilder embedBuilder=new EmbedBuilder();
+                embedBuilder.setTitle(gTitle).setColor(llColorPurple1);
+                GuildNotificationProfile._CONFIG._NEWS newsConfig=guildNotificationProfile.getConfig().getGeneralNewsConfig();
+                GuildNotificationReader._NEWS news=gGlobal.generalGuildNotification.getGeneralNews();
+                if(!news.isEnabled()){
+                    logger.info(fName+"news.isEnabled()=false->abort");
+                    logger2.info(fName+" news.isEnabled()=false");
+                    lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"No general news available.", llColors_Red.llColorRed_Barn));
+                    return;
+                }
+                if(newsConfig.isDisabled()){
+                    logger.info(fName+"newsConfig.isDisabled()=false->abort");
+                    logger2.info(fName+" newsConfig.isDisabled()=false");
+                    lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"General news is blocked.", llColors_Red.llColorRed_Barn));
+                    return;
+                }
+                if(news.hasBlockedGuilds()){
+                    logger.info(fName+"news.hasBlockedGuilds()=true");
+                    if(news.isGuildBlocked(gGuild)){
+                        logger.info(fName+"news.isGuildBlocked()=true->abort");
+                        logger2.info(fName+"news.isGuildBlocked()=true->abort");
+                        lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"General news is blocked by guild.", llColors_Red.llColorRed_Barn));
+                        return;
+                    }
+                }
+                if(news.hasAllowedGuilds()){
+                    logger.info(fName+"news.hasAllowedGuilds()=true");
+                    if(!news.isGuildAllowed(gGuild)){
+                        logger.info(fName+"news.isGuildAllowed()=false->abort");
+                        logger2.info(fName+"news.isGuildAllowed()=false->abort");
+                        lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"General news is not allowed guild.", llColors_Red.llColorRed_Barn));
+                        return;
+                    }
+                }
+                Message message=null;boolean hadTextChannels=false;TextChannel textChannel=null;
+                if(newsConfig.hasChannel()){
+                    logger.info(fName+"newsConfig.hasChannel()");
+                    TextChannel textChannel1=lsChannelHelper.lsGetTextChannelById(gGuild,newsConfig.getChannelIdAsLong());
+                    if(textChannel1!=null&&textChannel1.canTalk()){
+                        logger.info(fName+"textChannel1 can talk");
+                        message=news.send(textChannel1);
+                        hadTextChannels=true;
+                        textChannel=textChannel1;
+                    }else
+                    if(textChannel1!=null){
+                        logger.info(fName+"textChannel1 can't talk");
+                    }else{
+                        logger.info(fName+"textChannel1 is invalid");
+                    }
+                }
+                if(message==null){
+                    logger.info(fName+"search textchannel to post to");
+                    List<TextChannel>textChannels=gGuild.getTextChannels();
+                    logger.info(fName+"textChannels.size="+textChannels.size());
+                    for(TextChannel textChannel2:textChannels){
+                        if(textChannel2.canTalk()){
+                            logger.info(fName+"try textchannel2="+textChannel2.getId());
+                            message=news.send(textChannel2); hadTextChannels=true;
+                            textChannel=textChannel2;
+                            if(message!=null){
+                                logger.info(fName+"sent to textchannel="+textChannel2.getId());
+                                break;
+                            }
+                            break;
+                        }
+                    }
+                }
+                if(message!=null){
+                    logger.info(fName+"send()="+message.getId());
+                    logger2.info(fName+" posted to channel "+textChannel.getId()+", nessage="+message.getId());
+                    return;
+                }
+                if(hadTextChannels){
+                    logger.info(fName+"send()->failed");
+                    logger2.warn(fName+" failed to post to channel "+textChannel.getId()+".");
+                    lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"General news failed to post.", llColors_Red.llColorRed_Barn));
+                }
+                else{
+                    logger.info(fName+"no textchannel found");
+                    logger2.warn(fName+" failed to post as found no textchannel");
+                    lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"General news failed to post as found no text channel.", llColors_Red.llColorRed_Barn));
+                }
+
+            } catch (Exception e) {
+                logger.error(fName+".exception=" + e);
+                logger.error(cName +fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
+            }
+        }
+        private void postTriggerNews(String value){
+            String fName="[postTriggerNews]";
+            logger.info(fName);
+            try{
+                EmbedBuilder embedBuilder=new EmbedBuilder();
+                embedBuilder.setTitle(gTitle).setColor(llColorPurple1);
+                GuildNotificationProfile._CONFIG._NEWS newsConfig=guildNotificationProfile.getConfig().getTrigeredNewsConfig();
+                GuildNotificationReader._NEWS news=gGlobal.generalGuildNotification.getTriggerNews();
+                if(!news.isEnabled()){
+                    logger.info(fName+"news.isEnabled()=false->abort");
+                    logger2.info(fName+" news.isEnabled()=false");
+                    lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"No trigger news available.", llColors_Red.llColorRed_Barn));
+                    return;
+                }
+                if(newsConfig.isDisabled()){
+                    logger.info(fName+"newsConfig.isDisabled()=false->abort");
+                    logger2.info(fName+" newsConfig.isDisabled()=false");
+                    lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"Trigger news is blocked.", llColors_Red.llColorRed_Barn));
+                    return;
+                }
+                if(news.hasBlockedGuilds()){
+                    logger.info(fName+"news.hasBlockedGuilds()=true");
+                    if(news.isGuildBlocked(gGuild)){
+                        logger.info(fName+"news.isGuildBlocked()=true->abort");
+                        logger2.info(fName+"news.isGuildBlocked()=true->abort");
+                        lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"Trigger news is blocked by guild.", llColors_Red.llColorRed_Barn));
+                        return;
+                    }
+                }
+                if(news.hasAllowedGuilds()){
+                    logger.info(fName+"news.hasAllowedGuilds()=true");
+                    if(!news.isGuildAllowed(gGuild)){
+                        logger.info(fName+"news.isGuildAllowed()=false->abort");
+                        logger2.info(fName+"news.isGuildAllowed()=false->abort");
+                        lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"Trigger news is not allowed guild.", llColors_Red.llColorRed_Barn));
+                        return;
+                    }
+                }
+                Message message=null;boolean hadTextChannels=false;TextChannel textChannel=null;
+                if(newsConfig.hasChannel()){
+                    logger.info(fName+"newsConfig.hasChannel()");
+                    TextChannel textChannel1=lsChannelHelper.lsGetTextChannelById(gGuild,newsConfig.getChannelIdAsLong());
+                    if(textChannel1!=null&&textChannel1.canTalk()){
+                        logger.info(fName+"textChannel1 can talk");
+                        message=news.send(textChannel1);
+                        hadTextChannels=true;
+                        textChannel=textChannel1;
+                    }else
+                    if(textChannel1!=null){
+                        logger.info(fName+"textChannel1 can't talk");
+                    }else{
+                        logger.info(fName+"textChannel1 is invalid");
+                    }
+                }
+                if(message==null){
+                    logger.info(fName+"search textchannel to post to");
+                    List<TextChannel>textChannels=gGuild.getTextChannels();
+                    logger.info(fName+"textChannels.size="+textChannels.size());
+                    for(TextChannel textChannel2:textChannels){
+                        if(textChannel2.canTalk()){
+                            logger.info(fName+"try textchannel2="+textChannel2.getId());
+                            message=news.send(textChannel2); hadTextChannels=true;
+                            textChannel=textChannel2;
+                            if(message!=null){
+                                logger.info(fName+"sent to textchannel="+textChannel2.getId());
+                                break;
+                            }
+                            break;
+                        }
+                    }
+                }
+                if(message!=null){
+                    logger.info(fName+"send()="+message.getId());
+                    logger2.info(fName+" posted to channel "+textChannel.getId()+", nessage="+message.getId());
+                    return;
+                }
+                if(hadTextChannels){
+                    logger.info(fName+"send()->failed");
+                    logger2.warn(fName+" failed to post to channel "+textChannel.getId()+".");
+                    lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"Trigger news failed to post.", llColors_Red.llColorRed_Barn));
+                }
+                else{
+                    logger.info(fName+"no textchannel found");
+                    logger2.warn(fName+" failed to post as found no textchannel");
+                    lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"Trigger news failed to post as found no text channel.", llColors_Red.llColorRed_Barn));
+                }
+
+            } catch (Exception e) {
+                logger.error(fName+".exception=" + e);
+                logger.error(cName +fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
+            }
+        }
+        private void postSpamNews(String value){
+            String fName="[postSpamNews]";
+            logger.info(fName);
+            try{
+                EmbedBuilder embedBuilder=new EmbedBuilder();
+                embedBuilder.setTitle(gTitle).setColor(llColorPurple1);
+                GuildNotificationProfile._CONFIG._NEWS newsConfig=guildNotificationProfile.getConfig().getSpamNewsConfig();
+                GuildNotificationReader._NEWS news=gGlobal.generalGuildNotification.getSpamNews();
+                if(!news.isEnabled()){
+                    logger.info(fName+"news.isEnabled()=false->abort");
+                    logger2.info(fName+" news.isEnabled()=false");
+                    lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"No spam news available.", llColors_Red.llColorRed_Barn));
+                    return;
+                }
+                if(newsConfig.isDisabled()){
+                    logger.info(fName+"newsConfig.isDisabled()=false->abort");
+                    logger2.info(fName+" newsConfig.isDisabled()=false");
+                    lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"Spam news is blocked.", llColors_Red.llColorRed_Barn));
+                    return;
+                }
+                if(news.hasBlockedGuilds()){
+                    logger.info(fName+"news.hasBlockedGuilds()=true");
+                    if(news.isGuildBlocked(gGuild)){
+                        logger.info(fName+"news.isGuildBlocked()=true->abort");
+                        logger2.info(fName+"news.isGuildBlocked()=true->abort");
+                        lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"Spam news is blocked by guild.", llColors_Red.llColorRed_Barn));
+                        return;
+                    }
+                }
+                if(news.hasAllowedGuilds()){
+                    logger.info(fName+"news.hasAllowedGuilds()=true");
+                    if(!news.isGuildAllowed(gGuild)){
+                        logger.info(fName+"news.isGuildAllowed()=false->abort");
+                        logger2.info(fName+"news.isGuildAllowed()=false->abort");
+                        lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"Spam news is not allowed guild.", llColors_Red.llColorRed_Barn));
+                        return;
+                    }
+                }
+                Message message=null;boolean hadTextChannels=false;TextChannel textChannel=null;
+                if(newsConfig.hasChannel()){
+                    logger.info(fName+"newsConfig.hasChannel()");
+                    TextChannel textChannel1=lsChannelHelper.lsGetTextChannelById(gGuild,newsConfig.getChannelIdAsLong());
+                    if(textChannel1!=null&&textChannel1.canTalk()){
+                        logger.info(fName+"textChannel1 can talk");
+                        message=news.send(textChannel1);
+                        hadTextChannels=true;
+                        textChannel=textChannel1;
+                    }else
+                    if(textChannel1!=null){
+                        logger.info(fName+"textChannel1 can't talk");
+                    }else{
+                        logger.info(fName+"textChannel1 is invalid");
+                    }
+                }
+                if(message==null){
+                    logger.info(fName+"search textchannel to post to");
+                    List<TextChannel>textChannels=gGuild.getTextChannels();
+                    logger.info(fName+"textChannels.size="+textChannels.size());
+                    for(TextChannel textChannel2:textChannels){
+                        if(textChannel2.canTalk()){
+                            logger.info(fName+"try textchannel2="+textChannel2.getId());
+                            message=news.send(textChannel2); hadTextChannels=true;
+                            textChannel=textChannel2;
+                            if(message!=null){
+                                logger.info(fName+"sent to textchannel="+textChannel2.getId());
+                                break;
+                            }
+                            break;
+                        }
+                    }
+                }
+                if(message!=null){
+                    logger.info(fName+"send()="+message.getId());
+                    logger2.info(fName+" posted to channel "+textChannel.getId()+", nessage="+message.getId());
+                    return;
+                }
+                if(hadTextChannels){
+                    logger.info(fName+"send()->failed");
+                    logger2.warn(fName+" failed to post to channel "+textChannel.getId()+".");
+                    lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"Spam news failed to post.", llColors_Red.llColorRed_Barn));
+                }
+                else{
+                    logger.info(fName+"no textchannel found");
+                    logger2.warn(fName+" failed to post as found no textchannel");
+                    lsMessageHelper.lsSendMessage(gUser,lsMessageHelper.lsErrorEmbed(gTitle,"Spam news failed to post as found no text channel.", llColors_Red.llColorRed_Barn));
+                }
+
+            } catch (Exception e) {
+                logger.error(fName+".exception=" + e);
+                logger.error(cName +fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
+            }
+        }
+
         String strDisabled2Post="Disabled to post, have server manager enable it.",
         strNoNews="(No news)",
         strBlocked4BotManager="Blocked from bot managment!";

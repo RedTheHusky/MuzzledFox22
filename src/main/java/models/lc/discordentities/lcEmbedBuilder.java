@@ -80,7 +80,7 @@ public class lcEmbedBuilder {
         String fName="[set]";
         try {
             if (jsonObject != null) {
-                logger.error(fName + ".json=" + jsonObject.toString());
+                logger.info(fName + ".json=" + jsonObject.toString());
                 if(jsonObject.has(keyDescription))setDescription(jsonObject.optString(keyDescription));
                 if(jsonObject.has(keyTitle)&&jsonObject.has(keyUrl))setTitle(jsonObject.optString(keyTitle),jsonObject.optString(keyUrl)); else
                 if(jsonObject.has(keyTitle))setTitle(jsonObject.optString(keyTitle));
