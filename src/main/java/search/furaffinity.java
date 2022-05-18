@@ -2,10 +2,12 @@ package search;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import kong.unirest.*;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
+import models.lc.helper.lcSendMessageHelper;
+import models.lc.interaction.messagecomponent.lcMessageBuildComponent;
+import models.lc.interaction.messagecomponent.lcSharedMessageComponentManager;
 import models.lc.lcBasicFeatureControl;
 import models.lcGlobalHelper;
 import models.ll.colors.llColors;
@@ -16,10 +18,16 @@ import models.ls.*;
 import models.lsGlobalHelper;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import org.apache.log4j.Logger;
 import search.entities.lcFURAFFINITY;
+import util.HelpCommand;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -30,23 +38,23 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
     String gUrlUser="https://www.furaffinity.net/user/%/";
     String gUrlUserGallery="https://www.furaffinity.net/gallery/%/";
     Logger logger = Logger.getLogger(getClass()); 
-    lcGlobalHelper gGlobal;CommandEvent gEvent;
+    lcGlobalHelper gGlobal;
     String gTitle="FurAffinity-ImageSearcher",gCommand="fa";
-    User gUser;
-    Member gMember;
-    Guild gGuild;
-    TextChannel gTextChannel;
-    EventWaiter gWaiter;
     public furaffinity(lcGlobalHelper global){
         String fName="[constructor]";
         logger.info(fName);
-        gGlobal=global;gWaiter=global.waiter;
+        gGlobal=global;
         this.name = gTitle;
         this.help = "Get images from FurAffinity";
         this.aliases = new String[]{gCommand,"furaffinity","faffinity"};
         this.guildOnly = true;this.category= llCommandCategory_NSFW;
     }
-
+    public furaffinity(lcGlobalHelper g, SlashCommandEvent event){
+        String fName=".constructor";
+        logger.info(fName);
+        gGlobal =g;
+        Runnable r = new runLocal(event);new Thread(r).start();
+    }
     @Override
     protected void execute(CommandEvent event) {
         String fName="[execute]";
@@ -59,6 +67,10 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
     }
     protected class runLocal implements Runnable {
         String cName = "[runLocal]";
+        User gUser;
+        Member gMember;
+        Guild gGuild;
+        TextChannel gTextChannel;CommandEvent gEvent;
         public runLocal(CommandEvent ev) {
             String fName="runLocal";
             logger.info(".run build");
@@ -70,7 +82,21 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
             gTextChannel = gEvent.getTextChannel();
             logger.info(fName + ".gTextChannel:" + gTextChannel.getId() + "|" + gTextChannel.getName());
         }
-
+        SlashCommandEvent gSlashCommandEvent;
+        public runLocal(SlashCommandEvent ev) {
+            String fName="runLocal";
+            logger.info(cName + ".run build SlashCommandEvent");
+            gSlashCommandEvent = ev;
+            gUser=ev.getUser();
+            logger.info(fName + ".gUser:" + gUser.getId() + "|" + gUser.getName());
+            if(ev.isFromGuild()){
+                gGuild=ev.getGuild();
+                logger.info(fName + ".gGuild:" + gGuild.getId() + "|" + gGuild.getName());
+                gMember=ev.getMember();
+                gTextChannel=ev.getTextChannel();
+                logger.info(fName + ".gTextChannel:" + gTextChannel.getId() + "|" + gTextChannel.getName());
+            }
+        }
         @Override
         public void run() {
             String fName = "[run]";
@@ -80,118 +106,117 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
                 gBasicFeatureControl.initProfile();
                 String[] items;
                 boolean isInvalidCommand = true;
-               if(!isNSFW()){
+                /*if(!isNSFW()){
                     blocked();return;
-                }
-                if(gEvent.getArgs().isEmpty()){
-                    logger.info(fName+".Args=0");
-                    help("main");
-                }else {
-                    logger.info(fName + ".Args");
-                    items = gEvent.getArgs().split("\\s+");
-                    logger.info(fName + ".items.size=" + items.length);
-                    logger.info(fName + ".items[0]=" + items[0]);
-                    if(items[0].equalsIgnoreCase("help")){
+                }*/
+                if(gSlashCommandEvent!=null){
+                    messageComponentManager.set(gGlobal,gTextChannel,gTitle,gUser);
+                    slash();
+                }else{
+                    if(gEvent.getArgs().isEmpty()){
+                        logger.info(fName+".Args=0");
                         help("main");
-                    }
-                    else if(items[0].equalsIgnoreCase("guild")||items[0].equalsIgnoreCase("server")){
-                        if(items.length>2){
-                            // allowchannels/blockchannels/ allowroles/blockroles list|add|rem|set|clear
-                            int group=0,type=0,action=0;
-                            switch (items[1].toLowerCase()){
-                                case "allowedchannels":
-                                case "allowchannels":
-                                    group=1;type=1;
-                                    break;
-                                case "blockedchannels":
-                                case "blockchannels":
-                                    group=1;type=-1;
-                                    break;
-                                case "allowedroles":
-                                case "allowroles":
-                                    group=2;type=1;
-                                    break;
-                                case "blockedroles":
-                                case "blockroles":
-                                    group=2;type=-1;
-                                    break;
-                            }
-                            switch (items[2].toLowerCase()){
-                                case "list":
-                                    action=0;
-                                    break;
-                                case "add":
-                                    action=1;
-                                    break;
-                                case "set":
-                                    action=2;
-                                    break;
-                                case "rem":
-                                    action=-1;
-                                    break;
-                                case "clear":
-                                    action=-2;
-                                    break;
-                            }
-                            if(group==1){
-                                if(action==0){
-                                    getChannels(type,false);isInvalidCommand=false;
-                                }else{
-                                    setChannel(type,action,gEvent.getMessage());
-                                }
-                            }
-                            else if(group==2){
-                                if(action==0){
-                                    getRoles(type,false);isInvalidCommand=false;
-                                }else{
-                                    setRole(type,action,gEvent.getMessage());
-                                }
-                            }
-                        }else{
-                            menuGuild();isInvalidCommand=false;
+                    }else {
+                        logger.info(fName + ".Args");
+                        items = gEvent.getArgs().split("\\s+");
+                        logger.info(fName + ".items.size=" + items.length);
+                        logger.info(fName + ".items[0]=" + items[0]);
+                        if(items[0].equalsIgnoreCase("help")){
+                            help("main");
                         }
+                        else if(items[0].equalsIgnoreCase("guild")||items[0].equalsIgnoreCase("server")){
+                            if(items.length>2){
+                                // allowchannels/blockchannels/ allowroles/blockroles list|add|rem|set|clear
+                                int group=0,type=0,action=0;
+                                switch (items[1].toLowerCase()){
+                                    case "allowedchannels":
+                                    case "allowchannels":
+                                        group=1;type=1;
+                                        break;
+                                    case "blockedchannels":
+                                    case "blockchannels":
+                                        group=1;type=-1;
+                                        break;
+                                    case "allowedroles":
+                                    case "allowroles":
+                                        group=2;type=1;
+                                        break;
+                                    case "blockedroles":
+                                    case "blockroles":
+                                        group=2;type=-1;
+                                        break;
+                                }
+                                switch (items[2].toLowerCase()){
+                                    case "list":
+                                        action=0;
+                                        break;
+                                    case "add":
+                                        action=1;
+                                        break;
+                                    case "set":
+                                        action=2;
+                                        break;
+                                    case "rem":
+                                        action=-1;
+                                        break;
+                                    case "clear":
+                                        action=-2;
+                                        break;
+                                }
+                                if(group==1){
+                                    if(action==0){
+                                        getChannels(type,false);isInvalidCommand=false;
+                                    }else{
+                                        setChannel(type,action,gEvent.getMessage());
+                                    }
+                                }
+                                else if(group==2){
+                                    if(action==0){
+                                        getRoles(type,false);isInvalidCommand=false;
+                                    }else{
+                                        setRole(type,action,gEvent.getMessage());
+                                    }
+                                }
+                            }else{
+                                menuGuild();isInvalidCommand=false;
+                            }
+                        }
+                        else if(!gBasicFeatureControl.getEnable()){
+                            logger.info(fName+"its disabled");
+                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"It's disabled in "+gGuild.getName()+"!", lsMessageHelper.llColorRed_Cardinal);
+                            isInvalidCommand=false;
+                        }
+                        else if(!gBasicFeatureControl.isChannelAllowed(gTextChannel)){
+                            logger.info(fName+"its not allowed by channel");
+                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"It's not allowed in channel "+gTextChannel.getAsMention()+"!", lsMessageHelper.llColorRed_Cardinal);
+                            isInvalidCommand=false;
+                        }
+                        else if(!gBasicFeatureControl.isRoleAllowed(gMember)){
+                            logger.info(fName+"its not allowed by roles");
+                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"It's not allowed as you roles prevent it!", lsMessageHelper.llColorRed_Cardinal);
+                            isInvalidCommand=false;
+                        }
+                        if(items.length>=3&&items[0].equalsIgnoreCase("gallery")){
+                            doUserGallery(items[1],items[2]);
+                        }else
+                        if(items.length==2&&items[0].equalsIgnoreCase("gallery")){
+                            doUserGallery(items[1],"0");
+                        }else
+                        if(items.length>=2&&items[0].equalsIgnoreCase("user")){
+                            getUserPage(items[1]);
+                        }else
+                        if(items.length>=2&&items[0].equalsIgnoreCase("view")){
+                            getViewPage_v2(items[1]);
+                        }else
+                        if(gEvent.getArgs().replaceAll("\\s+","").toLowerCase().contains("https:")||gEvent.getArgs().replaceAll("\\s+","").toLowerCase().contains("http:")){
+                            getViewPage_v2(gEvent.getArgs());
+                        }
+                        else{
+                            doSearch(gEvent.getArgs());
+                        }
+                        llMessageDelete(gEvent);
                     }
-                    else if(!gBasicFeatureControl.getEnable()){
-                        logger.info(fName+"its disabled");
-                        lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"It's disabled in "+gGuild.getName()+"!", lsMessageHelper.llColorRed_Cardinal);
-                        isInvalidCommand=false;
-                    }
-                    else if(!gBasicFeatureControl.isChannelAllowed(gTextChannel)){
-                        logger.info(fName+"its not allowed by channel");
-                        lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"It's not allowed in channel "+gTextChannel.getAsMention()+"!", lsMessageHelper.llColorRed_Cardinal);
-                        isInvalidCommand=false;
-                    }
-                    else if(!gBasicFeatureControl.isRoleAllowed(gMember)){
-                        logger.info(fName+"its not allowed by roles");
-                        lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"It's not allowed as you roles prevent it!", lsMessageHelper.llColorRed_Cardinal);
-                        isInvalidCommand=false;
-                    }
-                    if(items.length>=3&&items[0].equalsIgnoreCase("gallery")){
-                        doUserGallery(items[1],items[2]);
-                    }else
-                    if(items.length==2&&items[0].equalsIgnoreCase("gallery")){
-                        doUserGallery(items[1],"0");
-                    }else
-                    if(items.length>=2&&items[0].equalsIgnoreCase("user")){
-                        getUserPage(items[1]);
-                    }else
-                    if(items.length>=2&&items[0].equalsIgnoreCase("view")){
-                        getViewPage_v2(items[1]);
-                    }else
-                    if(gEvent.getArgs().replaceAll("\\s+","").toLowerCase().contains("https:")||gEvent.getArgs().replaceAll("\\s+","").toLowerCase().contains("http:")){
-                        getViewPage_v2(gEvent.getArgs());
-                    }
-                    else{
-                        doSearch(gEvent.getArgs());
-                    }
-                    llMessageDelete(gEvent);
                 }
-            /*isInvalidCommand=false;
-            logger.info(fName+".deleting op message");
-            llQuckCommandMessageDelete(gEvent);
-            if(isInvalidCommand){
-                llQuickEmbedChannelResponse(gTextChannel,gTitle,"You provided an incorrect command!", llColorRed);
-            }*/
             }catch (Exception e){
                 logger.error(fName + ".exception=" + e);
                 logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -737,6 +762,7 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
                 options.put(keyPage,valueFirstPage);options.put(keyResetPage, valueDefaultResetPage);options.put(keyRange,valueRangeAll);
                 options.put(keyOne,valueFirstOne);options.put(keyMode,valueModeExtended);options.put(keyTypeArt,valueOn);
                 options.put(keyDoSearch,valueDoSearch); options.put(keyOrderBy,valueOrderByPopularity);options.put(keyOrderDirection,valueDesc);
+                if(message.toLowerCase().contains("showrating")){showRating=true;}
                 if(message.toLowerCase().contains(valueGeneral)||message.toLowerCase().contains(valueMature)||message.toLowerCase().contains(valueAdult)){
                     if(message.toLowerCase().contains(valueGeneral)){options.put(keyRatingGeneral,valueOn);}
                     if(message.toLowerCase().contains(valueMature)){options.put(keyRatingMature,valueOn);}
@@ -788,105 +814,8 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
             if(j<=0)j=1;
             return j;
         }
-        private void getHtmlGallerySearch() {
-            String fName = "[getHtmlGallerySearch]";
-            try {
-                Unirest a= new Unirest();
-                //a.config().verifySsl(false);
-                //HttpResponse<String> jsonResponse =a.post(gUrl).field(keyQ,options.getString(keyQ)).asString();
-                Map<String,Object> mapOptions=new LinkedHashMap<>();
-                Iterator<String>keys=options.keys();
-                while(keys.hasNext()){
-                    String key=keys.next();
-                    Object value=options.get(key);
-                    mapOptions.put(key,value);
-                }
-                int i=0;
-                for (Map.Entry<String, Object> entry : mapOptions.entrySet()) {
-                    logger.info(fName+".mapOptions["+i+"]="+entry.getKey()+ ":" + entry.getValue().toString());i++;
-                }
-                if( options.has(keyQ)){
-                    logger.info(fName + "do search by: " + gUser.getId() + "|" + gUser.getName()+"#"+gUser.getDiscriminator()+"=>"+options.getString(keyQ));
-                }else{
-                    logger.info(fName + "do search by: " + gUser.getId() + "|" + gUser.getName()+"#"+gUser.getDiscriminator()+"=>undefined");
-                }
 
-            /*Cookie cookie__cfduid_2=new Cookie("__cfduid","d887866db9e43b0f6262bffb8ecc44f901593255168");
-            Cookie cookiea=new Cookie("a","5e16e67e-0ab2-44a3-9769-3235eebdc393");
-            Cookie cookie__qca=new Cookie("__qca","P0-487465766-1593253203374");
-            Cookie cookie__gads=new Cookie("__gads","ID=6ede4f83e6fdeae2:T=1593253203:S=ALNI_MbzxADPN8g6RHuFv-hBKPQ96JPpmg");
-            Cookie cookie__cfduid=new Cookie("__cfduid","deeaef1de440c69a982b08688bcb8c0ad1593253201");
-            Cookie cookieb=new Cookie("b","6c76433b-5c4f-412a-92eb-c76d2df1a985");
-            Cookie cookiemc=new Cookie("mc","5ef72501-b2689-4634a-072a7");
-            Cookie cookieOAID=new Cookie("OAID","6920ed3e677437cdee26b17397f58307");
-            Cookie cookiecc=new Cookie("cc","1");
-            Cookie cookiesz=new Cookie("sz","1311x627");
 
-            cookieOAID.setDomain("rv.furaffinity.net");cookie__cfduid_2.setDomain(".facdn.net");cookiemc.setDomain(".quantserve.com");
-            cookiecc.setDomain("www.furaffinity.net");cookiesz.setDomain("www.furaffinity.net");
-            cookiea.setDomain(".furaffinity.net");cookie__qca.setDomain(".furaffinity.net");cookie__gads.setDomain(".furaffinity.net");cookie__cfduid.setDomain(".furaffinity.net");cookieb.setDomain(".furaffinity.net");
-
-            cookie__cfduid.setHttpOnly(true);cookie__cfduid_2.setHttpOnly(true);cookiea.setHttpOnly(true);cookieb.setHttpOnly(true);*/
-
-                HttpResponse<String> jsonResponse =a.post(gUrlSearch)
-                        .header("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 OPR/68.0.3618.173")
-                        .header("accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-                        .header("cookie","__cfduid=deeaef1de440c69a982b08688bcb8c0ad1593253201; b=6c76433b-5c4f-412a-92eb-c76d2df1a985; __gads=ID=6ede4f83e6fdeae2:T=1593253203:S=ALNI_MbzxADPN8g6RHuFv-hBKPQ96JPpmg; __qca=P0-487465766-1593253203374; cc=1; a=5e16e67e-0ab2-44a3-9769-3235eebdc393; sz=1311x627")
-                        .header("dnt","1")
-                        .header("origin","https://www.furaffinity.net")
-                        .header("referer:","https://www.furaffinity.net/search")
-                        .header("sec-fetch-dest","document")
-                        .header("sec-fetch-mode","navigate")
-                        .header("sec-fetch-site:","same-origin")
-                        .header("sec-fetch-user","?1")
-                        .header("upgrade-insecure-requests","1")
-                        /*.cookie(cookiea)
-                        .cookie(cookie__qca)
-                        .cookie(cookie__gads)
-                        .cookie(cookie__cfduid).cookie(cookie__cfduid_2)
-                        .cookie(cookieb)
-                        .cookie(cookiemc)
-                        .cookie(cookieOAID)
-                        .cookie(cookiecc)
-                        .cookie(cookiesz)*/
-                        .queryString(mapOptions)
-                        .asString();
-                logger.info(fName+".headers ="+jsonResponse.getHeaders().toString());
-                logger.info(fName+".status ="+jsonResponse.getStatus());
-                if(jsonResponse.getStatus()>299){
-                    logger.error(fName+".invalid status"); return ;
-                }
-                String body=jsonResponse.getBody();
-                logger.info(fName+".body ="+body);
-                String text="", textShadow="";
-                int itemsI=-1,itemsJ=-1;
-                if(body.contains("gallery-search-results")){
-                    itemsI=body.indexOf("gallery-search-results");
-                    textShadow=body.substring(itemsI);
-                    itemsJ=textShadow.indexOf("/section");
-                    if(itemsI>0&&itemsJ>0){
-                        text=textShadow.substring(0,itemsJ-1);
-                    }
-                }
-                text=text.replaceAll("</figure><!--","").replaceAll("-->","").replaceFirst("<figure","");
-                logger.info(fName+".gallery-search-results ="+text);
-                String [] items = text.split("<figure");
-                jsonItems=new JSONArray();
-                for(String item : items){
-                    JSONObject jsonObject=convertText2JSONItem(item);
-                    if(jsonObject.getString(keyItemType).equalsIgnoreCase("image")){
-                        jsonItems.put(jsonObject);
-                    }
-                }
-
-            } catch (Exception e) {
-                logger.error(fName+"exception:"+e);
-                logger.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-                llSendQuickEmbedMessage(gTextChannel,gTitle,"Error!",llColorRed);return ;
-            }
-        }
-        JSONArray jsonItems=new JSONArray();
-        JSONObject selectedItem=new JSONObject();
        private JSONObject convertText2JSONItem(String text){
             String fName = "[convertText2JSONItem]"; logger.info(fName);options=new JSONObject();
             try{
@@ -989,22 +918,23 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
             }
         }
 
-
+        lcFURAFFINITY.GalleryImages galleryImages=null;
+        int selectedIndex=-1;
         private void doSearch(String message) {
             String fName = "[doSearch]"; logger.info(fName);options=new JSONObject();
             try{
                 logger.info(fName+"message="+message);
                 setOptions(message);
-                getHtmlGallerySearch();
-                if(jsonItems.isEmpty()){
-                    llSendQuickEmbedMessage(gTextChannel,gTitle,"Nothing found!", llColorRed);return;
+                galleryImages=furaffinity.getGallerySearch(options);
+                if(galleryImages.isEmpty()){
+                    llSendQuickEmbedMessage(gTextChannel,gTitle,"Nothing found!", llColorRed);
+                    return;
                 }
                 int i=0;
-                logger.info(fName+"jsonItems.length="+jsonItems.length());
-                if(jsonItems.length()>1){i=getRandomSlot(jsonItems.length());}
-                selectedItem=jsonItems.getJSONObject(i);
-                selectedItem.put(keyIndex,i);
-                reactionMenu();
+                logger.info(fName+"galleryImages.length="+galleryImages.length());
+                if(galleryImages.length()>1){i=getRandomSlot(galleryImages.length());}
+                selectedIndex=i;
+                displayImage();
             } catch (Exception e) {
                 logger.error(fName+".exception=" + e);
                 logger.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -1013,46 +943,51 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
             }
 
         }
-        private void reactionMenu(){
-            String fName="[reactionMenu]";
+        boolean showRating=false;
+        private void postImage(){
+            String fName="[postImage]";
             logger.info(fName);
             try{
                 EmbedBuilder embed=new EmbedBuilder();
-                embed.setColor(llColorBlue1);
+                embed.setColor(llColorOrange_webcolor);
                 String title="####";
-                int index=-1;
-                if(selectedItem.has(keyIndex)){
-                    index=selectedItem.getInt(keyIndex);
-                }
-                if(selectedItem.has(keyItemTitle)){
-                    title=selectedItem.getString(keyItemTitle);
+                int index=selectedIndex;
+                lcFURAFFINITY.GalleryImages.GalleryImage galleryImage=galleryImages.getImage(index);
+                if(!galleryImage.getTitle().isBlank()){
+                    title=galleryImage.getTitle();
                 }
 
                 String username="####";
-                if(selectedItem.has(keyItemUserName)){
-                    username=selectedItem.getString(keyItemUserName);
+                if(!galleryImage.getUserName().isBlank()){
+                    username=galleryImage.getUserName();
                 }
 
                 int rating=-1;
-                if(selectedItem.has(keyItemRating)){
-                    rating=selectedItem.getInt(keyItemRating);
-                    if(rating==1) embed.addField("Rating","Mature",false);
-                    else if(rating==2) embed.addField("Rating","Adult",false);
-                    else embed.addField("Rating","General",false);
+                if(galleryImage.getRating()>=0){
+                    rating=galleryImage.getRating();
+                    if(rating==1){
+                        if(showRating)embed.addField("Rating","Mature",false);
+                        embed.setColor(llColorBlue_Fa);}
+                    else if(rating==2){
+                        if(showRating)embed.addField("Rating","Adult",false);
+                        embed.setColor(llColorRed_Fa);}
+                    else{
+                        if(showRating)embed.addField("Rating","General",false);
+                        embed.setColor(llColorGray_Fa);}
                 }
                 String image="";
-                if(selectedItem.has(keyItemPreview)){
-                    logger.info(fName+"keyItemPreview="+selectedItem.getString(keyItemPreview));
-                    image=selectedItem.getString(keyItemPreview);
+                if(!galleryImage.getPreview().isBlank()){
+                    logger.info(fName+"keyItemPreview="+galleryImage.getPreview());
+                    image=galleryImage.getPreview();
                 }
-                if(selectedItem.has(keyItemPage)){
-                    String url=gUrlView.replaceAll("%",selectedItem.getString(keyItemPage));
+                if(galleryImage.getJson().has(keyItemPage)){
+                    String url=gUrlView.replaceAll("%",galleryImage.getJson().getString(keyItemPage));
                     logger.info(fName+"url="+url);
                     Unirest a= new Unirest();
                     HttpResponse<String> jsonResponse =a.get(url)
                             .header("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 OPR/68.0.3618.173")
                             .header("accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-                            .header("cookie","__cfduid=deeaef1de440c69a982b08688bcb8c0ad1593253201; b=6c76433b-5c4f-412a-92eb-c76d2df1a985; __gads=ID=6ede4f83e6fdeae2:T=1593253203:S=ALNI_MbzxADPN8g6RHuFv-hBKPQ96JPpmg; __qca=P0-487465766-1593253203374; cc=1; a=5e16e67e-0ab2-44a3-9769-3235eebdc393; sz=1311x627")
+                            .header("cookie", lcFURAFFINITY.Config.getCookie(gGlobal))
                             .header("dnt","1")
                             .header("referer:","https://www.furaffinity.net/browse/")
                             .header("sec-fetch-dest","document")
@@ -1090,34 +1025,274 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
                     }
                 }
                 logger.info(fName+"setImage="+image);
+                boolean hasImage=false;
                 if(rating==0||gTextChannel.isNSFW()){
-                    if(selectedItem.has(keyItemPage)){
-                        embed.setTitle(title,gUrlView.replaceAll("%",selectedItem.getString(keyItemPage)));
+                    if(galleryImage.getJson().has(keyItemPage)){
+                        embed.setTitle(title,gUrlView.replaceAll("%",galleryImage.getJson().getString(keyItemPage)));
                     }else{
                         embed.setTitle(title);
                     }
-                    if(selectedItem.has(keyItemUser)){
-                        embed.addField("Author","["+username+"]("+gUrlUser.replaceAll("%",selectedItem.getString(keyItemUser))+")",false);
+                    if(!galleryImage.getUserAsString().isBlank()){
+                        //embed.addField("Author","["+username+"]("+gUrlUser.replaceAll("%",galleryImage.getUserAsString())+")",false);
+                        lcFURAFFINITY.USER user=galleryImage.getUser();
+                        if(user!=null&&user.getImage()!=null&&!user.getImage().isBlank()){
+                            embed.setAuthor(username,gUrlUser.replaceAll("%",galleryImage.getUserAsString()),user.getImage());
+                        }else{
+                            embed.setAuthor(username,gUrlUser.replaceAll("%",galleryImage.getUserAsString()));
+                        }
                     }else{
-                        embed.addField("Author",username,false);
+                        //embed.addField("Author",username,false);
+                        embed.setAuthor(username);
                     }
+
                     embed.setImage("http://"+image);
+                    hasImage=true;
                 }else{
                     logger.warn(fName+"channel not nsfw");
-                    embed.setDescription("**Attention** The NSFW image can only be displayed on NSFW channels!");
+                    embed.setDescription("**Attention** The NSFW image can only be displayed in NSFW channels!");
+                }
+                Message message=llSendMessageResponse(gTextChannel,embed);
+            } catch (Exception e) {
+                logger.error(fName+".exception=" + e);
+                logger.error(cName +fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
+
+            }
+        }
+        private void displayImage(){
+            String fName="[displayImage]";
+            logger.info(fName);
+            try{
+                EmbedBuilder embed=new EmbedBuilder();
+                embed.setColor(llColorOrange_webcolor);
+                String title="####";
+                int index=selectedIndex;
+                lcFURAFFINITY.GalleryImages.GalleryImage galleryImage=galleryImages.getImage(index);
+                if(!galleryImage.getTitle().isBlank()){
+                    title=galleryImage.getTitle();
+                }
+
+                String username="####";
+                if(!galleryImage.getUserName().isBlank()){
+                    username=galleryImage.getUserName();
+                }
+
+                int rating=-1;
+                if(galleryImage.getRating()>=0){
+                    rating=galleryImage.getRating();
+                    if(rating==1){
+                        if(showRating)embed.addField("Rating","Mature",false);
+                        embed.setColor(llColorBlue_Fa);}
+                    else if(rating==2){
+                        if(showRating)embed.addField("Rating","Adult",false);
+                        embed.setColor(llColorRed_Fa);}
+                    else{
+                        if(showRating)embed.addField("Rating","General",false);
+                        embed.setColor(llColorGray_Fa);}
+                }
+                String image="";
+                if(!galleryImage.getPreview().isBlank()){
+                    logger.info(fName+"keyItemPreview="+galleryImage.getPreview());
+                    image=galleryImage.getPreview();
+                }
+                if(galleryImage.getJson().has(keyItemPage)){
+                    String url=gUrlView.replaceAll("%",galleryImage.getJson().getString(keyItemPage));
+                    logger.info(fName+"url="+url);
+                    Unirest a= new Unirest();
+                    HttpResponse<String> jsonResponse =a.get(url)
+                            .header("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 OPR/68.0.3618.173")
+                            .header("accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+                            .header("cookie", lcFURAFFINITY.Config.getCookie(gGlobal))
+                            .header("dnt","1")
+                            .header("referer:","https://www.furaffinity.net/browse/")
+                            .header("sec-fetch-dest","document")
+                            .header("sec-fetch-mode","navigate")
+                            .header("sec-fetch-site:","same-origin")
+                            .header("sec-fetch-user","?1")
+                            .header("upgrade-insecure-requests","1")
+                            .asString();
+                    logger.info(fName+".status ="+jsonResponse.getStatus());
+                    if(jsonResponse.getStatus()<=200&&jsonResponse.getStatus()<300){
+                        String body=jsonResponse.getBody();
+                        //logger.info(fName+".body ="+body);
+                        String textShadow="";
+                        int itemsI=-1,itemsJ=-1,l;
+                        String begin="img id=\"submissionImg";
+                        if(body.contains(begin)){
+                            logger.info(fName+".found:"+ begin);
+                            itemsI=body.indexOf(begin);
+                            l=begin.length();
+                            textShadow=body.substring(itemsI);
+                            itemsJ=textShadow.indexOf("\">");
+                            begin="src=\"//";
+                            if( textShadow.contains(begin)){
+                                logger.info(fName+".found:"+ begin);
+                                itemsI= textShadow.indexOf(begin);
+                                l=begin.length();
+                                textShadow= textShadow.substring(itemsI+l);
+                                itemsJ=textShadow.indexOf("\"");
+                                if(itemsI>0&&itemsJ>0) {
+                                    image=textShadow.substring(0, itemsJ);
+                                    logger.info(fName+"imageGot="+image);
+                                }
+                            }
+                        }
+                    }
+                }
+                logger.info(fName+"setImage="+image);
+                boolean hasImage=false;
+                if(rating==0||gTextChannel.isNSFW()){
+                    if(galleryImage.getJson().has(keyItemPage)){
+                        embed.setTitle(title,gUrlView.replaceAll("%",galleryImage.getJson().getString(keyItemPage)));
+                    }else{
+                        embed.setTitle(title);
+                    }
+                    if(!galleryImage.getUserAsString().isBlank()){
+                        //embed.addField("Author","["+username+"]("+gUrlUser.replaceAll("%",galleryImage.getUserAsString())+")",false);
+                        lcFURAFFINITY.USER user=galleryImage.getUser();
+                        if(user!=null&&user.getImage()!=null&&!user.getImage().isBlank()){
+                            embed.setAuthor(username,gUrlUser.replaceAll("%",galleryImage.getUserAsString()),user.getImage());
+                        }else{
+                            embed.setAuthor(username,gUrlUser.replaceAll("%",galleryImage.getUserAsString()));
+                        }
+                    }else{
+                        //embed.addField("Author",username,false);
+                        embed.setAuthor(username);
+                    }
+
+                    embed.setImage("http://"+image);
+                    hasImage=true;
+                }else{
+                    logger.warn(fName+"channel not nsfw");
+                    embed.setDescription("**Attention** The NSFW image can only be displayed in NSFW channels!");
                 }
                 //embed.addField("Important","Report it if it violates rules 2 our staff!",false);
-                Message message=llSendMessageResponse(gTextChannel,embed);
-                if(jsonItems.length()>1){
-                    if(index!=0){message.addReaction(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasLastTrackButton)).queue();}
-                    if(index>0){message.addReaction(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasReverseButton)).queue();}
-                    message.addReaction(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasDownwardsButton)).queue();
-                    if(index<jsonItems.length()-1){message.addReaction(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasPlayButton)).queue();}
-                    if(index!=jsonItems.length()-1){message.addReaction(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasNextTrackButton)).queue();}
-                    message.addReaction(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasCrossMark)).queue();
-                    int finalIndex = index;
-                    logger.info(fName+"prepare wait");
-                    gWaiter.waitForEvent(GuildMessageReactionAddEvent.class,
+                Message message=null;
+                if(gSlashCommandEvent==null){
+                    message=llSendMessageResponse(gTextChannel,embed);
+                    if(index!=0){lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasLastTrackButton));}
+                    if(index>0){lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasReverseButton));}
+                    if(hasImage)lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasDownwardsButton));
+                    if(index<galleryImages.length()-1){lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasPlayButton));}
+                    if(index!=galleryImages.length()-1){lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasNextTrackButton));}
+                    lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasMag));
+                    lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasPassportControl));
+                    lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasCrossMark));
+                }else{
+                    messageComponentManager.loadMessageComponents(gCommandFileMainPath);
+                    try {
+                        logger.info(fName+"component_before="+messageComponentManager.messageBuildComponents.getJson());
+                        lcMessageBuildComponent componentNavigator=messageComponentManager.messageBuildComponents.getComponent(0);
+                        lcMessageBuildComponent.Button buttonNavFirst=componentNavigator.getButtonAt4(0);
+                        lcMessageBuildComponent.Button buttonNavBack=componentNavigator.getButtonAt4(1);
+                        lcMessageBuildComponent.Button buttonNavNext=componentNavigator.getButtonAt4(2);
+                        lcMessageBuildComponent.Button buttonNavLast=componentNavigator.getButtonAt4(3);
+                        lcMessageBuildComponent componentOption=messageComponentManager.messageBuildComponents.getComponent(1);
+                        lcMessageBuildComponent.Button buttonPost=componentOption.getButtonAt4(0);
+                        if(index<=1)buttonNavFirst.setDisable();
+                        if(index==0)buttonNavBack.setDisable();
+                        if(!hasImage)buttonPost.setDisable();
+                        if(index>=galleryImages.length()-1)buttonNavNext.setDisable();
+                        if(index>=galleryImages.length()-2)buttonNavLast.setDisable();
+                        logger.info(fName+"component_after="+messageComponentManager.messageBuildComponents.getJson());
+                        List<ActionRow> actionrow=messageComponentManager.messageBuildComponents.getAsActionRows();
+                        messageHelper.clear().setEmbed(embed.build()).setInteractionHook(gCurrentInteractionHook).setPrivateChannel(gUser);
+                        if(actionrow!=null&&!actionrow.isEmpty()){
+                            logger.info(fName+"has action ");
+                            messageHelper.setActionRows(actionrow);
+                        }
+                        if(gCurrentInteractionHook==null)message=messageHelper.send();
+                        else message=messageHelper.editOriginalInteractionHookOrBackupSend();
+                    }catch (Exception e3){
+                        logger.error(fName + ".exception=" + e3);
+                        logger.error(fName + ".exception:" + Arrays.toString(e3.getStackTrace()));
+                        messageHelper.clear().setEmbed(embed.build()).setInteractionHook(gCurrentInteractionHook).setPrivateChannel(gUser);
+                        if(gCurrentInteractionHook==null)message=messageHelper.send();
+                        else message=messageHelper.editOriginalInteractionHookOrBackupSend();
+                    }
+                }
+                displayImageListener(message);
+
+            } catch (Exception e) {
+                logger.error(fName+".exception=" + e);
+                logger.error(cName +fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
+
+            }
+        }
+        private void displayImageListener(Message message){
+            String fName="[displayImageListener]";
+            logger.info(fName);
+            try{
+                gGlobal.waiter.waitForEvent(ButtonClickEvent.class,
+                        e -> (e.getMessageIdLong()==message.getIdLong()),
+                        e -> {
+                            if(gCurrentInteractionHook!=null){
+                                gComponentInteractionHook=lsMessageHelper.lsDeferReply(e,true);
+                            }
+                            try {
+                                String id=e.getButton().getId();
+                                logger.warn(fName+"id="+id);
+                                switch (id){
+                                    case lsUnicodeEmotes.aliasReverseButton:
+                                        if(selectedIndex>0){
+                                            selectedIndex--;
+                                            if(gCurrentInteractionHook!=null) {
+                                                messageHelper.clear().clearActionRows().setEmbed(lsMessageHelper.lsGenerateEmbed(gTitle,"Going back",llColorPurple2).build()).setInteractionHook(gCurrentInteractionHook).setActionRowsClearFlag(true).editOriginalInteractionHook();
+                                                gCurrentInteractionHook=gComponentInteractionHook;
+                                            }
+                                            displayImage();
+                                        }
+                                        break;
+                                    case lsUnicodeEmotes.aliasPlayButton:
+                                        if((selectedIndex+1)<galleryImages.length()) {
+                                            selectedIndex++;
+                                            if(gCurrentInteractionHook!=null) {
+                                                messageHelper.clear().clearActionRows().setEmbed(lsMessageHelper.lsGenerateEmbed(gTitle,"Going next",llColorPurple2).build()).setInteractionHook(gCurrentInteractionHook).setActionRowsClearFlag(true).editOriginalInteractionHook();
+                                                gCurrentInteractionHook=gComponentInteractionHook;
+                                            }
+                                            displayImage();
+                                        }
+                                        break;
+                                    case lsUnicodeEmotes.aliasLastTrackButton:
+                                        selectedIndex=0;
+                                        if(gCurrentInteractionHook!=null) {
+                                            messageHelper.clear().clearActionRows().setEmbed(lsMessageHelper.lsGenerateEmbed(gTitle,"Going to first",llColorPurple2).build()).setInteractionHook(gCurrentInteractionHook).setActionRowsClearFlag(true).editOriginalInteractionHook();
+                                            gCurrentInteractionHook=gComponentInteractionHook;
+                                        }
+                                        displayImage();
+                                    break;
+                                    case lsUnicodeEmotes.aliasNextTrackButton:
+                                        selectedIndex=galleryImages.length()-1;
+                                        if(gCurrentInteractionHook!=null) {
+                                            messageHelper.clear().clearActionRows().setEmbed(lsMessageHelper.lsGenerateEmbed(gTitle,"Going to last",llColorPurple2).build()).setInteractionHook(gCurrentInteractionHook).setActionRowsClearFlag(true).editOriginalInteractionHook();
+                                            gCurrentInteractionHook=gComponentInteractionHook;
+                                        }
+                                        displayImage();
+                                        break;
+                                    case lsUnicodeEmotes.aliasMag:
+                                        if(gCurrentInteractionHook!=null) {
+                                            messageHelper.clear().clearActionRows().setEmbed(lsMessageHelper.lsGenerateEmbed(gTitle,"More from artist",llColorPurple2).build()).setInteractionHook(gCurrentInteractionHook).setActionRowsClearFlag(true).editOriginalInteractionHook();
+                                            gCurrentInteractionHook=gComponentInteractionHook;
+                                        }
+                                        doUserGallery(galleryImages.getImage(selectedIndex).getUserAsString(),"1");
+                                        break;
+                                    case lsUnicodeEmotes.aliasDownwardsButton:
+                                        if(gCurrentInteractionHook!=null) {
+                                            messageHelper.clear().clearActionRows().setEmbed(lsMessageHelper.lsGenerateEmbed(gTitle,"Postsing to everyone",llColorPurple2).build()).setInteractionHook(gCurrentInteractionHook).setActionRowsClearFlag(true).editOriginalInteractionHook();
+                                            gCurrentInteractionHook=gComponentInteractionHook;
+                                        }
+                                        postImage();
+                                        break;
+                                }
+
+                            }catch (Exception e3){
+                                logger.error(fName + ".exception=" + e3);
+                                logger.error(fName + ".exception:" + Arrays.toString(e3.getStackTrace()));
+                                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e3.toString());
+                                llMessageDelete(message);
+                            }
+                        },  5, TimeUnit.MINUTES, () -> logger.info(fName+ lsGlobalHelper.timeout_button));
+                if(message.isFromGuild()){
+                    gGlobal.waiter.waitForEvent(GuildMessageReactionAddEvent.class,
                             e -> (e.getMessageId().equalsIgnoreCase(message.getId())&&e.getUserId().equalsIgnoreCase(gUser.getId())),
                             e -> {
                                 try {
@@ -1126,10 +1301,9 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
                                     if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasReverseButton))){
                                         logger.info(fName+"do=back");
                                         llMessageDelete(e.getChannel(),e.getMessageId());
-                                        if((finalIndex-1)>=0){
-                                            selectedItem=jsonItems.getJSONObject(finalIndex-1);
-                                            selectedItem.put(keyIndex,finalIndex-1);
-                                            reactionMenu();
+                                        if(selectedIndex>0){
+                                            selectedIndex--;
+                                            displayImage();
                                         }
                                     }else
                                     if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasDownwardsButton))){
@@ -1139,25 +1313,32 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
                                     if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasPlayButton))){
                                         logger.info(fName+"do=next");
                                         llMessageDelete(e.getChannel(),e.getMessageId());
-                                        if((finalIndex+1)<jsonItems.length()) {
-                                            selectedItem = jsonItems.getJSONObject(finalIndex + 1);
-                                            selectedItem.put(keyIndex, finalIndex + 1);
-                                            reactionMenu();
+                                        if((selectedIndex+1)<galleryImages.length()) {
+                                            selectedIndex++;
+                                            displayImage();
                                         }
                                     }else
                                     if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasLastTrackButton))){
                                         logger.info(fName+"do=first");
                                         llMessageDelete(e.getChannel(),e.getMessageId());
-                                        selectedItem = jsonItems.getJSONObject(0);
-                                        selectedItem.put(keyIndex,0);
-                                        reactionMenu();
+                                        selectedIndex=0;
+                                        displayImage();
                                     }else
                                     if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasNextTrackButton))){
                                         logger.info(fName+"do=last");
                                         llMessageDelete(e.getChannel(),e.getMessageId());
-                                        selectedItem = jsonItems.getJSONObject(jsonItems.length()-1);
-                                        selectedItem.put(keyIndex,jsonItems.length()-1);
-                                        reactionMenu();
+                                        selectedIndex=galleryImages.length()-1;
+                                        displayImage();
+                                    }else
+                                    if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasMag))){
+                                        logger.info(fName+"do=last");
+                                        llMessageDelete(e.getChannel(),e.getMessageId());
+                                        doUserGallery(galleryImages.getImage(selectedIndex).getUserAsString(),"1");
+                                    }else
+                                    if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasPassportControl))){
+                                        logger.info(fName+"do=last");
+                                        llMessageDelete(e.getChannel(),e.getMessageId());
+                                        getUserPage(galleryImages.getImage(selectedIndex).getUserAsString());
                                     }else
                                     if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasCrossMark))){
                                         logger.info(fName+"do=delete");
@@ -1172,11 +1353,78 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
                                     lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e3.toString());
                                     llMessageDelete(message);
                                 }
-                            },1, TimeUnit.MINUTES, () -> {
+                            },5, TimeUnit.MINUTES, () -> {
                                 llMessageDelete(message);
                             });
-                    logger.info(fName+"wait created");
+                }else{
+                    gGlobal.waiter.waitForEvent(PrivateMessageReactionAddEvent.class,
+                            e -> (e.getMessageId().equalsIgnoreCase(message.getId())&&e.getUserId().equalsIgnoreCase(gUser.getId())),
+                            e -> {
+                                try {
+                                    String nameCode=e.getReactionEmote().getName();
+                                    logger.info(fName+"nameCode="+nameCode);
+                                    if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasReverseButton))){
+                                        logger.info(fName+"do=back");
+                                        llMessageDelete(e.getChannel(),e.getMessageId());
+                                        if(selectedIndex>0){
+                                            selectedIndex--;
+                                            displayImage();
+                                        }
+                                    }else
+                                    if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasDownwardsButton))){
+                                        logger.info(fName+"do=print");
+                                        llMessageDelete(e.getChannel(),e.getMessageId());
+                                        postImage();
+                                    }else
+                                    if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasPlayButton))){
+                                        logger.info(fName+"do=next");
+                                        llMessageDelete(e.getChannel(),e.getMessageId());
+                                        if((selectedIndex+1)<galleryImages.length()) {
+                                            selectedIndex++;
+                                            displayImage();
+                                        }
+                                    }else
+                                    if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasLastTrackButton))){
+                                        logger.info(fName+"do=first");
+                                        llMessageDelete(e.getChannel(),e.getMessageId());
+                                        selectedIndex=0;
+                                        displayImage();
+                                    }else
+                                    if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasNextTrackButton))){
+                                        logger.info(fName+"do=last");
+                                        llMessageDelete(e.getChannel(),e.getMessageId());
+                                        selectedIndex=galleryImages.length()-1;
+                                        displayImage();
+                                    }else
+                                    if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasMag))){
+                                        logger.info(fName+"do=last");
+                                        llMessageDelete(e.getChannel(),e.getMessageId());
+                                        doUserGallery(galleryImages.getImage(selectedIndex).getUserAsString(),"1");
+                                    }else
+                                    if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasPassportControl))){
+                                        logger.info(fName+"do=last");
+                                        llMessageDelete(e.getChannel(),e.getMessageId());
+                                        getUserPage(galleryImages.getImage(selectedIndex).getUserAsString());
+                                    }else
+                                    if(nameCode.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasCrossMark))){
+                                        logger.info(fName+"do=delete");
+                                        llMessageDelete(e.getChannel(),e.getMessageId());
+                                    }else{
+                                        logger.info(fName+"do=invalid");
+                                        llMessageDelete(e.getChannel(),e.getMessageId());
+                                    }
+                                }catch (Exception e3){
+                                    logger.error(fName + ".exception=" + e3);
+                                    logger.error(fName + ".exception:" + Arrays.toString(e3.getStackTrace()));
+                                    lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e3.toString());
+                                    llMessageDelete(message);
+                                }
+                            },5, TimeUnit.MINUTES, () -> {
+                                llMessageDelete(message);
+                            });
                 }
+
+                 logger.info(fName+"wait created");
             } catch (Exception e) {
                 logger.error(fName+".exception=" + e);
                 logger.error(cName +fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -1250,19 +1498,18 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
                 logger.info(fName+"message="+message);
                 logger.info(fName+"page="+page);
                 if(Integer.parseInt(page)>1){
-                    getHtmlGalleryUser(message,Integer.parseInt(page));
+                    galleryImages=furaffinity.getGalleryUser(message,Integer.parseInt(page));
                 }else{
-                    getHtmlGalleryUser(message,0);
+                    galleryImages=furaffinity.getGalleryUser(message,0);
                 }
-                if(jsonItems.isEmpty()){
+                if(galleryImages.isEmpty()){
                     llSendQuickEmbedMessage(gTextChannel,gTitle,"Nothing found!", llColorRed);
                 }
                 int i=0;
-                logger.info(fName+"jsonItems.length="+jsonItems.length());
-                if(jsonItems.length()>1){i=getRandomSlot(jsonItems.length());}
-                selectedItem=jsonItems.getJSONObject(i);
-                selectedItem.put(keyIndex,i);
-                reactionMenu();
+                logger.info(fName+"jsonItems.length="+galleryImages.length());
+                if(galleryImages.length()>1){i=getRandomSlot(galleryImages.length());}
+                selectedIndex=i;
+                displayImage();
             } catch (Exception e) {
                 logger.error(fName+".exception=" + e);
                 logger.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -1271,114 +1518,23 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
             }
 
         }
-        private void getHtmlGalleryUser(String name,int page) {
-            String fName = "[getGallerySearch]";
-            try {
-                logger.info(fName+".name ="+name);
-                logger.info(fName+".page ="+page);
-                HttpResponse<String>stringHttpResponse=furaffinity.reqGetUserGallery(name,page);
-                if(stringHttpResponse.getStatus()>299){
-                    logger.error(fName+".invalid status");
-                    llSendQuickEmbedMessage(gTextChannel,gTitle,"Invalid status!",llColorRed);return ;
-                }
-                String body=stringHttpResponse.getBody();
-                //logger.info(fName+".body ="+body);
-                String text="", textShadow="";
-                int itemsI=-1,itemsJ=-1;
-                if(body.contains("gallery-gallery")){
-                    logger.info(fName+".found="+"gallery-gallery");
-                    itemsI=body.indexOf("gallery-gallery");
-                    textShadow=body.substring(itemsI);
-                    itemsJ=textShadow.indexOf("/section");
-                    if(itemsI>0&&itemsJ>0){
-                        text=textShadow.substring(0,itemsJ-1);
-                    }
-                }
-                text=text.replaceAll("</figure><!--","").replaceAll("-->","").replaceFirst("<figure","");
-                logger.info(fName+".gallery-gallery ="+text);
-                String [] items = text.split("<figure");
-                jsonItems=new JSONArray();
-                for(String item : items){
-                    JSONObject jsonObject=convertText2JSONItem(item);
-                    if(jsonObject.getString(keyItemType).equalsIgnoreCase("image")){
-                        jsonItems.put(jsonObject);
-                    }
-                }
 
-            } catch (Exception e) {
-                logger.error(fName+"exception:"+e);
-                logger.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-                llSendQuickEmbedMessage(gTextChannel,gTitle,"Error!",llColorRed);return ;
-            }
-        }
 
         private void getUserPage(String name) {
             String fName = "[getUserPage]";
             try {
                 logger.info(fName+".name ="+name);
-                Unirest a= new Unirest();
                 String url=gUrlUser.replaceAll("%",name);
                 logger.info(fName+".url ="+url);
-                HttpResponse<String>stringHttpResponse=furaffinity.reqGetUserProfile(name);
-                logger.info(fName+".status ="+stringHttpResponse.getStatus());
-                if(stringHttpResponse.getStatus()>299){
+                lcFURAFFINITY.USER user=furaffinity.getUserProfile(name);
+                if(user.getStatus()>299){
                     logger.error(fName+".invalid status"); return ;
                 }
                 EmbedBuilder embedBuilder=new EmbedBuilder();
                 embedBuilder.addField("User",name,false);
-                String body=stringHttpResponse.getBody();
-                logger.info(fName+".body ="+body);
-                String textShadow="";
-                int itemsI=-1,itemsJ=-1,l;
-                String begin="";
-
-                String image="";
-                begin="img class=\"user-nav-avatar";
-                if(body.contains(begin)){
-                    logger.info(fName+".found:"+ begin);
-                    itemsI=body.indexOf(begin);
-                    l=begin.length();
-                    textShadow=body.substring(itemsI);
-                    itemsJ=textShadow.indexOf("\">");
-                    begin="src=\"//";
-                    if( textShadow.contains(begin)){
-                        logger.info(fName+".found:"+ begin);
-                        itemsI= textShadow.indexOf(begin);
-                        l=begin.length();
-                        textShadow= textShadow.substring(itemsI+l);
-                        itemsJ=textShadow.indexOf("\"");
-                        if(itemsI>0&&itemsJ>0) {
-                            image="https://"+textShadow.substring(0, itemsJ);
-                            logger.info(fName+"imageGot="+image);
-                            embedBuilder.setThumbnail(image);
-                        }
-                    }
-                }
-
-                String member="";
-                begin="div id=\"user-profile";
-                if(body.contains(begin)){
-                    logger.info(fName+".found:"+ begin);
-                    itemsI=body.indexOf(begin);
-                    l=begin.length();
-                    textShadow=body.substring(itemsI);
-                    //itemsJ=textShadow.indexOf(">");
-                    begin="title=\"";
-                    if( textShadow.contains(begin)){
-                        logger.info(fName+".found:"+ begin);
-                        itemsI= textShadow.indexOf(begin);
-                        l=begin.length();
-                        textShadow= textShadow.substring(itemsI+l);
-                        itemsJ=textShadow.indexOf("\"");
-                        if(itemsI>0&&itemsJ>0) {
-                            member=textShadow.substring(0, itemsJ);
-                            logger.info(fName+"member="+member);
-                            member=member.replace("Account status: ","");
-                            embedBuilder.addField("Account status",member,false);
-                        }
-                    }
-                }
-                String links="[Profile](https://www.furaffinity.net/user/%/)\n[Gallery](https://www.furaffinity.net/gallery/%/)\n[Scraps](https://www.furaffinity.net/scraps/%/)\n[Favorites](https://www.furaffinity.net/favorites/%/)\n[Journals](https://www.furaffinity.net/journals/%/)";
+                if(user.getImage()!=null&&!user.getImage().isBlank()) embedBuilder.setThumbnail(user.getImage());
+                //if(user.getAccountStatus()!=null&&!user.getAccountStatus().isBlank())embedBuilder.addField("Account status",user.getAccountStatus(),false);
+                String links="[Profile](https://www.furaffinity.net/user/%/) [Gallery](https://www.furaffinity.net/gallery/%/) [Scraps](https://www.furaffinity.net/scraps/%/) [Favorites](https://www.furaffinity.net/favorites/%/) [Journals](https://www.furaffinity.net/journals/%/)";
                 embedBuilder.addField("Links",links.replaceAll("%",name),false);
                 embedBuilder.setColor(llColorBlue3);
                 logger.info(fName+".post message");
@@ -1424,6 +1580,100 @@ public class furaffinity extends Command implements llMessageHelper, llGlobalHel
                 lsMessageHelper.lsSendMessageWithDeleteAndAutoDelete(gGlobal,gTextChannel," I sent you a list of commands in DMs");
             }else{
                 lsMessageHelper.lsSendMessageStatus(gTextChannel,embedBuilder);
+            }
+        }
+
+        lcSendMessageHelper messageHelper=new lcSendMessageHelper();
+        public InteractionHook gCurrentInteractionHook,gComponentInteractionHook;//slash and button interaction hook
+        public lcSharedMessageComponentManager messageComponentManager=new lcSharedMessageComponentManager(); //class to help managing components for message, loads the components from json file
+        String gCommandFileMainPath ="resources/json/search/imagegallerynavigator.json";
+        public void slash() {
+            String fName="[slash]";
+            logger.info(".start");
+            try{
+                gCurrentInteractionHook=lsMessageHelper.lsDeferReply(gSlashCommandEvent,true);
+                String subcommand=gSlashCommandEvent.getSubcommandName(), subcommandGroup=gSlashCommandEvent.getSubcommandGroup();
+                messageHelper.setTextChannel(gTextChannel).setInteractionHook(gCurrentInteractionHook);
+                boolean optionImageProv=false;String optionImageValue="";
+                boolean optionAuthorProv=false;String optionAuthorValue="";
+                boolean optionGeneralProv=false,optionGeneralValue=false;
+                boolean optionMatureProv=false,optionMatureValue=false;
+                boolean optionAdultProv=false,optionAdultValue=false;
+                for(OptionMapping option:gSlashCommandEvent.getOptions()){
+                    switch (option.getName()){
+                        case "image":
+                            optionImageProv=true;optionImageValue=option.getAsString();
+                            break;
+                        case "author":
+                            optionAuthorProv=true;optionAuthorValue=option.getAsString();
+                            break;
+                        case "general":
+                            optionGeneralProv=true;optionGeneralValue=option.getAsBoolean();
+                            break;
+                        case "mature":
+                            optionMatureProv=true;optionMatureValue=option.getAsBoolean();
+                            break;
+                        case "adult":
+                            optionAdultProv=true;optionAdultValue=option.getAsBoolean();
+                            break;
+                    }
+                }
+                if(subcommandGroup==null)subcommandGroup="";
+                if(subcommand==null)subcommand="";
+                logger.info(fName+"subcommandGroup="+subcommandGroup+", subcommand="+subcommand);
+                if(optionImageProv&&optionAuthorProv){
+                    messageHelper.setEmbed(lsMessageHelper.lsGenerateEmbed(gTitle,"Can only have image or author, not both!", llColorRed).build()).send();
+                }
+                else if(optionImageProv){
+                    options=new JSONObject();
+                    logger.info(fName + "optionImageValue=" + optionImageValue);
+                    options.put(keyQ,optionImageValue);
+                    //options.put(keyRatingAdult,valueOn);options.put(keyRatingMature,valueOn);options.put(keyRatingGeneral,valueOn);
+                    options.put(keyPage, valueFirstPage);
+                    options.put(keyResetPage, valueDefaultResetPage);
+                    options.put(keyRange, valueRangeAll);
+                    options.put(keyOne, valueFirstOne);
+                    options.put(keyMode, valueModeExtended);
+                    options.put(keyTypeArt, valueOn);
+                    options.put(keyDoSearch, valueDoSearch);
+                    options.put(keyOrderBy, valueOrderByPopularity);
+                    options.put(keyOrderDirection, valueDesc);
+                    if(optionGeneralProv||optionMatureProv||optionAdultProv){
+                        if (optionGeneralProv&&optionGeneralValue) {
+                            options.put(keyRatingGeneral, valueOn);
+                        }
+                        if (optionMatureProv&&optionMatureValue) {
+                            options.put(keyRatingMature, valueOn);
+                        }
+                        if (optionAdultProv&&optionAdultValue) {
+                            options.put(keyRatingAdult, valueOn);
+                        }
+                    }else{
+                        if(gTextChannel.isNSFW()){
+                            options.put(keyRatingMature, valueOn);options.put(keyRatingAdult, valueOn);
+                        }else{
+                            options.put(keyRatingGeneral, valueOn);
+                        }
+                    }
+                    galleryImages=furaffinity.getGallerySearch(options);
+                    if(galleryImages.isEmpty()){
+                        messageHelper.setEmbed(lsMessageHelper.lsGenerateEmbed(gTitle,"Nothing found!", llColorRed).build()).send();
+                        return;
+                    }
+                    int i=0;
+                    logger.info(fName+"galleryImages.length="+galleryImages.length());
+                    if(galleryImages.length()>1){i=getRandomSlot(galleryImages.length());}
+                    selectedIndex=i;
+                    displayImage();
+                }else if(optionAuthorProv){
+                    messageHelper.setEmbed(lsMessageHelper.lsGenerateEmbed(gTitle,"Not implemented!", llColorRed).build()).send();
+                }else{
+                    messageHelper.setEmbed(lsMessageHelper.lsGenerateEmbed(gTitle,"Invalid option!", llColorRed).build()).send();
+                }
+            }catch (Exception e){
+                logger.error(fName + ".exception=" + e);
+                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel, gUser,gTitle, e.toString());
             }
         }
     }
