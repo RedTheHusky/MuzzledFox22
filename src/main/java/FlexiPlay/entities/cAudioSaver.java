@@ -1,4 +1,4 @@
-package FlexiPlay;
+package FlexiPlay.entities;
 
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
@@ -11,6 +11,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class cAudioSaver implements AudioReceiveHandler {
     Logger logger = Logger.getLogger(getClass());
@@ -35,7 +36,7 @@ public class cAudioSaver implements AudioReceiveHandler {
         double volume = 1.0D;
         saveQueue.add(combinedAudio.getAudioData(volume));
 
-        System.out.println("ADDED!");
+
     }
 
     @Override
@@ -60,7 +61,7 @@ public class cAudioSaver implements AudioReceiveHandler {
             AudioInputStream stream = new AudioInputStream(b_in, AudioReceiveHandler.OUTPUT_FORMAT,
                     finalizedArr.length);
             AudioSystem.write(stream, AudioFileFormat.Type.WAVE, file);
-            System.out.println("File saved: " + file.getName() + ", bytes: "
+            logger.info("File saved: " + file.getName() + ", bytes: "
                     + finalizedArr.length);
             return file;
         } catch (Exception e) {
@@ -86,11 +87,11 @@ public class cAudioSaver implements AudioReceiveHandler {
             AudioInputStream stream = new AudioInputStream(b_in, AudioReceiveHandler.OUTPUT_FORMAT,
                     finalizedArr.length);
             AudioSystem.write(stream, AudioFileFormat.Type.WAVE, file);
-            System.out.println("File saved: " + file.getName() + ", bytes: "
+            logger.info("File saved: " + file.getName() + ", bytes: "
                     + finalizedArr.length);
             return file;
         } catch (Exception e) {
-            //FlexiUtils.logger.error("Exception: " + e);
+            logger.error(".exception=" + e+"\nStackTrace: "+ Arrays.toString(e.getStackTrace()));
         }
         return null;
     }
@@ -112,11 +113,11 @@ public class cAudioSaver implements AudioReceiveHandler {
             AudioInputStream stream = new AudioInputStream(b_in, AudioReceiveHandler.OUTPUT_FORMAT,
                     finalizedArr.length);
             AudioSystem.write(stream, type, file);
-            System.out.println("File saved: " + file.getName() + ", bytes: "
+            logger.info("File saved: " + file.getName() + ", bytes: "
                     + finalizedArr.length);
             return file;
         } catch (Exception e) {
-            //FlexiUtils.logger.error("Exception: " + e);
+            logger.error(".exception=" + e+"\nStackTrace: "+ Arrays.toString(e.getStackTrace()));
         }
         return null;
     }

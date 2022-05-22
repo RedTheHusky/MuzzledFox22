@@ -18,26 +18,24 @@ import java.util.Arrays;
 public class expressOAuth {
     Logger logger = Logger.getLogger(getClass());
     lcGlobalHelper gGlobal;
-    jeAuth auth=null;
+
     public expressOAuth(lcGlobalHelper global, boolean start) {
         gGlobal=global;
         if(start)start();
     }
 
 
-    DiscordOAuth oauthHandler,oauthHandler2;
-    String clientID="389512707973316608";
-    String clientSecret="WKXr7Ub1yzDDK3KVg7M5oXkedyAqX3Jt";
-    String redirectUri="http://localhost:8789/ouath/validate";
-    String redirectUriPHP="http://localhost/Discord/Dasboard/backend/login";
-    public String scope[]={"identify","guilds"};
+    DiscordOAuth oauthHandler;
+
+
+    public String[] scope ={"identify","guilds"};
 
     public void start() {
         String fName="[start]";
         try {
             logger.info(fName+"init");
-            oauthHandler = new DiscordOAuth(clientID, clientSecret, redirectUri, scope);
-            oauthHandler2 = new DiscordOAuth(clientID, clientSecret, redirectUriPHP, scope);
+            oauthHandler = new DiscordOAuth(gGlobal.configfile.getBot().getId(), gGlobal.configfile.getBot().getClientSecret(), gGlobal.configfile.getBot().getRedirectUrl(), scope);
+
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -65,7 +63,7 @@ public class expressOAuth {
         String fName="[authorizingCode]";
         try {
             logger.info(fName+"code="+code);
-            TokensResponse tokens=null;String accessToken="",refreshToken="";
+            TokensResponse tokens;String accessToken="",refreshToken="";
             try {
                 tokens = oauthHandler.getTokens(code);
                 accessToken = tokens.getAccessToken();
@@ -119,7 +117,7 @@ public class expressOAuth {
     public void getUrl(Request req, Response res) {
         String fName="[getUrl]";
         try {
-            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler2,req,res,"getUrl");
+            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler,req,res,"getUrl");
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -130,7 +128,7 @@ public class expressOAuth {
     public void getToken(Request req, Response res) {
         String fName="[getToken]";
         try {
-            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler2,req,res,"getToken");
+            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler,req,res,"getToken");
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -141,7 +139,7 @@ public class expressOAuth {
     public void getRefresh(Request req, Response res) {
         String fName="[getRefresh]";
         try {
-            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler2,req,res,"getRefresh");
+            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler,req,res,"getRefresh");
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -152,7 +150,7 @@ public class expressOAuth {
     public void getUser(Request req, Response res) {
         String fName="[getUser]";
         try {
-            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler2,req,res,"getUser");
+            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler,req,res,"getUser");
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -163,7 +161,7 @@ public class expressOAuth {
     public void getGuilds(Request req, Response res) {
         String fName="[getGuilds]";
         try {
-            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler2,req,res,"getGuilds");
+            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler,req,res,"getGuilds");
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -185,7 +183,7 @@ public class expressOAuth {
     public void postAuthLogin(Request req, Response res) {
         String fName="[postAuthLogin]";
         try {
-            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler2,req,res,"postAuthLogin");
+            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler,req,res,"postAuthLogin");
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -198,7 +196,7 @@ public class expressOAuth {
     public void getAuthResume(Request req, Response res) {
         String fName="[authResume]";
         try {
-            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler2,req,res,"getAuthResume");
+            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler,req,res,"getAuthResume");
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -212,7 +210,7 @@ public class expressOAuth {
     public void getAuthLogOut(Request req, Response res) {
         String fName="[authLogOut]";
         try {
-            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler2,req,res,"getAuthLogOut");
+            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler,req,res,"getAuthLogOut");
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
@@ -225,7 +223,7 @@ public class expressOAuth {
     public void getGuildsUserIsPresent4Bot(Request req, Response res) {
         String fName="[getGuildsUserIsPresent4Bot]";
         try {
-            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler2,req,res,"getGuildsUserIsPresent4Bot");
+            new expresschildOAuth(gGlobal,oauthHandler,oauthHandler,req,res,"getGuildsUserIsPresent4Bot");
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));

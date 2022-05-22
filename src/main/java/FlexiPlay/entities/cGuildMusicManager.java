@@ -1,4 +1,4 @@
-package FlexiPlay;
+package FlexiPlay.entities;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
