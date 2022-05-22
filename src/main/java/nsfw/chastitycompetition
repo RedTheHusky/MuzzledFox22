@@ -1,4 +1,0 @@
-keyHygieneOpeningStatus | -1 unlock, 1 lock
-keyHygieneOpeningVerified | -1 reject, 1 approve
-keyHygieneOpeningMode | 0 notified, 1 ask, -1 denied
-keySissygasmasResponse | -1 reject, 1 approve

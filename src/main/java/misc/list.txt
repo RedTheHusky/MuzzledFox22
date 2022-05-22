@@ -1,3 +1,0 @@
-
-emote	N/A	furemote [emoticon]
-poll	N/A	furpoll Is it time for dinner yet?
