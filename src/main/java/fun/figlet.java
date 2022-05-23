@@ -7,6 +7,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import io.leego.banana.BananaUtils;
 import io.leego.banana.Font;
+import models.la.aBasicCommandHandler;
 import models.lc.json.profile.lcJSONUserProfile;
 import models.lc.lcBasicFeatureControl;
 import models.lcGlobalHelper;
@@ -51,23 +52,12 @@ public class figlet extends Command implements llGlobalHelper{
         Runnable r = new runLocal(event);
         new Thread(r).start();
     }
-    protected class runLocal implements Runnable {
-        CommandEvent gEvent;String cName = "[runLocal]";
-        User gUser;Member gMember;
-        Guild gGuild;TextChannel gTextChannel;
-        Message gMessage;
+    protected class runLocal extends aBasicCommandHandler implements Runnable {
+        String cName = "[runLocal]";
         public runLocal(CommandEvent ev) {
             String fName="runLocal";
             logger.info(cName + ".run build");
-            gEvent = ev;
-            gUser = gEvent.getAuthor();gMember=gEvent.getMember();
-            gGuild = gEvent.getGuild();
-            logger.info(cName + fName + ".gUser:" + gUser.getId() + "|" + gUser.getName());
-            logger.info(cName + fName + ".gGuild:" + gGuild.getId() + "|" + gGuild.getName());
-            gTextChannel = gEvent.getTextChannel();
-            logger.info(cName + fName + ".gTextChannel:" + gTextChannel.getId() + "|" + gTextChannel.getName());
-            gMessage=gEvent.getMessage();
-
+            setCommandHandlerValues(logger,ev);
         }
 
         @Override
@@ -75,11 +65,8 @@ public class figlet extends Command implements llGlobalHelper{
             String fName = "[run]";
             logger.info(cName + ".run start");
             try {
-                gBasicFeatureControl=new lcBasicFeatureControl(gGuild,"figlet",gGlobal);
-                gBasicFeatureControl.initProfile();
-                String[] items;
-                boolean isInvalidCommand=true;
-
+                buildBasicFeatureControl(gGlobal,logger,"figlet",gEvent);
+                setString4BasicFeatureControl(gTitle,gCommand);
                 if(gEvent.getArgs().isEmpty()){
                     logger.info(cName+fName+".Args=0");
                     help("main"); isInvalidCommand=false;
@@ -89,80 +76,14 @@ public class figlet extends Command implements llGlobalHelper{
                     items = gEvent.getArgs().split("\\s+");
                     logger.info(cName + fName + ".items.size=" + items.length);
                     logger.info(cName + fName + ".items[0]=" + items[0]);
-                    if(items[0].equalsIgnoreCase("guild")||items[0].equalsIgnoreCase("server")){
-                        if(items.length>2){
-                            // allowchannels/blockchannels/ allowroles/blockroles list|add|rem|set|clear
-                            int group=0,type=0,action=0;
-                            switch (items[1].toLowerCase()){
-                                case "allowedchannels":
-                                case "allowchannels":
-                                    group=1;type=1;
-                                    break;
-                                case "blockedchannels":
-                                case "blockchannels":
-                                    group=1;type=-1;
-                                    break;
-                                case "allowedroles":
-                                case "allowroles":
-                                    group=2;type=1;
-                                    break;
-                                case "blockedroles":
-                                case "blockroles":
-                                    group=2;type=-1;
-                                    break;
-                            }
-                            switch (items[2].toLowerCase()){
-                                case "list":
-                                    action=0;
-                                    break;
-                                case "add":
-                                    action=1;
-                                    break;
-                                case "set":
-                                    action=2;
-                                    break;
-                                case "rem":
-                                    action=-1;
-                                    break;
-                                case "clear":
-                                    action=-2;
-                                    break;
-                            }
-                            if(group==1){
-                                if(action==0){
-                                    getChannels(type,false);isInvalidCommand=false;
-                                }else{
-                                    setChannel(type,action,gEvent.getMessage());
-                                }
-                            }
-                            else if(group==2){
-                                if(action==0){
-                                    getRoles(type,false);isInvalidCommand=false;
-                                }else{
-                                    setRole(type,action,gEvent.getMessage());
-                                }
-                            }
-                        }else{
-                            menuGuild();isInvalidCommand=false;
-                        }
+                    if(items[0].equalsIgnoreCase("help")){
+                        help("main");isInvalidCommand=false;
                     }
-                    else if(items[0].equalsIgnoreCase("help")){
-                        help("main"); isInvalidCommand=false;
-                    }
-                    else if(!gBasicFeatureControl.getEnable()){
-                        logger.info(fName+"its disabled");
-                        lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"It's disabled in "+gGuild.getName()+"!", lsMessageHelper.llColorRed_Cardinal);
-                        isInvalidCommand=false;
-                    }
-                    else if(!gBasicFeatureControl.isChannelAllowed(gTextChannel)){
-                        logger.info(fName+"its not allowed by channel");
-                        lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"It's not allowed in channel "+gTextChannel.getAsMention()+"!", lsMessageHelper.llColorRed_Cardinal);
-                        isInvalidCommand=false;
-                    }
-                    else if(!gBasicFeatureControl.isRoleAllowed(gMember)){
-                        logger.info(fName+"its not allowed by roles");
-                        lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"It's not allowed as you roles prevent it!", lsMessageHelper.llColorRed_Cardinal);
-                        isInvalidCommand=false;
+                    else if(ifItsAnAccessControlCommand()){
+                        logger.info(fName+"its an AccessControlCommand");
+                    }else
+                    if(!checkIfMemberIsAllowed()){
+                        logger.info(fName+"not allowed");
                     }
                     else if(items[0].equalsIgnoreCase("unset")){
                         unset();
@@ -216,7 +137,7 @@ public class figlet extends Command implements llGlobalHelper{
             desc+="\n`"+llPrefixStr+gCommand+" unset`, to unset your default font.";
             Font font2UseProfile=null;
             try {
-                getProfile(gUser);
+               getUserProfile(gMember,gGlobal,table,profileName,true,()->{gUserProfile=iSafetyUserProfileEntry(gUserProfile);});
                 if(gUserProfile.jsonObject.has(keyFont2Use)&&!gUserProfile.jsonObject.isNull(keyFont2Use)&&!gUserProfile.jsonObject.getString(keyFont2Use).isBlank()){
                     String fromProfile=gUserProfile.jsonObject.getString(keyFont2Use);
                     logger.info(fName+" font2use_fromProfile="+fromProfile);
@@ -238,6 +159,7 @@ public class figlet extends Command implements llGlobalHelper{
             }catch (Exception e){
                 logger.error(fName + ".exception=" + e);
                 logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+                desc+="\nCustom font: <can't read>";
             }
             embedBuilder.addField("Use a different font",desc,false);
             embedBuilder.addField("Library","These text generator and its fonts are provided by "+ lsUsefullFunctions.getUrlTextString("yihleego/banana","https://github.com/yihleego/banana"),false);
@@ -613,164 +535,117 @@ public class figlet extends Command implements llGlobalHelper{
         }
         private void set(String command) {
             String fName = "[set]";
-            logger.info(cName + fName);
-            try {
-                logger.info(cName + fName+"command="+command);
-                buildFontsList();
-                getProfile(gUser);
-                Font font2Use=null;
-                for(int i=0;i<fonts.size();i++){
-                    Font font=fonts.get(i);
-                    String name=font.getName().replaceAll(" ","_");
-                    logger.info(fName+"font["+i+"].name="+name);
-                    if(name.toLowerCase().equals(command)||name.toUpperCase().equals(command)||name.equals(command)){
-                        logger.info(fName+"font["+i+"].match");
-                        font2Use=font;
-                        break;
-                    }
+            
+            logger.info(cName + fName+"command="+command);
+            buildFontsList();
+           getUserProfile(gMember,gGlobal,table,profileName,true,()->{gUserProfile=iSafetyUserProfileEntry(gUserProfile);});
+            Font font2Use=null;
+            for(int i=0;i<fonts.size();i++){
+                Font font=fonts.get(i);
+                String name=font.getName().replaceAll(" ","_");
+                logger.info(fName+"font["+i+"].name="+name);
+                if(name.toLowerCase().equals(command)||name.toUpperCase().equals(command)||name.equals(command)){
+                    logger.info(fName+"font["+i+"].match");
+                    font2Use=font;
+                    break;
                 }
-                if(font2Use==null){
-                    logger.warn(cName + fName+"invalid name");
-                    lsMessageHelper.lsSendQuickEmbedMessage_Redirect(gUser,gTitle,"Invalid font name entered!", lsMessageHelper.llColorRed,gTextChannel);
-                    return;
-                }
-                gUserProfile.jsonObject.put(keyFont2Use,font2Use.getName().replaceAll(" ","_").toLowerCase());
-                saveProfile();
-                lsMessageHelper.lsSendQuickEmbedMessage_Redirect(gUser,gTitle,"Default font set to: "+font2Use.getName().replaceAll(" ","_").toLowerCase()+".", lsMessageHelper.llColorGreen2,gTextChannel);
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             }
+            if(font2Use==null){
+                logger.warn(cName + fName+"invalid name");
+                lsMessageHelper.lsSendQuickEmbedMessage_Redirect(gUser,gTitle,"Invalid font name entered!", lsMessageHelper.llColorRed,gTextChannel);
+                return;
+            }
+            gUserProfile.jsonObject.put(keyFont2Use,font2Use.getName().replaceAll(" ","_").toLowerCase());
+            saveUserProfile(gGlobal);
+            lsMessageHelper.lsSendQuickEmbedMessage_Redirect(gUser,gTitle,"Default font set to: "+font2Use.getName().replaceAll(" ","_").toLowerCase()+".", lsMessageHelper.llColorGreen2,gTextChannel);
         }
         private void unset() {
             String fName = "[set]";
             logger.info(cName + fName);
-            try {
-                getProfile(gUser);
-                gUserProfile.jsonObject.put(keyFont2Use,"");
-                saveProfile();
-                lsMessageHelper.lsSendQuickEmbedMessage_Redirect(gUser,gTitle,"Unseted custom font.", lsMessageHelper.llColorGreen2,gTextChannel);
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+            getUserProfile(gMember,gGlobal,table,profileName,true,()->{gUserProfile=iSafetyUserProfileEntry(gUserProfile);});
+            gUserProfile.jsonObject.put(keyFont2Use,"");
+            saveUserProfile(gGlobal);
+            lsMessageHelper.lsSendQuickEmbedMessage_Redirect(gUser,gTitle,"Unseted custom font.", lsMessageHelper.llColorGreen2,gTextChannel);
         }
         private void convertText2Figlet() {
             String fName = "[convertText2Figlet]";
             logger.info(cName + fName);
+            getUserProfile(gMember,gGlobal,table,profileName,true,()->{gUserProfile=iSafetyUserProfileEntry(gUserProfile);});
+            String text=gMessage.getContentRaw();
+            text=text.replaceFirst(lcGlobalHelper.llPrefixStr+" ","").replaceFirst(lcGlobalHelper.llPrefixStr,"").trim();
+            if(text.startsWith(gCommand)){text=text.replaceFirst(gCommand,"").trim();}
+            else if(text.startsWith("ascii")){text=text.replaceFirst("ascii","").trim();}
+            logger.info(cName + fName+"text="+text);
+            //String newText=FigletFont.convertOneLine(text);
+            buildFontsList();String newText="";
+            Font font2UseProfile=null,font2Use=null;
             try {
-                getProfile(gUser);
-                String text=gMessage.getContentRaw();
-                text=text.replaceFirst(lcGlobalHelper.llPrefixStr+" ","").replaceFirst(lcGlobalHelper.llPrefixStr,"").trim();
-                if(text.startsWith(gCommand)){text=text.replaceFirst(gCommand,"").trim();}
-                else if(text.startsWith("ascii")){text=text.replaceFirst("ascii","").trim();}
-                logger.info(cName + fName+"text="+text);
-                //String newText=FigletFont.convertOneLine(text);
-                buildFontsList();String newText="";
-                Font font2UseProfile=null,font2Use=null;
-                try {
-                    if(gUserProfile.jsonObject.has(keyFont2Use)&&!gUserProfile.jsonObject.isNull(keyFont2Use)&&!gUserProfile.jsonObject.getString(keyFont2Use).isBlank()){
-                        String fromProfile=gUserProfile.jsonObject.getString(keyFont2Use);
-                        logger.info(fName+" font2use_fromProfile="+fromProfile);
-                        for(int i=0;i<fonts.size();i++){
-                            Font font=fonts.get(i);
-                            String name=font.getName().replaceAll(" ","_");
-                            logger.info(fName+"font["+i+"].name="+name);
-                            if(name.toLowerCase().equals(fromProfile)||name.toUpperCase().equals(fromProfile)||name.equals(fromProfile)){
-                                logger.info(fName+"font["+i+"].match");
-                                font2UseProfile=font;
-                                break;
-                            }
+                if(gUserProfile.jsonObject.has(keyFont2Use)&&!gUserProfile.jsonObject.isNull(keyFont2Use)&&!gUserProfile.jsonObject.getString(keyFont2Use).isBlank()){
+                    String fromProfile=gUserProfile.jsonObject.getString(keyFont2Use);
+                    logger.info(fName+" font2use_fromProfile="+fromProfile);
+                    for(int i=0;i<fonts.size();i++){
+                        Font font=fonts.get(i);
+                        String name=font.getName().replaceAll(" ","_");
+                        logger.info(fName+"font["+i+"].name="+name);
+                        if(name.toLowerCase().equals(fromProfile)||name.toUpperCase().equals(fromProfile)||name.equals(fromProfile)){
+                            logger.info(fName+"font["+i+"].match");
+                            font2UseProfile=font;
+                            break;
                         }
                     }
-                }catch (Exception e){
-                    logger.error(fName + ".exception=" + e);
-                    logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
                 }
-                String items[]= text.split("\\s+");
-                logger.info(fName+" items="+ Arrays.toString(items));
-                logger.info(fName+" items[0]="+items[0]);
-                for(int i=0;i<fonts.size();i++){
-                    Font font=fonts.get(i);
-                    String name=font.getName().replaceAll(" ","_");
-                    logger.info(fName+"font["+i+"].name="+name);
-                    if(name.toLowerCase().equals(items[0])||name.toUpperCase().equals(items[0])||name.equals(items[0])){
-                        logger.info(fName+"font["+i+"].match");
-                        text=text.replaceFirst(name.toLowerCase(),"").replaceFirst(name.toUpperCase(),"").replaceFirst(name,"").trim();
-                        font2Use=font;
-                        break;
-                    }
-                }
-                if(font2Use!=null){
-                    newText=BananaUtils.bananaify(text, font2Use);
-                }
-                else if(font2UseProfile!=null){
-                    newText=BananaUtils.bananaify(text, font2UseProfile);
-                }
-                else{
-                    newText=BananaUtils.bananaify(text);
-                }
-                //newText=BananaUtils.bananaify(text, Font.THREE_D_ASCII);
-                logger.info(cName + fName+"newText="+newText);
-                if(newText.length()>2000){
-                    newText=newText.trim();
-                }
-                newText="```"+newText+"```";
-                if(newText.length()>2000){
-                    lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Too big text.", lsMessageHelper.llColorRed);return;
-                }
-                postMessage(newText);
             }catch (Exception e){
                 logger.error(fName + ".exception=" + e);
                 logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             }
+            String items[]= text.split("\\s+");
+            logger.info(fName+" items="+ Arrays.toString(items));
+            logger.info(fName+" items[0]="+items[0]);
+            for(int i=0;i<fonts.size();i++){
+                Font font=fonts.get(i);
+                String name=font.getName().replaceAll(" ","_");
+                logger.info(fName+"font["+i+"].name="+name);
+                if(name.toLowerCase().equals(items[0])||name.toUpperCase().equals(items[0])||name.equals(items[0])){
+                    logger.info(fName+"font["+i+"].match");
+                    text=text.replaceFirst(name.toLowerCase(),"").replaceFirst(name.toUpperCase(),"").replaceFirst(name,"").trim();
+                    font2Use=font;
+                    break;
+                }
+            }
+            if(font2Use!=null){
+                newText=BananaUtils.bananaify(text, font2Use);
+            }
+            else if(font2UseProfile!=null){
+                newText=BananaUtils.bananaify(text, font2UseProfile);
+            }
+            else{
+                newText=BananaUtils.bananaify(text);
+            }
+            //newText=BananaUtils.bananaify(text, Font.THREE_D_ASCII);
+            logger.info(cName + fName+"newText="+newText);
+            if(newText.length()>2000){
+                newText=newText.trim();
+            }
+            newText="```"+newText+"```";
+            if(newText.length()>2000){
+                lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Too big text.", lsMessageHelper.llColorRed);return;
+            }
+            postMessage(newText);
         }
         private void postMessage(String source) {
             String fName = "[postMessage]";
-            logger.info(fName);
-            try {
-                logger.info(fName+"source="+source);
-                try {
-                    /*lcWebHook2 whh = new lcWebHook2();
-                    if(!whh.useChannel(gTextChannel)){
-                        logger.info(fName+"webhook failed to get/build");
-                    }
-                    if(!whh.clientOpen()){
-                        logger.info(fName+"webhook client faild to open");
-                    }
-                    JSONObject jsonObject=new JSONObject();
-                    Member member = gEvent.getMember();
-                    String avatarUrl = gUser.getEffectiveAvatarUrl();
-                    logger.info(fName + ".avatarUrl=" + avatarUrl);
-                    assert member != null;
-                    jsonObject.put(lcWebHook2.keyContent, source);
-                    jsonObject.put(lcWebHook2.keyName, member.getEffectiveName());
-                    jsonObject.put(lcWebHook2.keyUserName, member.getEffectiveName());
-                    jsonObject.put(lcWebHook2.keyUserAvatar, avatarUrl.replaceFirst("gif","png")+"?size=512");
-                    jsonObject.put(lcWebHook2.keyAvatar,avatarUrl.replaceFirst("gif","png")+"?size=512");
-                    logger.info(fName + ".sendwebhook");
-                    ReadonlyMessage readonlyMessage=whh.sendReturnWebhookMessageBuilder(jsonObject);*/
-                    logger.info(fName + ".sendwebhook");
-                    ReadonlyMessage readonlyMessage=lsMessageHelper.lsSendWebhookMessageResponse(gTextChannel,gMember,source);
-                    if(readonlyMessage==null){
-                        logger.info(fName + ".send embed message");
-                        EmbedBuilder embedBuilder=new EmbedBuilder();
-                        embedBuilder.setDescription(source);
-                        embedBuilder.setColor(lsMessageHelper.llColorPurple2);
-                        embedBuilder.setAuthor(gUser.getName(),null, lsUserHelper.getAuthorIcon(gUser));
-                        if(lsMessageHelper.lsSendMessageResponse(gTextChannel,embedBuilder)==null){
-                            logger.info(fName + ".send normal message");
-                            lsMessageHelper.lsSendMessageResponse(gTextChannel,source);
-                        }
-                    }
-                }catch (Exception e){
-                    logger.error(fName + ".exception=" + e);
-                    logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.info(fName + ".sendwebhook");
+            ReadonlyMessage readonlyMessage=lsMessageHelper.lsSendWebhookMessageResponse(gTextChannel,gMember,source);
+            if(readonlyMessage==null){
+                logger.info(fName + ".send embed message");
+                EmbedBuilder embedBuilder=new EmbedBuilder();
+                embedBuilder.setDescription(source);
+                embedBuilder.setColor(lsMessageHelper.llColorPurple2);
+                embedBuilder.setAuthor(gUser.getName(),null, lsUserHelper.getAuthorIcon(gUser));
+                if(lsMessageHelper.lsSendMessageResponse(gTextChannel,embedBuilder)==null){
+                    logger.info(fName + ".send normal message");
+                    lsMessageHelper.lsSendMessageResponse(gTextChannel,source);
                 }
-
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             }
         }
         List<Font> fonts;
@@ -1092,580 +967,7 @@ public class figlet extends Command implements llGlobalHelper{
             gUserProfile.safetyPutFieldEntry(keyFont2Use, "");
             return gUserProfile;
         }
-        private Boolean getProfile(User user){
-            String fName="[getProfile]";
-            logger.info(fName);
-            try{
-                logger.info(fName + ".user:"+ user.getId()+"|"+user.getName());
-                gUserProfile=gGlobal.getUserProfile(profileName,user,gGuild,profileName);
-                if(gUserProfile!=null&&gUserProfile.isProfile()){
-                    logger.info(fName + ".is locally cached");
-                }else{
-                    logger.info(fName + ".need to get or create");
-                    gUserProfile=new lcJSONUserProfile(gGlobal,user,gGuild,profileName);
-                    if(gUserProfile.getProfile(table)){
-                        logger.info(fName + ".has sql entry");
-                    }
-                }
-                gUserProfile=iSafetyUserProfileEntry(gUserProfile);
-                gGlobal.putUserProfile(gUserProfile,profileName);
-                if(!gUserProfile.isUpdated){
-                    logger.info(fName + ".no update>ignore");return true;
-                }
-                if(!saveProfile()){ logger.error(fName+".failed to write in Db");
-                    lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Failed to write in Db!", lsMessageHelper.llColorRed);}
-                return true;
-
-            } catch (Exception e) {
-                logger.error(fName+".exception=" + e);
-                logger.error(cName +fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-                return  false;
-            }
-        }
-        private Boolean saveProfile(){
-            String fName="[saveProfile]";
-            logger.info(fName);
-            try{
-                gGlobal.putUserProfile(gUserProfile,profileName);
-                if(gUserProfile.saveProfile(table)){
-                    logger.info(fName + ".success");return  true;
-                }
-                logger.warn(fName + ".failed");return false;
-            } catch (Exception e) {
-                logger.error(fName+".exception=" + e);
-                logger.error(cName +fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-                return  false;
-            }
-        }
-        lcBasicFeatureControl gBasicFeatureControl;
-        private void setEnable(boolean enable) {
-            String fName = "[setEnable]";
-            try {
-                logger.info(fName + "enable=" + enable);
-                if(!lsMemberHelper.lsMemberHasPermission_MANAGESERVER(gMember)&&!lsGlobalHelper.slMemberIsBotOwner(gMember)){
-                    logger.info(fName+"denied");
-                    lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied. Require manage server.",llColors.llColorOrange_InternationalEngineering);
-                    return;
-                }
-                gBasicFeatureControl.setEnable(enable);
-                if(enable){
-                    lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Set to enable for guild.", llColors.llColorOrange_Bittersweet);
-                }else{
-                    lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Set to disable for guild.", llColors.llColorOrange_Bittersweet);
-                }
-            } catch (Exception e) {
-                logger.error(cName+fName+"exception:"+e);
-                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
-            }
-        }
-        private void getChannels(int type, boolean toDM) {
-            String fName = "[setChannel]";
-            try {
-                logger.info(fName + "type=" +type+", toDM="+toDM);
-                if(type==1){
-                    logger.info(fName+"allowed");
-                    List<Long>list=gBasicFeatureControl.getAllowedChannelsAsLong();
-                    if(!list.isEmpty()){
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Allowed channels list: "+lsChannelHelper.lsGetTextChannelsMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Allowed channels list: "+lsChannelHelper.lsGetTextChannelsMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }
-                    }else{
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Allowed channels list is empty.", llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Allowed channels list is empty.", llColors.llColorOrange_Bittersweet);
-                        }
-                    }
-                }
-                if(type==-1){
-                    logger.info(fName+"denied");
-                    List<Long>list=gBasicFeatureControl.getDeniedChannelsAsLong();
-                    if(!list.isEmpty()){
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied channels list: "+lsChannelHelper.lsGetTextChannelsMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Denied channels list: "+lsChannelHelper.lsGetTextChannelsMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }
-                    }else{
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied channels list is empty.", llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Denied channels list is empty.", llColors.llColorOrange_Bittersweet);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                logger.error(cName+fName+"exception:"+e);
-                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
-            }
-        }
-        private void getRoles(int type, boolean toDM) {
-            String fName = "[getRoles]";
-            try {
-                logger.info(fName + "type=" +type+", toDM="+toDM);
-                if(type==1){
-                    logger.info(fName+"allowed");
-                    List<Long>list=gBasicFeatureControl.getAllowedRolesAsLong();
-                    if(!list.isEmpty()){
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Allowed roles list: "+lsRoleHelper.lsGetRolesMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Allowed roles list: "+lsRoleHelper.lsGetRolesMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }
-                    }else{
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Allowed roles list is empty.", llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Allowed roles list is empty.", llColors.llColorOrange_Bittersweet);
-                        }
-                    }
-                }
-                if(type==-1){
-                    logger.info(fName+"denied");
-                    List<Long>list=gBasicFeatureControl.getDeniedRolesAsLong();
-                    if(!list.isEmpty()){
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied roles list: "+lsRoleHelper.lsGetRolesMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Denied roles list: "+lsRoleHelper.lsGetRolesMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }
-                    }else{
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied roles list is empty.", llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Denied roles list is empty.", llColors.llColorOrange_Bittersweet);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                logger.error(cName+fName+"exception:"+e);
-                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
-            }
-        }
-        private void setChannel(int type, int action, Message message) {
-            String fName = "[setChannel]";
-            try {
-                logger.info(fName + "type=" +type+", action="+action);
-                if(!lsMemberHelper.lsMemberHasPermission_MANAGESERVER(gMember)&&!lsGlobalHelper.slMemberIsBotOwner(gMember)){
-                    logger.info(fName+"denied");
-                    lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied. Require manage server.", llColors.llColorOrange_InternationalEngineering);
-                    return;
-                }
-                boolean updated=false, result=false;
-                if(type==1){
-                    logger.info(fName+"allowed");
-                    if(action==1){
-                        logger.info(fName+"add");
-                        List<TextChannel>textChannels=message.getMentionedChannels();
-                        for(TextChannel textChannel:textChannels){
-                            result=gBasicFeatureControl.addAllowedChannel(textChannel);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Added new channels.\nAllowed channels set to: "+lsChannelHelper.lsGetTextChannelsMentionAsString(gBasicFeatureControl.getAllowedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==2){
-                        logger.info(fName+"set");
-                        if(!gBasicFeatureControl.clearAllowedChannels()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        List<TextChannel>textChannels=message.getMentionedChannels();
-                        for(TextChannel textChannel:textChannels){
-                            result=gBasicFeatureControl.addAllowedChannel(textChannel);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Set channels.\nAllowed channels set to: "+lsChannelHelper.lsGetTextChannelsMentionAsString(gBasicFeatureControl.getAllowedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-
-                    }
-                    if(action==-1){
-                        logger.info(fName+"rem");
-                        List<TextChannel>textChannels=message.getMentionedChannels();
-                        for(TextChannel textChannel:textChannels){
-                            result=gBasicFeatureControl.remAllowedChannel(textChannel);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Removed channels.\nAllowed channels set to:"+lsChannelHelper.lsGetTextChannelsMentionAsString(gBasicFeatureControl.getAllowedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==-2){
-                        logger.info(fName+"clear");
-                        if(!gBasicFeatureControl.clearAllowedChannels()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Cleared allowed channels.", llColors.llColorOrange_Bittersweet);
-                    }
-                }
-                if(type==-1){
-                    logger.info(fName+"denied");
-                    if(action==1){
-                        logger.info(fName+"add");
-                        List<TextChannel>textChannels=message.getMentionedChannels();
-                        for(TextChannel textChannel:textChannels){
-                            result=gBasicFeatureControl.addDeniedChannel(textChannel);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Added new channels.\nDenied channels set to: "+lsChannelHelper.lsGetTextChannelsMentionAsString(gBasicFeatureControl.getDeniedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==2){
-                        logger.info(fName+"set");
-                        if(!gBasicFeatureControl.clearDeniedChannels()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        List<TextChannel>textChannels=message.getMentionedChannels();
-                        for(TextChannel textChannel:textChannels){
-                            result=gBasicFeatureControl.addDeniedChannel(textChannel);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Set channels.\nDenied channels set to: "+lsChannelHelper.lsGetTextChannelsMentionAsString(gBasicFeatureControl.getDeniedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-
-                    }
-                    if(action==-1){
-                        logger.info(fName+"rem");
-                        List<TextChannel>textChannels=message.getMentionedChannels();
-                        for(TextChannel textChannel:textChannels){
-                            result=gBasicFeatureControl.remDeniedChannel(textChannel);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Removed channels.\nDenied channels set to:"+lsChannelHelper.lsGetTextChannelsMentionAsString(gBasicFeatureControl.getDeniedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==-2){
-                        logger.info(fName+"clear");
-                        if(!gBasicFeatureControl.clearDeniedChannels()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Cleared denied channels.", llColors.llColorOrange_Bittersweet);
-                    }
-                }
-            } catch (Exception e) {
-                logger.error(cName+fName+"exception:"+e);
-                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
-            }
-        }
-        private void setRole(int type, int action, Message message) {
-            String fName = "[setRole]";
-            try {
-                logger.info(fName + "type=" +type+", action="+action);
-                if(!lsMemberHelper.lsMemberHasPermission_MANAGESERVER(gMember)&&!lsGlobalHelper.slMemberIsBotOwner(gMember)){
-                    logger.info(fName+"denied");
-                    lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied. Require manage server.", llColors.llColorOrange_InternationalEngineering);
-                    return;
-                }
-                boolean updated=false, result=false;
-                if(type==1){
-                    logger.info(fName+"allowed");
-                    if(action==1){
-                        logger.info(fName+"add");
-                        List<Role>roles=message.getMentionedRoles();
-                        for(Role role:roles){
-                            result=gBasicFeatureControl.addAllowedRole(role);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Added new roles.\nAllowed roles set to: "+lsRoleHelper.lsGetRolesMentionAsString(gBasicFeatureControl.getAllowedRolesAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==2){
-                        logger.info(fName+"set");
-                        if(!gBasicFeatureControl.clearAllowedRoles()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        List<Role>roles=message.getMentionedRoles();
-                        for(Role role:roles){
-                            result=gBasicFeatureControl.addAllowedRole(role);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Set roles.\nAllowed roles set to: "+lsRoleHelper.lsGetRolesMentionAsString(gBasicFeatureControl.getAllowedRolesAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-
-                    }
-                    if(action==-1){
-                        logger.info(fName+"rem");
-                        List<Role>roles=message.getMentionedRoles();
-                        for(Role role:roles){
-                            result=gBasicFeatureControl.remAllowedRole(role);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Removed roles.\nAllowed roles set to:"+lsRoleHelper.lsGetRolesMentionAsString(gBasicFeatureControl.getAllowedRolesAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==-2){
-                        logger.info(fName+"clear");
-                        if(!gBasicFeatureControl.clearAllowedRoles()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Cleared allowed roles.", llColors.llColorOrange_Bittersweet);
-                    }
-                }
-                if(type==-1){
-                    logger.info(fName+"denied");
-                    if(action==1){
-                        logger.info(fName+"add");
-                        List<Role>roles=message.getMentionedRoles();
-                        for(Role role:roles){
-                            result=gBasicFeatureControl.addDeniedRole(role);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Added new roles.\nDenied roles set to: "+lsRoleHelper.lsGetRolesMentionAsString(gBasicFeatureControl.getDeniedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==2){
-                        logger.info(fName+"set");
-                        if(!gBasicFeatureControl.clearDeniedRoles()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        List<Role>roles=message.getMentionedRoles();
-                        for(Role role:roles){
-                            result=gBasicFeatureControl.addDeniedRole(role);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Set roles.\nDenied roles set to: "+lsRoleHelper.lsGetRolesMentionAsString(gBasicFeatureControl.getDeniedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-
-                    }
-                    if(action==-1){
-                        logger.info(fName+"rem");
-                        List<Role>roles=message.getMentionedRoles();
-                        for(Role role:roles){
-                            result=gBasicFeatureControl.remDeniedRole(role);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Removed roles.\nDenied roles set to:"+lsRoleHelper.lsGetRolesMentionAsString(gBasicFeatureControl.getDeniedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==-2){
-                        logger.info(fName+"clear");
-                        if(!gBasicFeatureControl.clearDeniedRoles()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Cleared denied roles.", llColors.llColorOrange_Bittersweet);
-                    }
-                }
-            } catch (Exception e) {
-                logger.error(cName+fName+"exception:"+e);
-                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
-            }
-        }
-        private void menuGuild(){
-            String fName="[menuGuild]";
-            logger.info(fName);
-            try{
-                EmbedBuilder embed=new EmbedBuilder();
-                embed.setColor(llColors.llColorBlue1);
-                embed.setTitle(gTitle+" Options");
-                embed.addField("Enable","Select "+gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasGreenCircle)+" or "+gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasRedCircle)+" to enable/disable for this server.",false);
-                embed.addField("Allowed channels","Commands:`"+llPrefixStr+gCommand+" server allowchannels  :one:/list|add|rem|set|clear`",false);
-                embed.addField("Blocked channels","Commands:`"+llPrefixStr+gCommand+" server blockchannels :two:/list|add|rem|set|clear`",false);
-                embed.addField("Allowed roles","Commands:`"+llPrefixStr+gCommand+" server allowroles :three:/list|add|rem|set|clear`",false);
-                embed.addField("Blocked roles","Commands:`"+llPrefixStr+gCommand+" server blockroles :four:/list|add|rem|set|clear`",false);
-                embed.addField("Help","Select "+gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasInformationSource)+" for more commands & help",false);
-                Message message=lsMessageHelper.lsSendMessageResponse_withReactionNotification(gUser,embed);
-                lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasInformationSource));
-                if(gBasicFeatureControl.getEnable()){
-                    lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasRedCircle));
-                }else{
-                    lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasGreenCircle));
-                }
-                if(!gBasicFeatureControl.getAllowedChannelsAsLong().isEmpty()) lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasOne));
-                if(!gBasicFeatureControl.getDeniedChannelsAsLong().isEmpty()) lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasTwo));
-                if(!gBasicFeatureControl.getAllowedRolesAsLong().isEmpty()) lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasThree));
-                if(!gBasicFeatureControl.getAllowedRolesAsLong().isEmpty()) lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasFour));
-                gGlobal.waiter.waitForEvent(PrivateMessageReactionAddEvent.class,
-                        e -> (e.getMessageIdLong()==message.getIdLong()&&!e.getUser().isBot()&&e.getUserIdLong()==gUser.getIdLong()),
-                        e -> {
-                            try {
-                                String name=e.getReactionEmote().getName();
-                                logger.warn(fName+"name="+name);
-                                lsMessageHelper.lsMessageDelete(message);
-                                if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasInformationSource))) {
-                                    help("main");return;
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasGreenCircle))) {
-                                    setEnable(true);
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasRedCircle))) {
-                                    setEnable(false);
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasOne))) {
-                                    getChannels(1,true);
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasTwo))) {
-                                    getChannels(-1,true);
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasThree))) {
-                                    getRoles(1,true);
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasFour))) {
-                                    getRoles(-1,true);
-                                }
-                                else{
-                                    menuGuild();
-                                }
-                            }catch (Exception e3){
-                                logger.error(fName + ".exception=" + e3);
-                                logger.error(fName + ".exception:" + Arrays.toString(e3.getStackTrace()));
-                                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e3.toString());
-                                lsMessageHelper.lsMessageDelete(message);
-                            }
-
-                        },5, TimeUnit.MINUTES, () -> {
-                            logger.info(fName+"timeout");
-                            lsMessageHelper.lsMessageDelete(message);
-                        });
-
-            } catch (Exception e) {
-                logger.error(fName+".exception=" + e);
-                logger.error(cName +fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
-            }
-        }
+        
+        
     }
 }
