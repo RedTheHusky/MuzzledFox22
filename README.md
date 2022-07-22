@@ -1,3 +1,5 @@
+This is the last commit as the new version will be using JDA5 and between JDA4 and JDA5 there is huge changes. 
+
 Files of Discord bot named Muzzled Fox shared so the community can help in improving the bot. Lets work toggether. :3
 
 <br />Notes:
