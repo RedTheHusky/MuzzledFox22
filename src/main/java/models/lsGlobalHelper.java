@@ -11,6 +11,8 @@ import net.dv8tion.jda.api.entities.User;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public interface lsGlobalHelper extends llGlobalHelper
 {
@@ -54,4 +56,33 @@ public interface lsGlobalHelper extends llGlobalHelper
     int lsImageBytesLimit=10240000;
     String timeout = "timeout",timeout_button="timeout_button",timeout_selectmenu="timeout_selectMenu",timeout_reaction_add="timeout_reaction_add";
     String lsGeneralGuildNotificationPath="resources/json/guilds/notification.json";
+
+
+    static Map<Integer,lcGlobalHelper>globals=new HashMap<>();
+    static boolean sAddGlobal(lcGlobalHelper global){
+        String fName="sAddGlobal.";
+        Logger logger = Logger.getLogger(fName);
+        try{
+            globals.put(globals.size(),global);
+            return true;
+        }
+        catch(Exception e){
+            logger.error(fName+".exception=" + e);
+            logger.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
+            return false;
+        }
+    }
+    static lcGlobalHelper sGetGlobal(){
+        String fName="sGetGlobal.";
+        Logger logger = Logger.getLogger(fName);
+        try{
+            return globals.get(0);
+        }
+        catch(Exception e){
+            logger.error(fName+".exception=" + e);
+            logger.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
+            return null;
+        }
+    }
+
 }

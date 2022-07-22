@@ -27,7 +27,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.apache.log4j.Logger;
 import org.jsoup.internal.StringUtil;
-import restraints.models.entityRDUserProfile;
+import restraints.models.entity.entityRDUserProfile;
 import restraints.models.lcBDSMGuildProfiles;
 
 import java.io.File;

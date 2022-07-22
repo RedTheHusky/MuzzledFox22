@@ -18,18 +18,18 @@ public class ServerExpress {
         //8789,8788
         String fName="[build]";
         gGlobal=global;
-        Express app = new Express();
+        app = new Express();
 
-        app.bind( new expressOAuth(gGlobal,true), new expressRD(gGlobal), new expressLovense(gGlobal),new expressRoots(gGlobal));
+        /*app.bind( new expressOAuth(gGlobal,true), new expressRD(gGlobal), new expressLovense(gGlobal),new expressRoots(gGlobal));
 
         /*if(llGlobalHelper.llBotToken==llGlobalHelper.llMainBotToke){
             port=8789;
         }else{
             port=8788;
         }*/
-        app.listen(port);
+        /*app.listen(port);
         logger.info(fName+"Running! Point your browsers to http://localhost:"+port+"/ ");
-        isRunning=true;
+        isRunning=true;*/
     }
     public boolean start() {
         String fName="[start]";
@@ -55,7 +55,7 @@ public class ServerExpress {
                 logger.warn("Cant as already stopped");
                 return true;
             }
-            app.listen(8789);
+            app.stop();
             logger.info("Stopped");
             return true;
         } catch (Exception e) {

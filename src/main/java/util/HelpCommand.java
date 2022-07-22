@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import org.apache.log4j.Logger;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -109,7 +108,7 @@ public class HelpCommand extends Command implements llMessageHelper, llGlobalHel
                 /*if(items[0].equalsIgnoreCase("social")){
                     listCommands(llCommandCategory_SocialSFW);listCommands(llCommandCategory_SocialNSFW);isInvalidCommand=false;
                 }*/
-                        if(items[0].equalsIgnoreCase("between")||items[0].equalsIgnoreCase("social")){
+                        if(items[0].equalsIgnoreCase("between")||items[0].equalsIgnoreCase("forRemoval/social")){
                             menuLevels(llCommandCategory_Between);isInvalidCommand=false;//listCommands(llCommandCategory_SocialNSFW);
 
                         }

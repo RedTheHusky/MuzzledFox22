@@ -36,25 +36,11 @@ public enum GAGLEVELS {
     Pokemon_Pikachu (27,"pikachu"),
     Pokemon_Eevee (28,"eevee"),
     Chocke (29,"choke");
-    private String name,display, description;
+    private String name;
     private int code;
     private GAGLEVELS(int code, String name) {
         this.code = code;
         this.name = name;
-        this.display="";
-        this.description="";
-    }
-    private GAGLEVELS(int code, String name,String display) {
-        this.code = code;
-        this.name = name;
-        this.display=display;
-        this.description="";
-    }
-    private GAGLEVELS(int code, String name,String display,String description) {
-        this.code = code;
-        this.name = name;
-        this.display=display;
-        this.description=description;
     }
     public static GAGLEVELS valueByCode(int code) {
         GAGLEVELS[] var1 = values();
@@ -82,12 +68,6 @@ public enum GAGLEVELS {
     }
     public String getName() {
         return this.name;
-    }
-    public String getDisplay() {
-        return this.display;
-    }
-    public String getDescription() {
-        return this.description;
     }
     public int getCode() {
         return this.code;

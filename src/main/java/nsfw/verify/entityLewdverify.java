@@ -2,9 +2,6 @@ package nsfw.verify;
 
 import kong.unirest.json.JSONObject;
 import org.apache.log4j.Logger;
-import restraints.in.iRestraints;
-import restraints.models.BREATHPLAYLEVELS;
-import restraints.models.GAGLEVELS;
 
 import java.util.Arrays;
 import java.util.Iterator;

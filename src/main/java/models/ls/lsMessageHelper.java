@@ -33,6 +33,42 @@ public interface lsMessageHelper extends llColors
 {
     /*https://discord.com/channels/125227483518861312/125227483518861312/860120398830108682*/
     boolean sendTyingBeforeMessage4Private=true;
+    default void lsSendMessage258(User author, Message message){
+        String fName="[lsSendMessage:author,message]";
+        Logger logger = Logger.getLogger(lsMessageHelper.class);
+        logger.info(fName+".init");
+        try{
+            logger.info(fName+".init");
+            if(lsGlobalHelper.lsIsDisabled2SendMessage){
+                logger.warn(fName+".Its disabled to send message");
+                return;
+            }
+            PrivateChannel  channel=author.openPrivateChannel().complete();
+            if(sendTyingBeforeMessage4Private)channel.sendTyping().complete();
+            channel.sendMessage(message).queue();
+        }
+        catch(Exception e){
+            logger.error(fName + ".exception=" + e+"\nStackTrace:" + Arrays.toString(e.getStackTrace()));
+        }
+    }
+    default void lsSendMessage2(User author, Message message){
+        String fName="[lsSendMessage:author,message]";
+        Logger logger = Logger.getLogger(lsMessageHelper.class);
+        logger.info(fName+".init");
+        try{
+            logger.info(fName+".init");
+            if(lsGlobalHelper.lsIsDisabled2SendMessage){
+                logger.warn(fName+".Its disabled to send message");
+                return;
+            }
+            PrivateChannel  channel=author.openPrivateChannel().complete();
+            if(sendTyingBeforeMessage4Private)channel.sendTyping().complete();
+            channel.sendMessage(message).queue();
+        }
+        catch(Exception e){
+            logger.error(fName + ".exception=" + e+"\nStackTrace:" + Arrays.toString(e.getStackTrace()));
+        }
+    }
     static void lsSendMessage(User author, Message message){
         String fName="[lsSendMessage:author,message]";
         Logger logger = Logger.getLogger(lsMessageHelper.class);

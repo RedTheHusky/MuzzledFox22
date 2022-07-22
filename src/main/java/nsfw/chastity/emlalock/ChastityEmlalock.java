@@ -34,7 +34,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.apache.log4j.Logger;
 import restraints.in.iRestraints;
 import restraints.models.lcBDSMGuildProfiles;
-import restraints.models.entityRDUserProfile;
+import restraints.models.entity.entityRDUserProfile;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -103,63 +103,6 @@ public class lcSqlConnEntity {
             return false;
         }
     }
-    public boolean openConnection_old(){
-        String fName="[openConnection]";
-        try {
-            String vDomane= "";
-            String vDb="";
-            String vUser="";
-            String vPassword="";
-            if(!flagDriver){
-                logger.info(cName+fName+".driver not started!");
-                return false;
-            }
-            logger.info(cName+fName+".domane="+vDomane); logger.info(cName+fName+".db="+vDb);
-            //vDomane="192.168.100.107:3306";vDb="muzzledbot";
-            vDomane="192.168.100.107";vDb="muzzledbot";
-            //vDomane="192.168.100.115";vDb="avaire";
-            url="jdbc:mysql://"+vDomane+"/"+vDb;vUser="muzzlefox2";vPassword="U7C9BPRM55xZnYQc";
-            //JDBC URL: jdbc:mysql://:/? connectTimeout=0&socketTimeout=0&autoReconnect=true
-            //url="jdbc:mysql://"+vDomane+"/"+vDb+"?autoReconnect=true"; //not working
-            //url="jdbc:mysql://"+vDomane+"/"+vDb+"?autoReconnect=true&useUnicode=yes";
-            //url="jdbc:mysql://"+vDomane+"/"+vDb+"?connectTimeout=0&socketTimeout=0&autoReconnect=true&useUnicode=yes";
-            url="jdbc:mysql://"+vDomane+"/"+vDb+"?autoReconnect=true&characterEncoding=utf8&useUnicode=true&sessionVariables=storage_engine%3DInnoDB&interactiveClient=true";
-            //url="jdbc:mysql://"+vDomane+"/"+vDb+"?enabledTLSProtocols=TLSv1.1&autoReconnect=true&characterEncoding=utf8&useUnicode=true&sessionVariables=storage_engine%3DInnoDB&interactiveClient=true";
-            //url="jdbc:mysql://"+vDomane+"/"+vDb+"?enabledTLSProtocols=TLSv1.1&connectTimeout=0&socketTimeout=0&autoReconnect=true&useUnicode=yes&interactiveClient=true";
-            //windows working url url="jdbc:mysql://"+vDomane+"/"+vDb+"?autoReconnect=true&characterEncoding=utf8&useUnicode=true&sessionVariables=storage_engine%3DInnoDB&interactiveClient=true";
-            logger.info(cName+fName+".url="+url);
-            logger.info(cName+fName+".vUser="+vUser);
-            //logger.info(cName+fName+".vPassword="+vPassword);
-            //https://stackoverflow.com/questions/55129768/mysql-jdbc-connection-with-ssl-fails-at-tls-handshake-level
-            Properties props = new Properties();
-            /*
-            props.setProperty("characterEncoding", "utf8");
-            props.setProperty("useUnicode", "true");
-            props.setProperty("sessionVariables", "storage_engine%3DInnoDB");
-            props.setProperty("interactiveClient", "true");*/
-            props.setProperty("user", vUser);
-            props.setProperty("password",  vPassword);
-            /*props.setProperty("useSSL", "false");
-            props.setProperty("requireSSL", "false");
-            props.setProperty("verifyServerCertificate", "false");
-            props.setProperty("javax.net.debug", "all");
-            props.setProperty("enabledTLSProtocols", "TLSv1.1");
-            props.setProperty("zeroDateTimeBehavior", "convertToNull");*/
-            //props.setProperty("javax.net.debug", "all");
-            url="jdbc:mysql://"+vDomane+"/"+vDb+"?requireSSL=false&verifyServerCertificate=false&autoReconnect=true&characterEncoding=utf8&useUnicode=true&sessionVariables=storage_engine%3DInnoDB&interactiveClient=true";
-            url="jdbc:mysql://"+vDomane+"/"+vDb+"?useSSL=false&requireSSL=false&verifyServerCertificate=false&autoReconnect=true&characterEncoding=utf8&useUnicode=true&sessionVariables=storage_engine%3DInnoDB&interactiveClient=true";
-            flagConn=false;
-            conn = DriverManager.getConnection(url, props);
-            logger.info(cName+fName+".done");
-            flagConn=true; return true;
-        } catch (SQLException ex) {
-            // handle any errors
-            logger.error(cName+fName+".SQLException: " + ex.getMessage());
-            logger.error(cName+fName+".SQLState: " + ex.getSQLState());
-            logger.error(cName+fName+".VendorError: " + ex.getErrorCode());
-            return false;
-        }
-    }
     public boolean closeConnection(){
         String fName="[closeConnection]";
         try {

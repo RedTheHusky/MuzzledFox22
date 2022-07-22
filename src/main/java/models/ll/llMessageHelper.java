@@ -72,7 +72,7 @@ public interface llMessageHelper extends llColors
     default Message llSendMessageResponse(TextChannel textChannel, String messageString){
         return  lsMessageHelper.lsSendMessageResponse(textChannel,messageString);
     }
-    
+
     default Message llGetMessageById(TextChannel channel, long id){
         return  lsMessageHelper.lsGetMessageById(channel,  id);
     }
@@ -158,7 +158,7 @@ public interface llMessageHelper extends llColors
         lsMessageHelper.lsReplyMissingRequirement(event, command, requires);
     }
 
- 
+
     default  void llSendQuickEmbedMessage(User user, String title, String desc, Color color){
         lsMessageHelper.lsSendQuickEmbedMessage(user, title, desc,color);
     }

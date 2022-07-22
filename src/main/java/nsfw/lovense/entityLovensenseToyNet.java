@@ -1,18 +1,10 @@
 package nsfw.lovense;
 
-import kong.unirest.FailedResponse;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 import org.apache.log4j.Logger;
-import restraints.in.iRestraints;
-import restraints.models.HOODLEVELS;
 
 import java.util.Arrays;
 import java.util.Iterator;
-
-import static nsfw.lovense.iLovense.gUrlLovesenseCommand;
 
 
 public class entityLovensenseToyNet {

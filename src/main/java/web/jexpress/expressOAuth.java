@@ -9,6 +9,7 @@ import io.mokulu.discord.oauth.DiscordOAuth;
 import io.mokulu.discord.oauth.model.TokensResponse;
 import kong.unirest.json.JSONObject;
 import models.lcGlobalHelper;
+import models.ls.lsMessageHelper;
 import org.apache.log4j.Logger;
 import web.jexpress.childrens.expresschildOAuth;
 import web.jexpress.models.expStats;
@@ -35,7 +36,6 @@ public class expressOAuth {
         try {
             logger.info(fName+"init");
             oauthHandler = new DiscordOAuth(gGlobal.configfile.getBot().getId(), gGlobal.configfile.getBot().getClientSecret(), gGlobal.configfile.getBot().getRedirectUrl(), scope);
-
         }catch (Exception e){
             logger.error(fName + ".exception=" + e);
             logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));

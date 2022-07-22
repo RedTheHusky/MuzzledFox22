@@ -21,7 +21,6 @@ public class lcE621 {
         String gUrl="https://e621.net";
         String gUrlGetPost ="https://e621.net/posts/%.json",icon="https://e621.net/favicon.ico";
         String keyFile ="file", keyUrl ="url",keyExt="ext",keyRating="rating",keyTags="tags",keyGeneral="general";
-
     }
     public JSONObject getImageJSON(String viewId) {
         Logger logger = Logger.getLogger(e621.class);

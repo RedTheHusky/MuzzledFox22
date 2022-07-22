@@ -1,0 +1,7 @@
+this.aliases = new String[]{"hi"};
+Guild.Chastity
+    verify
+    emlalock profile <emlalock username>
+        https://www.emlalock.com/api/user?userid=6k12qw7btcoveh5
+    emlalcok session <emlalock user>
+        https://www.emlalock.com/api/userchastitysession?userid=6k12qw7btcoveh5

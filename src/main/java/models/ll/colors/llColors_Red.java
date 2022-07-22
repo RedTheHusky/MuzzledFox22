@@ -42,4 +42,5 @@ public interface llColors_Red {
     Color llColorRed_CoralPink =new Color(248, 131, 121);
     Color llColorRed_SalmonPink =new Color(255, 145, 164);
     Color llColorRed_Salmon =new Color(250, 128, 114);
+    Color llColorRed_Fa=new Color(151, 28, 28);
 }

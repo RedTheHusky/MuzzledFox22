@@ -1,0 +1,38 @@
+==REFERENCER==
+restraints.models.entity.entityArmsCuffs
+restraints.models.entity.entityBlindfold
+restraints.models.entity.entityChastity
+restraints.models.entity.entityCollar
+restraints.models.entity.entityEarMuffs
+restraints.models.entity.entityGag
+restraints.models.entity.entityHood
+restraints.models.entity.entityLegsCuffs
+restraints.models.entity.entityMitts
+restraints.models.entity.entityNameTag
+restraints.models.entity.entityStraitjacket
+restraints.models.entity.entitySuit
+restraints.models.entity.entityTimeLock
+restraints.models.entity.entityTimeOut
+
+==TESTING NR 1 DONE ==
+ArmsCuffs
+LegsCuffs
+Chastity
+Collar
+Hood
+Straitjacket
+Mitts
+nametag
+timelock
+timeout
+suit
+gag
+
+==NEED TESTING==
+
+==TO DO==
+voicechannelrestriction*
+pishock*
+leash*
+level.STRAITJACKETARMSLEVEL
+level.STRAITJACKETCROTCHSLEVEL

@@ -28,6 +28,7 @@ import nsfw.verify.lewdverify;
 import nsfw.lovense.Lovense;
 import org.apache.log4j.Logger;
 import restraints.*;
+import search.furaffinity;
 import util.HelpCommand;
 import userprofiles.fursona;
 import userprofiles.nfursona;
@@ -171,11 +172,11 @@ public class slashControler extends Command implements llMessageHelper, llGlobal
             String fName="[jdaSlashHandler]";
             logger.info(fName);
             String commandName=gSlashCommandEvent.getName();
-            logger.info(cName+fName+"commandName="+commandName);
             String subcommandgroup=gSlashCommandEvent.getSubcommandGroup();
-            logger.info(cName+fName+"subcommandgroup="+subcommandgroup);
+            if(subcommandgroup==null)subcommandgroup="";
             String subcommand=gSlashCommandEvent.getSubcommandName();
-            logger.info(cName+fName+"subcommand="+subcommand);
+            if(subcommand==null)subcommand="";
+            logger.info(cName+fName+"commandName="+commandName+", subcommandgroup="+subcommandgroup+", subcommand="+subcommand);
             List<OptionMapping> options=gSlashCommandEvent.getOptions();
             StringBuilder strOptions=new StringBuilder();
             for(OptionMapping option:options){
@@ -237,7 +238,7 @@ public class slashControler extends Command implements llMessageHelper, llGlobal
                     }
                     break;
                 case "restraints":
-                    if(subcommandgroup!=null&&!subcommandgroup.isBlank()){
+                    if(!subcommandgroup.isBlank()){
                         logger.info(cName+fName+"entered subcommandgroup restraints="+subcommandgroup);
                         switch (subcommandgroup){
                             case "auth":
@@ -245,7 +246,7 @@ public class slashControler extends Command implements llMessageHelper, llGlobal
                                 break;
                         }
                     }else
-                    if(subcommand!=null&&!subcommand.isBlank()){
+                    if(!subcommand.isBlank()){
                         logger.info(cName+fName+"entered subcommand restraints="+subcommand);
                         switch (subcommand){
                             case "menu":
@@ -434,6 +435,12 @@ public class slashControler extends Command implements llMessageHelper, llGlobal
                     break;
                 case  "commands":
                     new HelpCommand(gGlobal,gSlashCommandEvent);
+                case  "image_search":
+                    switch (subcommand){
+                        case "fa":
+                            new furaffinity(gGlobal,gSlashCommandEvent);
+                            break;
+                    }
                     break;
             }
         }

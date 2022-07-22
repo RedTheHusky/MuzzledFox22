@@ -1,0 +1,7 @@
+Update runaway
+Fix the lock button at padlock
+update help display
+disable close button
+
+
+update pishock

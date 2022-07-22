@@ -1,39 +1,42 @@
 package fun.games;
 
 
-
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
+import models.la.aBasicCommandHandler;
 import models.lc.json.profile.lcJSONGuildProfile;
 import models.lc.json.profile.lcJSONUserProfile;
-import models.lc.lcBasicFeatureControl;
 import models.lcGlobalHelper;
 import models.ll.colors.llColors;
 import models.llGlobalHelper;
-import models.ls.*;
+import models.ls.lsMemberHelper;
+import models.ls.lsMessageHelper;
+import models.ls.lsUnicodeEmotes;
+import models.ls.lsUsefullFunctions;
 import models.lsGlobalHelper;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
-import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import org.apache.log4j.Logger;
 import restraints.rdPishock;
 
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
 public class Minesweeper extends Command implements llGlobalHelper{
     Logger logger = Logger.getLogger(getClass()); String cName="[Minesweeper]";
-    lcGlobalHelper gGlobal;
+    lcGlobalHelper gGlobal=lsGlobalHelper.sGetGlobal();
     String gTitle="Minesweeper[beta]",gCommand="minesweeper";
 
-    public Minesweeper(lcGlobalHelper global){
+    public Minesweeper(){
         String fName="[constructor]";
         logger.info(cName+fName);
-        gGlobal=global;
-        this.name = "Minesweeper[beta]";
+        this.name = gTitle;
         this.help = "Imitation of the popular game Minesweeper.";
         this.aliases = new String[]{gCommand,"gameminesweeper"};
         this.guildOnly = true;this.category= llCommandCategory_Between;
@@ -49,23 +52,12 @@ public class Minesweeper extends Command implements llGlobalHelper{
         Runnable r = new runLocal(event);
         new Thread(r).start();
     }
-    protected class runLocal implements Runnable {
-        CommandEvent gEvent;String cName = "[runLocal]";
-        User gUser;Member gMember;
-        Guild gGuild;TextChannel gTextChannel;
-        Message gMessage;
+    protected class runLocal extends aBasicCommandHandler implements Runnable {
+       String cName = "[runLocal]";
         public runLocal(CommandEvent ev) {
             String fName="runLocal";
             logger.info(cName + ".run build");
-            gEvent = ev;
-            gUser = gEvent.getAuthor();gMember=gEvent.getMember();
-            gGuild = gEvent.getGuild();
-            logger.info(cName + fName + ".gUser:" + gUser.getId() + "|" + gUser.getName());
-            logger.info(cName + fName + ".gGuild:" + gGuild.getId() + "|" + gGuild.getName());
-            gTextChannel = gEvent.getTextChannel();
-            logger.info(cName + fName + ".gTextChannel:" + gTextChannel.getId() + "|" + gTextChannel.getName());
-            gMessage=gEvent.getMessage();
-
+            setCommandHandlerValues(logger,ev);
         }
 
         @Override
@@ -73,11 +65,8 @@ public class Minesweeper extends Command implements llGlobalHelper{
             String fName = "[run]";
             logger.info(cName + ".run start");
             try {
-                gBasicFeatureControl=new lcBasicFeatureControl(gGuild,"bfc_gameminesweeper",gGlobal);
-                gBasicFeatureControl.initProfile();
-                String[] items;
-                boolean isInvalidCommand=true;
-
+                buildBasicFeatureControl(logger,"bfc_gameminesweeper",gEvent);
+                setString4BasicFeatureControl(gTitle,gCommand);
                 if(gEvent.getArgs().isEmpty()){
                     logger.info(cName+fName+".Args=0");
                     help("main"); isInvalidCommand=false;
@@ -87,80 +76,15 @@ public class Minesweeper extends Command implements llGlobalHelper{
                     items = gEvent.getArgs().split("\\s+");
                     logger.info(cName + fName + ".items.size=" + items.length);
                     logger.info(cName + fName + ".items[0]=" + items[0]);
-                    if(items[0].equalsIgnoreCase("guild")||items[0].equalsIgnoreCase("server")){
-                        if(items.length>2){
-                            // allowchannels/blockchannels/ allowroles/blockroles list|add|rem|set|clear
-                            int group=0,type=0,action=0;
-                            switch (items[1].toLowerCase()){
-                                case "allowedchannels":
-                                case "allowchannels":
-                                    group=1;type=1;
-                                    break;
-                                case "blockedchannels":
-                                case "blockchannels":
-                                    group=1;type=-1;
-                                    break;
-                                case "allowedroles":
-                                case "allowroles":
-                                    group=2;type=1;
-                                    break;
-                                case "blockedroles":
-                                case "blockroles":
-                                    group=2;type=-1;
-                                    break;
-                            }
-                            switch (items[2].toLowerCase()){
-                                case "list":
-                                    action=0;
-                                    break;
-                                case "add":
-                                    action=1;
-                                    break;
-                                case "set":
-                                    action=2;
-                                    break;
-                                case "rem":
-                                    action=-1;
-                                    break;
-                                case "clear":
-                                    action=-2;
-                                    break;
-                            }
-                            if(group==1){
-                                if(action==0){
-                                    getChannels(type,false);isInvalidCommand=false;
-                                }else{
-                                    setChannel(type,action,gEvent.getMessage());
-                                }
-                            }
-                            else if(group==2){
-                                if(action==0){
-                                    getRoles(type,false);isInvalidCommand=false;
-                                }else{
-                                    setRole(type,action,gEvent.getMessage());
-                                }
-                            }
-                        }else{
-                            menuGuild();isInvalidCommand=false;
-                        }
-                    }
-                    else if(items[0].equalsIgnoreCase("help")){
+
+                    if(items[0].equalsIgnoreCase("help")){
                         help("main"); isInvalidCommand=false;
-                    }
-                    else if(!gBasicFeatureControl.getEnable()){
-                        logger.info(fName+"its disabled");
-                        lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"It's disabled in "+gGuild.getName()+"!", lsMessageHelper.llColorRed_Cardinal);
-                        isInvalidCommand=false;
-                    }
-                    else if(!gBasicFeatureControl.isChannelAllowed(gTextChannel)){
-                        logger.info(fName+"its not allowed by channel");
-                        lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"It's not allowed in channel "+gTextChannel.getAsMention()+"!", lsMessageHelper.llColorRed_Cardinal);
-                        isInvalidCommand=false;
-                    }
-                    else if(!gBasicFeatureControl.isRoleAllowed(gMember)){
-                        logger.info(fName+"its not allowed by roles");
-                        lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"It's not allowed as you roles prevent it!", lsMessageHelper.llColorRed_Cardinal);
-                        isInvalidCommand=false;
+                    }else
+                    if(ifItsAnAccessControlCommand()){
+                        logger.info(fName+"its an AccessControlCommand");
+                    }else
+                    if(!checkIfMemberIsAllowed()){
+                        logger.info(fName+"not allowed");
                     }
                     else if(items[0].equalsIgnoreCase("testgame")){
                        testGame(); isInvalidCommand=false;
@@ -206,8 +130,7 @@ public class Minesweeper extends Command implements llGlobalHelper{
                 }
                 logger.info(cName+".run ended");
             }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+                logger.error(fName + ".exception=" + e+" StackTrace:" + Arrays.toString(e.getStackTrace()));
                 lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
             }
         }
@@ -247,464 +170,269 @@ public class Minesweeper extends Command implements llGlobalHelper{
         /** Set Up all the components of Minesweeper */
         public void testGame() {
             String fName="[testGame]";
-            try {
-                gameSetup();
-                debugPrintBricks();
+            gameSetup();
+            debugPrintBricks();
 
-                createBoard();
-                postBoard();
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+            createBoard();
+            postBoard();
         }
         public void newGame() {
             String fName="[newGame]";
-            try {
-                getGuildProfile();
-                gameSetup();
-                debugPrintBricks();
-                saveBricks();
-                saveGuild();
-                getPlayer(gMember);
-                savePlayers();
+            getGuildProfile(gGlobal,lsGlobalHelper.llv2_GlobalsSettings,profileName,true,()->{iGuildPSafety();});
+            gameSetup();
+            debugPrintBricks();
+            saveBricks();
+            saveGuild(gGlobal);
+            getPlayer(gMember);
+            savePlayers();
 
-                createBoard();
-                postBoard();
-                ask2SelectRow();
-                listen2SelectRow();
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+            createBoard();
+            postBoard();
+            ask2SelectRow();
+            listen2SelectRow();
         }
         public void newGame(String x,String y) {
             String fName="[newGame]";
+            getGuildProfile(gGlobal,lsGlobalHelper.llv2_GlobalsSettings,profileName,true,()->{iGuildPSafety();});
+            logger.info(fName+"x="+x+" y="+y);
+            int ix=0,iy=0;
             try {
-                getGuildProfile();
-                logger.info(fName+"x="+x+" y="+y);
-                int ix=0,iy=0;
-                try {
-                    if(!x.isBlank())ix=Integer.parseInt(x);
-                    if(!y.isBlank())iy=Integer.parseInt(y);
-                }catch (Exception e){
-                    logger.error(fName + ".exception=" + e);
-                    logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-                    lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Please input number value!");
-                    return;
-                }
-                if(ix<=0){
-                    lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Rows size can't be 0 or negative number!");
-                    return;
-                }
-                else if(ix<4){
-                    lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Rows size can't be smaller than 4!");
-                    return;
-                }
-                else if(ix>13){
-                    lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Rows size can't be bigger than 13!");
-                    return;
-                }
-                if(!y.isBlank()){
-                    if(iy<=0){
-                        lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Columns size can't be 0 or negative number!");
-                        return;
-                    }else
-                    if(iy<4){
-                        lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Columns size can't be smaller than 4!");
-                        return;
-                    }else
-                    if(iy>13){
-                        lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Columns size can't be bigger than 13!");
-                        return;
-                    }
-                }
-
-
-                TILE_ROWS=ix;TILE_COLUMNS=iy;
-                MINE_NUMBER= (int) (TILE_COLUMNS*TILE_ROWS/10);
-                logger.info(fName+"TILE_COLUMNS="+TILE_COLUMNS+", TILE_ROWS="+TILE_ROWS+", MINE_NUMBER="+MINE_NUMBER);
-                gameSetup();
-                debugPrintBricks();
-                saveBricks();
-                saveGuild();
-                getPlayer(gMember);
-                savePlayers();
-
-                createBoard();
-                postBoard();
-                ask2SelectRow();
-                listen2SelectRow();
+                if(!x.isBlank())ix=Integer.parseInt(x);
+                if(!y.isBlank())iy=Integer.parseInt(y);
             }catch (Exception e){
                 logger.error(fName + ".exception=" + e);
                 logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Please input number value!");
+                return;
             }
-        }
-        public void calcMines(String x,String y) {
-            String fName="[calcMines]";
-            try {
-                getGuildProfile();
-                logger.info(fName+"x="+x+" y="+y);
-                int ix=0,iy=0;
-                try {
-                    if(!x.isBlank())ix=Integer.parseInt(x);
-                    if(!y.isBlank())iy=Integer.parseInt(y);
-                }catch (Exception e){
-                    logger.error(fName + ".exception=" + e);
-                    logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-                    lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Please input number value!");
-                    return;
-                }
-                if(ix<=0){
-                    lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Rows size can't be 0 or negative number!");
-                    return;
-                }
-                if(ix>20){
-                    lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Rows size can't be bigger than 20!");
-                    return;
-                }
-                if(!y.isBlank()&&iy<=0){
+            if(ix<=0){
+                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Rows size can't be 0 or negative number!");
+                return;
+            }
+            else if(ix<4){
+                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Rows size can't be smaller than 4!");
+                return;
+            }
+            else if(ix>13){
+                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Rows size can't be bigger than 13!");
+                return;
+            }
+            if(!y.isBlank()){
+                if(iy<=0){
                     lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Columns size can't be 0 or negative number!");
                     return;
                 }else
-                if(!y.isBlank()&&iy>20){
-                    lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Columns size can't be bigger than 20!");
+                if(iy<4){
+                    lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Columns size can't be smaller than 4!");
+                    return;
+                }else
+                if(iy>13){
+                    lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Columns size can't be bigger than 13!");
                     return;
                 }
-                else{
-                    iy=ix;
-                }
-                TILE_ROWS=ix;TILE_COLUMNS=iy;
-                MINE_NUMBER= (int) (TILE_COLUMNS*TILE_ROWS/10);
-                logger.info(fName+"TILE_COLUMNS="+TILE_COLUMNS+", TILE_ROWS="+TILE_ROWS+", MINE_NUMBER="+MINE_NUMBER);
-                EmbedBuilder embedBuilder=new EmbedBuilder();
-                embedBuilder.setTitle(gTitle);
-                embedBuilder.setColor(llColors.llColorGreen_Fern2);
-                embedBuilder.addField("Rows&Columns",""+TILE_ROWS+"x"+TILE_COLUMNS,false);
-                embedBuilder.addField("Bricks",""+(TILE_ROWS*TILE_COLUMNS),false);
-                embedBuilder.addField("Mines",""+MINE_NUMBER,false);
-                lsMessageHelper.lsSendMessage(gTextChannel,embedBuilder);
+            }
+
+
+            TILE_ROWS=ix;TILE_COLUMNS=iy;
+            MINE_NUMBER= (int) (TILE_COLUMNS*TILE_ROWS/10);
+            logger.info(fName+"TILE_COLUMNS="+TILE_COLUMNS+", TILE_ROWS="+TILE_ROWS+", MINE_NUMBER="+MINE_NUMBER);
+            gameSetup();
+            debugPrintBricks();
+            saveBricks();
+            saveGuild(gGlobal);
+            getPlayer(gMember);
+            savePlayers();
+
+            createBoard();
+            postBoard();
+            ask2SelectRow();
+            listen2SelectRow();
+        }
+        public void calcMines(String x,String y) {
+            String fName="[calcMines]";
+            getGuildProfile(gGlobal,lsGlobalHelper.llv2_GlobalsSettings,profileName,true,()->{iGuildPSafety();});
+            logger.info(fName+"x="+x+" y="+y);
+            int ix=0,iy=0;
+            try {
+                if(!x.isBlank())ix=Integer.parseInt(x);
+                if(!y.isBlank())iy=Integer.parseInt(y);
             }catch (Exception e){
                 logger.error(fName + ".exception=" + e);
                 logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Please input number value!");
+                return;
             }
+            if(ix<=0){
+                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Rows size can't be 0 or negative number!");
+                return;
+            }
+            if(ix>20){
+                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Rows size can't be bigger than 20!");
+                return;
+            }
+            if(!y.isBlank()&&iy<=0){
+                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Columns size can't be 0 or negative number!");
+                return;
+            }else
+            if(!y.isBlank()&&iy>20){
+                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Columns size can't be bigger than 20!");
+                return;
+            }
+            else{
+                iy=ix;
+            }
+            TILE_ROWS=ix;TILE_COLUMNS=iy;
+            MINE_NUMBER= (int) (TILE_COLUMNS*TILE_ROWS/10);
+            logger.info(fName+"TILE_COLUMNS="+TILE_COLUMNS+", TILE_ROWS="+TILE_ROWS+", MINE_NUMBER="+MINE_NUMBER);
+            EmbedBuilder embedBuilder=new EmbedBuilder();
+            embedBuilder.setTitle(gTitle);
+            embedBuilder.setColor(llColors.llColorGreen_Fern2);
+            embedBuilder.addField("Rows&Columns",""+TILE_ROWS+"x"+TILE_COLUMNS,false);
+            embedBuilder.addField("Bricks",""+(TILE_ROWS*TILE_COLUMNS),false);
+            embedBuilder.addField("Mines",""+MINE_NUMBER,false);
+            lsMessageHelper.lsSendMessage(gTextChannel,embedBuilder);
         }
         public void continueGame() {
             String fName="[continueGame]";
-            try {
-                getGuildProfile();
-                getBricks();
-                debugPrintBricks();
-                getPlayers();
+            getGuildProfile(gGlobal,lsGlobalHelper.llv2_GlobalsSettings,profileName,true,()->{iGuildPSafety();});
+            getBricks();
+            debugPrintBricks();
+            getPlayers();
 
-                createBoard();
-                postBoard();
-                ask2SelectRow();
-                listen2SelectRow();
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+            createBoard();
+            postBoard();
+            ask2SelectRow();
+            listen2SelectRow();
         }
         public void showAll() {
             String fName="[showAll]";
-            try {
-                getGuildProfile();
-                getBricks();
-                createBoard();
-                postBoard();
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+            getGuildProfile(gGlobal,lsGlobalHelper.llv2_GlobalsSettings,profileName,true,()->{iGuildPSafety();});
+            getBricks();
+            createBoard();
+            postBoard();
         }
 
         Message messageBoard=null;
         EmbedBuilder embedBoard;
         public void createEmbed() {
             String fName="[createEmbed]";
-            try {
-                if(embedBoard!=null)return;
-                embedBoard=new EmbedBuilder();
-                embedBoard.setTitle(gTitle);embedBoard.setColor(llColors.llColorGreen_Fern2);
-                logger.info(fName+"embed created");
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+            if(embedBoard!=null)return;
+            embedBoard=new EmbedBuilder();
+            embedBoard.setTitle(gTitle);embedBoard.setColor(llColors.llColorGreen_Fern2);
+            logger.info(fName+"embed created");
         }
         public void createBoard() {
             String fName="[createBoard]";
-            try {
-                createEmbed();
-                logger.info(fName+"TILE_COLUMNS="+TILE_COLUMNS+", TILE_ROWS="+TILE_ROWS);
-                int x=0,y=0;
-                StringBuilder strx= new StringBuilder();
-                StringBuilder stry= new StringBuilder();
-                StringBuilder columlabel=new StringBuilder();
-                columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlackLargeSquare));
-                for(int i=0;i<TILE_COLUMNS;i++){
-                    switch (i){
-                        case 0: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0));
-                            break;
-                        case 1: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
-                            break;
-                        case 2: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
-                            break;
-                        case 3: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
-                            break;
-                        case 4: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
-                            break;
-                        case 5: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
-                            break;
-                        case 6: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
-                            break;
-                        case 7: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
-                            break;
-                        case 8: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
-                            break;
-                        case 9: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9));
-                            break;
-                        case 10: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA));
-                            break;
-                        case 11: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB));
-                            break;
-                        case 12: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC));
-                            break;
-                        case 13: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD));
-                            break;
-                        case 14: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE));
-                            break;
-                        case 15: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF));
-                            break;
-                        case 16: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG));
-                            break;
-                        case 17: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH));
-                            break;
-                        case 18: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI));
-                            break;
-                        case 19: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ));
-                            break;
-                        default: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlackLargeSquare));
-                            break;
-                    }
-                    if(TILE_COLUMNS>10&&i<TILE_COLUMNS)columlabel.append(" ");
+            createEmbed();
+            logger.info(fName+"TILE_COLUMNS="+TILE_COLUMNS+", TILE_ROWS="+TILE_ROWS);
+            int x=0,y=0;
+            StringBuilder strx= new StringBuilder();
+            StringBuilder stry= new StringBuilder();
+            StringBuilder columlabel=new StringBuilder();
+            columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlackLargeSquare));
+            for(int i=0;i<TILE_COLUMNS;i++){
+                switch (i){
+                    case 0: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0));
+                        break;
+                    case 1: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
+                        break;
+                    case 2: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
+                        break;
+                    case 3: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
+                        break;
+                    case 4: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
+                        break;
+                    case 5: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
+                        break;
+                    case 6: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
+                        break;
+                    case 7: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
+                        break;
+                    case 8: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
+                        break;
+                    case 9: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9));
+                        break;
+                    case 10: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA));
+                        break;
+                    case 11: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB));
+                        break;
+                    case 12: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC));
+                        break;
+                    case 13: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD));
+                        break;
+                    case 14: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE));
+                        break;
+                    case 15: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF));
+                        break;
+                    case 16: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG));
+                        break;
+                    case 17: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH));
+                        break;
+                    case 18: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI));
+                        break;
+                    case 19: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ));
+                        break;
+                    default: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlackLargeSquare));
+                        break;
                 }
-                strx.append(columlabel.toString()).append("\n");
-                for (BRICK brick : bricks) {
-                    if(brick.getX() != x){
-                        x = brick.getX();
-                        strx.append(stry).append("\n");
-                        stry = new StringBuilder();
-                    }
-                    if(stry.length()==0){
-                        //row label
-                        switch (x){
-                            case 0: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA));
-                                break;
-                            case 1: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB));
-                                break;
-                            case 2: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC));
-                                break;
-                            case 3: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD));
-                                break;
-                            case 4: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE));
-                                break;
-                            case 5: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF));
-                                break;
-                            case 6: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG));
-                                break;
-                            case 7: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH));
-                                break;
-                            case 8: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI));
-                                break;
-                            case 9: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ));
-                                break;
-                            case 10: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0));
-                                break;
-                            case 11: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
-                                break;
-                            case 12: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
-                                break;
-                            case 13: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
-                                break;
-                            case 14: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
-                                break;
-                            case 15: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
-                                break;
-                            case 16: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
-                                break;
-                            case 17: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
-                                break;
-                            case 18: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
-                                break;
-                            case 19: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9));
-                                break;
-                            default: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlackLargeSquare));
-                                break;
-                        }
-                    }
-                    if(brick.isVisible()){
-                        logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"].visible");
-                        if(brick.isDetonated()){
-                            logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"]=detonated");
-                            stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSkullCrossbones));
-                        }
-                        else if(brick.isMine()){
-                            logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"]=bomb");
-                            stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBomb));
-                        }
-                        else {
-                            logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"]="+brick.getNumber());
-                            switch (brick.getNumber()){
-                                case 1: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
-                                    break;
-                                case 2: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
-                                    break;
-                                case 3: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
-                                    break;
-                                case 4: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
-                                    break;
-                                case 5: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
-                                    break;
-                                case 6: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
-                                    break;
-                                case 7: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
-                                    break;
-                                case 8: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
-                                    break;
-                                default: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlueSquare));
-                                    break;
-                            }
-                        }
-                    }else{
-                        logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"].hidden");
-                        stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasWhiteLargeSquare));
-                    }
-                    if(TILE_COLUMNS>10&&brick.getY()<TILE_COLUMNS-1)stry.append(" ");
-                }
-                if(!stry.toString().isBlank()){
-                    strx.append(stry);
-                }
-                String text=strx.toString();
-                logger.info(fName+"bricks.text:\n"+text);
-                logger.info(fName+"bricks.text.size:\n"+text.length());
-                embedBoard.setDescription(text);
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+                if(TILE_COLUMNS>10&&i<TILE_COLUMNS)columlabel.append(" ");
             }
-        }
-        public void createBoardShowAll() {
-            String fName="[createBoardShowAll]";
-            try {
-                createEmbed();
-                int x=0,y=0;
-                StringBuilder strx= new StringBuilder();
-                StringBuilder stry= new StringBuilder();
-                StringBuilder columlabel=new StringBuilder();
-                columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlackLargeSquare));
-                for(int i=0;i<TILE_COLUMNS;i++){
-                    switch (i){
-                        case 0: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0));
-                            break;
-                        case 1: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
-                            break;
-                        case 2: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
-                            break;
-                        case 3: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
-                            break;
-                        case 4: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
-                            break;
-                        case 5: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
-                            break;
-                        case 6: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
-                            break;
-                        case 7: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
-                            break;
-                        case 8: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
-                            break;
-                        case 9: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9));
-                            break;
-                        case 10: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA));
-                            break;
-                        case 11: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB));
-                            break;
-                        case 12: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC));
-                            break;
-                        case 13: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD));
-                            break;
-                        case 14: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE));
-                            break;
-                        case 15: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF));
-                            break;
-                        case 16: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG));
-                            break;
-                        case 17: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH));
-                            break;
-                        case 18: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI));
-                            break;
-                        case 19: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ));
-                            break;
-                        default: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlackLargeSquare));
-                            break;
-                    }
-                    columlabel.append(" ");
+            strx.append(columlabel.toString()).append("\n");
+            for (BRICK brick : bricks) {
+                if(brick.getX() != x){
+                    x = brick.getX();
+                    strx.append(stry).append("\n");
+                    stry = new StringBuilder();
                 }
-                strx.append(columlabel.toString()).append("\n");
-                for (BRICK brick : bricks) {
-                    if(brick.getX() != x){
-                        x = brick.getX();
-                        strx.append(stry).append("\n");
-                        stry = new StringBuilder();
+                if(stry.length()==0){
+                    //row label
+                    switch (x){
+                        case 0: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA));
+                            break;
+                        case 1: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB));
+                            break;
+                        case 2: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC));
+                            break;
+                        case 3: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD));
+                            break;
+                        case 4: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE));
+                            break;
+                        case 5: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF));
+                            break;
+                        case 6: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG));
+                            break;
+                        case 7: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH));
+                            break;
+                        case 8: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI));
+                            break;
+                        case 9: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ));
+                            break;
+                        case 10: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0));
+                            break;
+                        case 11: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
+                            break;
+                        case 12: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
+                            break;
+                        case 13: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
+                            break;
+                        case 14: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
+                            break;
+                        case 15: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
+                            break;
+                        case 16: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
+                            break;
+                        case 17: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
+                            break;
+                        case 18: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
+                            break;
+                        case 19: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9));
+                            break;
+                        default: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlackLargeSquare));
+                            break;
                     }
-                    if(stry.length()==0){
-                        //row lable
-                        switch (x){
-                            case 0: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA));
-                                break;
-                            case 1: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB));
-                                break;
-                            case 2: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC));
-                                break;
-                            case 3: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD));
-                                break;
-                            case 4: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE));
-                                break;
-                            case 5: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF));
-                                break;
-                            case 6: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG));
-                                break;
-                            case 7: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH));
-                                break;
-                            case 8: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI));
-                                break;
-                            case 9: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ));
-                                break;
-                            case 10: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0));
-                                break;
-                            case 11: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
-                                break;
-                            case 12: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
-                                break;
-                            case 13: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
-                                break;
-                            case 14: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
-                                break;
-                            case 15: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
-                                break;
-                            case 16: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
-                                break;
-                            case 17: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
-                                break;
-                            case 18: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
-                                break;
-                            case 19: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9));
-                                break;
-                            default: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlackLargeSquare));
-                                break;
-                        }
-                    }
+                }
+                if(brick.isVisible()){
+                    logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"].visible");
                     if(brick.isDetonated()){
                         logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"]=detonated");
                         stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSkullCrossbones));
@@ -736,564 +464,619 @@ public class Minesweeper extends Command implements llGlobalHelper{
                                 break;
                         }
                     }
-                    if(TILE_COLUMNS>10&&brick.getY()<TILE_COLUMNS-1)stry.append(" ");
+                }else{
+                    logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"].hidden");
+                    stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasWhiteLargeSquare));
                 }
-                if(!stry.toString().isBlank()){
-                    strx.append(stry);
-                }
-                String text=strx.toString();
-                logger.info(fName+"bricks.text:\n"+text);
-                logger.info(fName+"bricks.text.size:\n"+text.length());
-                embedBoard.setDescription(text);
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+                if(TILE_COLUMNS>10&&brick.getY()<TILE_COLUMNS-1)stry.append(" ");
             }
+            if(!stry.toString().isBlank()){
+                strx.append(stry);
+            }
+            String text=strx.toString();
+            logger.info(fName+"bricks.text:\n"+text);
+            logger.info(fName+"bricks.text.size:\n"+text.length());
+            embedBoard.setDescription(text);
+        }
+        public void createBoardShowAll() {
+            String fName="[createBoardShowAll]";
+            createEmbed();
+            int x=0,y=0;
+            StringBuilder strx= new StringBuilder();
+            StringBuilder stry= new StringBuilder();
+            StringBuilder columlabel=new StringBuilder();
+            columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlackLargeSquare));
+            for(int i=0;i<TILE_COLUMNS;i++){
+                switch (i){
+                    case 0: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0));
+                        break;
+                    case 1: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
+                        break;
+                    case 2: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
+                        break;
+                    case 3: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
+                        break;
+                    case 4: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
+                        break;
+                    case 5: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
+                        break;
+                    case 6: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
+                        break;
+                    case 7: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
+                        break;
+                    case 8: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
+                        break;
+                    case 9: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9));
+                        break;
+                    case 10: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA));
+                        break;
+                    case 11: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB));
+                        break;
+                    case 12: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC));
+                        break;
+                    case 13: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD));
+                        break;
+                    case 14: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE));
+                        break;
+                    case 15: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF));
+                        break;
+                    case 16: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG));
+                        break;
+                    case 17: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH));
+                        break;
+                    case 18: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI));
+                        break;
+                    case 19: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ));
+                        break;
+                    default: columlabel.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlackLargeSquare));
+                        break;
+                }
+                columlabel.append(" ");
+            }
+            strx.append(columlabel.toString()).append("\n");
+            for (BRICK brick : bricks) {
+                if(brick.getX() != x){
+                    x = brick.getX();
+                    strx.append(stry).append("\n");
+                    stry = new StringBuilder();
+                }
+                if(stry.length()==0){
+                    //row lable
+                    switch (x){
+                        case 0: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA));
+                            break;
+                        case 1: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB));
+                            break;
+                        case 2: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC));
+                            break;
+                        case 3: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD));
+                            break;
+                        case 4: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE));
+                            break;
+                        case 5: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF));
+                            break;
+                        case 6: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG));
+                            break;
+                        case 7: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH));
+                            break;
+                        case 8: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI));
+                            break;
+                        case 9: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ));
+                            break;
+                        case 10: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0));
+                            break;
+                        case 11: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
+                            break;
+                        case 12: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
+                            break;
+                        case 13: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
+                            break;
+                        case 14: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
+                            break;
+                        case 15: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
+                            break;
+                        case 16: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
+                            break;
+                        case 17: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
+                            break;
+                        case 18: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
+                            break;
+                        case 19: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9));
+                            break;
+                        default: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlackLargeSquare));
+                            break;
+                    }
+                }
+                if(brick.isDetonated()){
+                    logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"]=detonated");
+                    stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSkullCrossbones));
+                }
+                else if(brick.isMine()){
+                    logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"]=bomb");
+                    stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBomb));
+                }
+                else {
+                    logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"]="+brick.getNumber());
+                    switch (brick.getNumber()){
+                        case 1: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
+                            break;
+                        case 2: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
+                            break;
+                        case 3: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
+                            break;
+                        case 4: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
+                            break;
+                        case 5: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
+                            break;
+                        case 6: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
+                            break;
+                        case 7: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
+                            break;
+                        case 8: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
+                            break;
+                        default: stry.append(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasBlueSquare));
+                            break;
+                    }
+                }
+                if(TILE_COLUMNS>10&&brick.getY()<TILE_COLUMNS-1)stry.append(" ");
+            }
+            if(!stry.toString().isBlank()){
+                strx.append(stry);
+            }
+            String text=strx.toString();
+            logger.info(fName+"bricks.text:\n"+text);
+            logger.info(fName+"bricks.text.size:\n"+text.length());
+            embedBoard.setDescription(text);
         }
         public void postBoard() {
             String fName="[postBoard]";
-            try {
-                createEmbed();
-                if(messageBoard!=null){
-                    lsMessageHelper.lsMessageDelete(messageBoard);
-                }
-                messageBoard=lsMessageHelper.lsSendMessageResponse(gTextChannel,embedBoard);
-                logger.info(fName+"posted");
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            createEmbed();
+            if(messageBoard!=null){
+                lsMessageHelper.lsMessageDelete(messageBoard);
             }
+            messageBoard=lsMessageHelper.lsSendMessageResponse(gTextChannel,embedBoard);
+            logger.info(fName+"posted");
         }
         public void updateBoard() {
             String fName="[updateBoard]";
-            try {
-                if(messageBoard==null){
-                    postBoard();
-                    logger.info(fName+"posted");
-                }else{
-                    messageBoard.editMessageEmbeds(embedBoard.build()).complete();
-                    logger.info(fName+"updated");
-                }
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            if(messageBoard==null){
+                postBoard();
+                logger.info(fName+"posted");
+            }else{
+                messageBoard.editMessageEmbeds(embedBoard.build()).complete();
+                logger.info(fName+"updated");
             }
         }
         public void lostGame() {
             String fName="[lostGame]";
-            try {
-                createEmbed();
-                createBoard();
-                embedBoard.addField("Game lost", playerWhoSelectedLast.getAsMention()+" choose badly. They lost in "+getPlayer(playerWhoSelectedLast).getTurns()+" turn(s).",false);
-                StringBuilder desc2= new StringBuilder();
-                Set<Long>setKey=players.keySet();
-                Iterator<Long>iteratorKey=setKey.iterator();
-                while(iteratorKey.hasNext()){
-                    PLAYER player=players.get(iteratorKey.next());
-                    if(player.getID()!=playerWhoSelectedLast.getIdLong()){
-                        Member member=player.getMember(gGuild);
-                        if(member!=null){
-                            desc2.append("\n").append(member.getAsMention()).append(":").append(player.getTurns()).append(" turn(s)");
-                        }else{
-                            desc2.append("\n").append(player.getID()).append(":").append(player.getTurns()).append(" turn(s)");
-                        }
+            createEmbed();
+            createBoard();
+            embedBoard.addField("Game lost", playerWhoSelectedLast.getAsMention()+" choose badly. They lost in "+getPlayer(playerWhoSelectedLast).getTurns()+" turn(s).",false);
+            StringBuilder desc2= new StringBuilder();
+            Set<Long>setKey=players.keySet();
+            Iterator<Long>iteratorKey=setKey.iterator();
+            while(iteratorKey.hasNext()){
+                PLAYER player=players.get(iteratorKey.next());
+                if(player.getID()!=playerWhoSelectedLast.getIdLong()){
+                    Member member=player.getMember(gGuild);
+                    if(member!=null){
+                        desc2.append("\n").append(member.getAsMention()).append(":").append(player.getTurns()).append(" turn(s)");
+                    }else{
+                        desc2.append("\n").append(player.getID()).append(":").append(player.getTurns()).append(" turn(s)");
                     }
                 }
-                if(desc2.length()!=0){
-                    embedBoard.addField("Other players", desc2.toString(),false);
-                }
-                postBoard();
-                new rdPishock(gGlobal,"game_punish",gGuild,gTextChannel,playerWhoSelectedLast,playerWhoSelectedLast);
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             }
+            if(desc2.length()!=0){
+                embedBoard.addField("Other players", desc2.toString(),false);
+            }
+            postBoard();
+            new rdPishock(gGlobal,"game_punish",gGuild,gTextChannel,playerWhoSelectedLast,playerWhoSelectedLast);
         }
         public void woneGame() {
             String fName="[woneGane]";
-            try {
-                createEmbed();
-                createBoard();
-                embedBoard.addField("Game won", playerWhoSelectedLast.getAsMention()+" finished the game in "+getPlayer(playerWhoSelectedLast).getTurns()+" turn(s).",false);
-                StringBuilder desc2= new StringBuilder();
-                Set<Long>setKey=players.keySet();
-                Iterator<Long>iteratorKey=setKey.iterator();
-                while(iteratorKey.hasNext()){
-                    PLAYER player=players.get(iteratorKey.next());
-                    if(player.getID()!=playerWhoSelectedLast.getIdLong()){
-                        Member member=player.getMember(gGuild);
-                        if(member!=null){
-                            desc2.append("\n").append(member.getAsMention()).append(":").append(player.getTurns()).append(" turn(s)");
-                        }else{
-                            desc2.append("\n").append(player.getID()).append(":").append(player.getTurns()).append(" turn(s)");
-                        }
+            createEmbed();
+            createBoard();
+            embedBoard.addField("Game won", playerWhoSelectedLast.getAsMention()+" finished the game in "+getPlayer(playerWhoSelectedLast).getTurns()+" turn(s).",false);
+            StringBuilder desc2= new StringBuilder();
+            Set<Long>setKey=players.keySet();
+            Iterator<Long>iteratorKey=setKey.iterator();
+            while(iteratorKey.hasNext()){
+                PLAYER player=players.get(iteratorKey.next());
+                if(player.getID()!=playerWhoSelectedLast.getIdLong()){
+                    Member member=player.getMember(gGuild);
+                    if(member!=null){
+                        desc2.append("\n").append(member.getAsMention()).append(":").append(player.getTurns()).append(" turn(s)");
+                    }else{
+                        desc2.append("\n").append(player.getID()).append(":").append(player.getTurns()).append(" turn(s)");
                     }
                 }
-                if(desc2.length()!=0){
-                    embedBoard.addField("Other players", desc2.toString(),false);
-                }
-                postBoard();
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             }
+            if(desc2.length()!=0){
+                embedBoard.addField("Other players", desc2.toString(),false);
+            }
+            postBoard();
         }
         public void stillGoingGame() {
             String fName="[stillGoingGame]";
-            try {
-                createEmbed();
-                createBoard();
-                postBoard();
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+            createEmbed();
+            createBoard();
+            postBoard();
         }
         int selectedI=-1,selectedJ=-1;Member playerWhoSelectedLast;
         public void ask2SelectRow() {
             String fName="[ask2SelectRow]";
-            try {
-                updateBoard();
-                for(int i=0;i<TILE_ROWS;i++){
-                    if(isRowAvailable(i)){
-                        switch (i){
-                            case 0: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA));
-                                break;
-                            case 1:lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB));
-                                break;
-                            case 2: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC));
-                                break;
-                            case 3:lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD));
-                                break;
-                            case 4: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE));
-                                break;
-                            case 5: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF));
-                                break;
-                            case 6: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG));
-                                break;
-                            case 7: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH));
-                                break;
-                            case 8: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI));
-                                break;
-                            case 9: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ));
-                                break;
-                            case 10: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0));
-                                break;
-                            case 11: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
-                                break;
-                            case 12: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
-                                break;
-                            case 13: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
-                                break;
-                            case 14: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
-                                break;
-                            case 15: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
-                                break;
-                            case 16: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
-                                break;
-                            case 17: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
-                                break;
-                            case 18: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
-                                break;
-                            case 19: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9));
-                                break;
-                        }
+            updateBoard();
+            for(int i=0;i<TILE_ROWS;i++){
+                if(isRowAvailable(i)){
+                    switch (i){
+                        case 0: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA));
+                            break;
+                        case 1:lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB));
+                            break;
+                        case 2: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC));
+                            break;
+                        case 3:lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD));
+                            break;
+                        case 4: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE));
+                            break;
+                        case 5: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF));
+                            break;
+                        case 6: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG));
+                            break;
+                        case 7: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH));
+                            break;
+                        case 8: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI));
+                            break;
+                        case 9: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ));
+                            break;
+                        case 10: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0));
+                            break;
+                        case 11: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
+                            break;
+                        case 12: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
+                            break;
+                        case 13: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
+                            break;
+                        case 14: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
+                            break;
+                        case 15: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
+                            break;
+                        case 16: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
+                            break;
+                        case 17: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
+                            break;
+                        case 18: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
+                            break;
+                        case 19: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9));
+                            break;
                     }
                 }
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             }
         }
         public void listen2SelectRow() {
             String fName="[listen2SelectRow]";
-            try {
-                gGlobal.waiter.waitForEvent(GuildMessageReactionAddEvent.class,
-                        e -> (e.getMessageId().equalsIgnoreCase(messageBoard.getId())&&!e.getUser().isBot()),
-                        e -> {
-                            try {
-                                String name=e.getReactionEmote().getName();
-                                logger.warn(fName+"name="+name);
-                                if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA)))selectedI=0;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB)))selectedI=1;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC)))selectedI=2;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD)))selectedI=3;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE)))selectedI=4;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF)))selectedI=5;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG)))selectedI=6;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH)))selectedI=7;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI)))selectedI=8;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ)))selectedI=9;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0)))selectedI=10;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1)))selectedI=11;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2)))selectedI=12;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3)))selectedI=13;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4)))selectedI=14;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5)))selectedI=15;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6)))selectedI=16;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7)))selectedI=17;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8)))selectedI=18;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9)))selectedI=19;
+            gGlobal.waiter.waitForEvent(GuildMessageReactionAddEvent.class,
+                    e -> (e.getMessageId().equalsIgnoreCase(messageBoard.getId())&&!e.getUser().isBot()),
+                    e -> {
+                        try {
+                            String name=e.getReactionEmote().getName();
+                            logger.warn(fName+"name="+name);
+                            if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA)))selectedI=0;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB)))selectedI=1;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC)))selectedI=2;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD)))selectedI=3;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE)))selectedI=4;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF)))selectedI=5;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG)))selectedI=6;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH)))selectedI=7;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI)))selectedI=8;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ)))selectedI=9;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0)))selectedI=10;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1)))selectedI=11;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2)))selectedI=12;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3)))selectedI=13;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4)))selectedI=14;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5)))selectedI=15;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6)))selectedI=16;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7)))selectedI=17;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8)))selectedI=18;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9)))selectedI=19;
 
-                                if(selectedI<0){
-                                    listen2SelectRow();
-                                }else{
-                                    lsMessageHelper.lsMessageClearReactions(messageBoard);
-                                    ask2SelectColumn();
-                                    listen2SelectColumn();
-                                }
-                            }catch (Exception e2) {
-                                logger.error(fName + ".exception=" + e2);
-                                logger.error(fName + ".exception:" + Arrays.toString(e2.getStackTrace()));
+                            if(selectedI<0){
+                                listen2SelectRow();
+                            }else{
+                                lsMessageHelper.lsMessageClearReactions(messageBoard);
+                                ask2SelectColumn();
+                                listen2SelectColumn();
                             }
-                        },15, TimeUnit.MINUTES, () -> {lsMessageHelper.lsMessageDelete(messageBoard);messageBoard=null;});
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+                        }catch (Exception e2) {
+                            logger.error(fName + ".exception=" + e2);
+                            logger.error(fName + ".exception:" + Arrays.toString(e2.getStackTrace()));
+                        }
+                    },15, TimeUnit.MINUTES, () -> {lsMessageHelper.lsMessageDelete(messageBoard);messageBoard=null;});
         }
         public void ask2SelectColumn() {
             String fName="[ask2SelectColumn]";
-            try {
-                updateBoard();
-                for(int i=0;i<TILE_COLUMNS;i++){
-                    BRICK brick=getBrick(selectedI,i);
-                    if(!brick.isVisible()){
-                        switch (i){
-                            case 0: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0));
-                                break;
-                            case 1: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
-                                break;
-                            case 2: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
-                                break;
-                            case 3: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
-                                break;
-                            case 4: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
-                                break;
-                            case 5: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
-                                break;
-                            case 6: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
-                                break;
-                            case 7: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
-                                break;
-                            case 8: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
-                                break;
-                            case 9: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9));
-                                break;
-                            case 10: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA));
-                                break;
-                            case 11: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB));
-                                break;
-                            case 12:lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC));
-                                break;
-                            case 13: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD));
-                                break;
-                            case 14: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE));
-                                break;
-                            case 15: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF));
-                                break;
-                            case 16: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG));
-                                break;
-                            case 17: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH));
-                                break;
-                            case 18: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI));
-                                break;
-                            case 19: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ));
-                                break;
-                        }
+            updateBoard();
+            for(int i=0;i<TILE_COLUMNS;i++){
+                BRICK brick=getBrick(selectedI,i);
+                if(!brick.isVisible()){
+                    switch (i){
+                        case 0: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0));
+                            break;
+                        case 1: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1));
+                            break;
+                        case 2: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2));
+                            break;
+                        case 3: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3));
+                            break;
+                        case 4: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4));
+                            break;
+                        case 5: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5));
+                            break;
+                        case 6: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6));
+                            break;
+                        case 7: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7));
+                            break;
+                        case 8: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8));
+                            break;
+                        case 9: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9));
+                            break;
+                        case 10: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA));
+                            break;
+                        case 11: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB));
+                            break;
+                        case 12:lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC));
+                            break;
+                        case 13: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD));
+                            break;
+                        case 14: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE));
+                            break;
+                        case 15: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF));
+                            break;
+                        case 16: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG));
+                            break;
+                        case 17: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH));
+                            break;
+                        case 18: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI));
+                            break;
+                        case 19: lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ));
+                            break;
                     }
                 }
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             }
         }
         public void listen2SelectColumn() {
             String fName="[listen2SelectColumn]";
-            try {
-                gGlobal.waiter.waitForEvent(GuildMessageReactionAddEvent.class,
-                        e -> (e.getMessageId().equalsIgnoreCase(messageBoard.getId())&&!e.getUser().isBot()),
-                        e -> {
-                            try {
-                                String name=e.getReactionEmote().getName();
-                                logger.warn(fName+"name="+name);
-                                if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0)))selectedJ=0;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1)))selectedJ=1;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2)))selectedJ=2;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3)))selectedJ=3;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4)))selectedJ=4;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5)))selectedJ=5;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6)))selectedJ=6;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7)))selectedJ=7;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8)))selectedJ=8;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9)))selectedJ=9;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA)))selectedI=10;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB)))selectedI=11;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC)))selectedI=12;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD)))selectedI=13;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE)))selectedI=14;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF)))selectedI=15;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG)))selectedI=16;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH)))selectedI=17;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI)))selectedI=18;
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ)))selectedI=19;
+            gGlobal.waiter.waitForEvent(GuildMessageReactionAddEvent.class,
+                    e -> (e.getMessageId().equalsIgnoreCase(messageBoard.getId())&&!e.getUser().isBot()),
+                    e -> {
+                        try {
+                            String name=e.getReactionEmote().getName();
+                            logger.warn(fName+"name="+name);
+                            if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias0)))selectedJ=0;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias1)))selectedJ=1;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias2)))selectedJ=2;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias3)))selectedJ=3;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias4)))selectedJ=4;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias5)))selectedJ=5;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias6)))selectedJ=6;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias7)))selectedJ=7;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias8)))selectedJ=8;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.alias9)))selectedJ=9;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolA)))selectedI=10;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolB)))selectedI=11;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolC)))selectedI=12;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolD)))selectedI=13;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolE)))selectedI=14;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolF)))selectedI=15;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolG)))selectedI=16;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolH)))selectedI=17;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolI)))selectedI=18;
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasSymbolJ)))selectedI=19;
 
-                                if(selectedJ<0){
-                                    listen2SelectRow();
-                                }else{
-                                    lsMessageHelper.lsMessageClearReactions(messageBoard);
-                                    ask2Option();
-                                    listen2Option();
-                                }
-                            }catch (Exception e2) {
-                                logger.error(fName + ".exception=" + e2);
-                                logger.error(fName + ".exception:" + Arrays.toString(e2.getStackTrace()));
+                            if(selectedJ<0){
+                                listen2SelectRow();
+                            }else{
+                                lsMessageHelper.lsMessageClearReactions(messageBoard);
+                                ask2Option();
+                                listen2Option();
                             }
-                        },15, TimeUnit.MINUTES, () -> {lsMessageHelper.lsMessageDelete(messageBoard);messageBoard=null;});
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+                        }catch (Exception e2) {
+                            logger.error(fName + ".exception=" + e2);
+                            logger.error(fName + ".exception:" + Arrays.toString(e2.getStackTrace()));
+                        }
+                    },15, TimeUnit.MINUTES, () -> {lsMessageHelper.lsMessageDelete(messageBoard);messageBoard=null;});
         }
         public void ask2Option() {
             String fName="[ask2Option]";
-            try {
-                updateBoard();
-                BRICK brick=getBrick(selectedI,selectedJ);
-                if(!brick.isVisible()){
-                    lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasTriangularFlagOnPost));
-                    lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasEye));
-                }
-                lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasArrowUp));
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            updateBoard();
+            BRICK brick=getBrick(selectedI,selectedJ);
+            if(!brick.isVisible()){
+                lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasTriangularFlagOnPost));
+                lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasEye));
             }
+            lsMessageHelper.lsMessageAddReactions(messageBoard,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasArrowUp));
         }
         public void listen2Option() {
             String fName="[listen2Option]";
-            try {
-                gGlobal.waiter.waitForEvent(GuildMessageReactionAddEvent.class,
-                        e -> (e.getMessageId().equalsIgnoreCase(messageBoard.getId())&&!e.getUser().isBot()),
-                        e -> {
-                            try {
-                                String name=e.getReactionEmote().getName();
-                                logger.warn(fName+"name="+name);
-                                PLAYER player=getPlayer(e.getMember());
-                                player.incTurns();
-                                playerWhoSelectedLast =e.getMember();
-                                setPlayer(player);
-                                if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasArrowUp))){
-                                    lsMessageHelper.lsMessageClearReactions(messageBoard);
-                                    ask2SelectRow();listen2SelectRow();
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasTriangularFlagOnPost))){
-                                    BRICK brick=getBrick(selectedI,selectedJ);
-                                    if(brick.isFlagged()){
-                                        brick.setFlagged(false);
-                                    }else{
-                                        brick.setFlagged(true);
-                                    }
-                                    setBrick(selectedI,selectedJ,brick);
-                                    saveBricks();savePlayers();saveGuild();
-                                    if(!isRemaining()){
-                                        woneGame();
-                                        player.setWinner(true);
-                                        player.setFinished(true);
-                                    }
-                                    else{
-                                        continueGame();
-                                    }
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasEye))){
-                                    BRICK brick=getBrick(selectedI,selectedJ);
+            gGlobal.waiter.waitForEvent(GuildMessageReactionAddEvent.class,
+                    e -> (e.getMessageId().equalsIgnoreCase(messageBoard.getId())&&!e.getUser().isBot()),
+                    e -> {
+                        try {
+                            String name=e.getReactionEmote().getName();
+                            logger.warn(fName+"name="+name);
+                            PLAYER player=getPlayer(e.getMember());
+                            player.incTurns();
+                            playerWhoSelectedLast =e.getMember();
+                            setPlayer(player);
+                            if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasArrowUp))){
+                                lsMessageHelper.lsMessageClearReactions(messageBoard);
+                                ask2SelectRow();listen2SelectRow();
+                            }
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasTriangularFlagOnPost))){
+                                BRICK brick=getBrick(selectedI,selectedJ);
+                                if(brick.isFlagged()){
                                     brick.setFlagged(false);
-                                    brick.setVisible(true);
-                                    if(brick.isMine()){
-                                        brick.setDetonated(true);
-
-                                    }
-                                    setBrick(selectedI,selectedJ,brick);
-                                    saveBricks();savePlayers();saveGuild();
-                                    if(brick.isDetonated()){
-                                        lostGame();
-                                        player.setLoser(true);
-                                        player.setFinished(true);
-                                    }
-                                    else if(!isRemaining()){
-                                        woneGame();
-                                        player.setWinner(true);
-                                        player.setFinished(true);
-                                    }
-                                    else{
-                                        continueGame();
-                                    }
+                                }else{
+                                    brick.setFlagged(true);
+                                }
+                                setBrick(selectedI,selectedJ,brick);
+                                saveBricks();savePlayers();saveGuild(gGlobal);
+                                if(!isRemaining()){
+                                    woneGame();
+                                    player.setWinner(true);
+                                    player.setFinished(true);
                                 }
                                 else{
-                                    listen2Option();
+                                    continueGame();
                                 }
-                            }catch (Exception e2) {
-                                logger.error(fName + ".exception=" + e2);
-                                logger.error(fName + ".exception:" + Arrays.toString(e2.getStackTrace()));
                             }
-                        },15, TimeUnit.MINUTES, () -> {lsMessageHelper.lsMessageDelete(messageBoard);messageBoard=null;});
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+                            else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasEye))){
+                                BRICK brick=getBrick(selectedI,selectedJ);
+                                brick.setFlagged(false);
+                                brick.setVisible(true);
+                                if(brick.isMine()){
+                                    brick.setDetonated(true);
+
+                                }
+                                setBrick(selectedI,selectedJ,brick);
+                                saveBricks();savePlayers();saveGuild(gGlobal);
+                                if(brick.isDetonated()){
+                                    lostGame();
+                                    player.setLoser(true);
+                                    player.setFinished(true);
+                                }
+                                else if(!isRemaining()){
+                                    woneGame();
+                                    player.setWinner(true);
+                                    player.setFinished(true);
+                                }
+                                else{
+                                    continueGame();
+                                }
+                            }
+                            else{
+                                listen2Option();
+                            }
+                        }catch (Exception e2) {
+                            logger.error(fName + ".exception=" + e2);
+                            logger.error(fName + ".exception:" + Arrays.toString(e2.getStackTrace()));
+                        }
+                    },15, TimeUnit.MINUTES, () -> {lsMessageHelper.lsMessageDelete(messageBoard);messageBoard=null;});
         }
 
         public void gameSetup () {
             String fName="[gameSetup]";
-            try {
-                gameCreateBricks();
-                gameMineGenerator();
-                gameNumberGenerator();
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+            gameCreateBricks();
+            gameMineGenerator();
+            gameNumberGenerator();
         }
         private void gameCreateBricks () {
             String fName="[gameCreateBricks]";
-            try {
-                logger.info(fName+"TILE_COLUMNS="+TILE_COLUMNS+", TILE_ROWS="+TILE_ROWS);
-                for (int i=0;i<TILE_ROWS;i++) {
-                    for (int j=0;j<TILE_COLUMNS;j++) {
-                        bricks.add(new BRICK(i,j,bricks.size()));
-                    }
+            logger.info(fName+"TILE_COLUMNS="+TILE_COLUMNS+", TILE_ROWS="+TILE_ROWS);
+            for (int i=0;i<TILE_ROWS;i++) {
+                for (int j=0;j<TILE_COLUMNS;j++) {
+                    bricks.add(new BRICK(i,j,bricks.size()));
                 }
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             }
         }
         /** Randomly generate mines throughtout the board */
         private void gameMineGenerator () {
             String fName="[gameMineGenerator]";
-            try {
-                logger.info(fName+"MINE_NUMBER="+MINE_NUMBER);
-                int i=0,d=0;
-                while (i<MINE_NUMBER&&d<500) {
-                    int x=lsUsefullFunctions.getRandom(TILE_COLUMNS-1);
-                    int y=lsUsefullFunctions.getRandom(TILE_ROWS-1);
-                    logger.info(fName+"i["+i+"]:x="+x+", y="+y);
-                    BRICK brick=getBrick(x,y);
-                    if(!brick.isMine()){
-                        logger.info(fName+"brick is not a mine");
-                        brick.setMine(true);
-                        i++;
-                        setBrick(x,y,brick);
-                    }
-                    d++;
+            logger.info(fName+"MINE_NUMBER="+MINE_NUMBER);
+            int i=0,d=0;
+            while (i<MINE_NUMBER&&d<500) {
+                int x=lsUsefullFunctions.getRandom(TILE_COLUMNS-1);
+                int y=lsUsefullFunctions.getRandom(TILE_ROWS-1);
+                logger.info(fName+"i["+i+"]:x="+x+", y="+y);
+                BRICK brick=getBrick(x,y);
+                if(!brick.isMine()){
+                    logger.info(fName+"brick is not a mine");
+                    brick.setMine(true);
+                    i++;
+                    setBrick(x,y,brick);
                 }
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+                d++;
             }
         }
         /** Generates the numbers on each of the tiles throughout the board. Each number denoted the number of mines surrounding
          * the tile. 0 is not displayed. */
         private void gameNumberGenerator() {
             String fName="[gameNumberGenerator]";
-            try {
-                logger.info(fName+"TILE_COLUMNS="+TILE_COLUMNS+", TILE_ROWS="+TILE_ROWS+", MINE_NUMBER="+MINE_NUMBER);
-                for (int i=0;i<TILE_ROWS;i++) {
-                    for (int j=0;j<TILE_COLUMNS;j++) {
-                        BRICK brick=getBrick(i,j);
-                        if (!brick.isMine()){
-                            brick.setNumber(gameCountSurround(i,j));
-                        }
-                        setBrick(i,j,brick);
+            logger.info(fName+"TILE_COLUMNS="+TILE_COLUMNS+", TILE_ROWS="+TILE_ROWS+", MINE_NUMBER="+MINE_NUMBER);
+            for (int i=0;i<TILE_ROWS;i++) {
+                for (int j=0;j<TILE_COLUMNS;j++) {
+                    BRICK brick=getBrick(i,j);
+                    if (!brick.isMine()){
+                        brick.setNumber(gameCountSurround(i,j));
                     }
+                    setBrick(i,j,brick);
                 }
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             }
         }
         /** Counts the mines surrounding the Tile at [i,j] */
         private int gameCountSurround (int i, int j) {
             String fName="[gameCountSurround]";
-            try {
-                int count=0;
-                if (i+1!=TILE_COLUMNS && getBrick(i+1,j).isMine()) {
-                    logger.info(fName+"i="+i+", j="+j+", trigger 1");
-                    count++;
-                }
-                if (i+1!=TILE_COLUMNS &&  j+1!=TILE_ROWS &&getBrick(i+1,j+1).isMine()) {
-                    logger.info(fName+"i="+i+", j="+j+", trigger 2");
-                    count++;
-                }
-                if (i-1!=-1 && j+1!=TILE_ROWS &&getBrick(i-1,j+1).isMine()) {
-                    logger.info(fName+"i="+i+", j="+j+", trigger 3");
-                    count++;
-                }
-                if (i+1!=TILE_COLUMNS && j-1!=-1 && getBrick(i+1,j-1).isMine()) {
-                    logger.info(fName+"i="+i+", j="+j+", trigger 4");
-                    count++;
-                }
-                if (i-1!=-1 && j-1!=-1 && getBrick(i-1,j-1).isMine()) {
-                    logger.info(fName+"i="+i+", j="+j+", trigger 5");
-                    count++;
-                }
-                if (i-1!=-1 && getBrick(i-1,j).isMine()) {
-                    logger.info(fName+"i="+i+", j="+j+", trigger 6");
-                    count++;
-                }
-                if (j+1!=TILE_ROWS && getBrick(i,j+1).isMine()) {
-                    logger.info(fName+"i="+i+", j="+j+", trigger 7");
-                    count++;
-                }
-                if (j-1!=-1 &&  getBrick(i,j-1).isMine()) {
-                    logger.info(fName+"i="+i+", j="+j+", trigger 8");
-                    count++;
-                }
-                logger.info(fName+"i="+i+", j="+j+", count="+count);
-                return count;
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-                return -1;
+            int count=0;
+            if (i+1!=TILE_COLUMNS && getBrick(i+1,j).isMine()) {
+                logger.info(fName+"i="+i+", j="+j+", trigger 1");
+                count++;
             }
+            if (i+1!=TILE_COLUMNS &&  j+1!=TILE_ROWS &&getBrick(i+1,j+1).isMine()) {
+                logger.info(fName+"i="+i+", j="+j+", trigger 2");
+                count++;
+            }
+            if (i-1!=-1 && j+1!=TILE_ROWS &&getBrick(i-1,j+1).isMine()) {
+                logger.info(fName+"i="+i+", j="+j+", trigger 3");
+                count++;
+            }
+            if (i+1!=TILE_COLUMNS && j-1!=-1 && getBrick(i+1,j-1).isMine()) {
+                logger.info(fName+"i="+i+", j="+j+", trigger 4");
+                count++;
+            }
+            if (i-1!=-1 && j-1!=-1 && getBrick(i-1,j-1).isMine()) {
+                logger.info(fName+"i="+i+", j="+j+", trigger 5");
+                count++;
+            }
+            if (i-1!=-1 && getBrick(i-1,j).isMine()) {
+                logger.info(fName+"i="+i+", j="+j+", trigger 6");
+                count++;
+            }
+            if (j+1!=TILE_ROWS && getBrick(i,j+1).isMine()) {
+                logger.info(fName+"i="+i+", j="+j+", trigger 7");
+                count++;
+            }
+            if (j-1!=-1 &&  getBrick(i,j-1).isMine()) {
+                logger.info(fName+"i="+i+", j="+j+", trigger 8");
+                count++;
+            }
+            logger.info(fName+"i="+i+", j="+j+", count="+count);
+            return count;
         }
         public boolean isRemaining() {
             String fName="[isRemaining]";
-            try {
-                for (BRICK brick:bricks) {
-                   if(!brick.isVisible()&&!brick.isMine()){
-                       logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"]is not visible and not a mine>true");
-                       return true;
-                   }
+            for (BRICK brick:bricks) {
+                if(!brick.isVisible()&&!brick.isMine()){
+                    logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"]is not visible and not a mine>true");
+                    return true;
                 }
-                logger.info(fName+"default>false");
-                return false;
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-                return true;
             }
-
+            logger.info(fName+"default>false");
+            return false;
         }
         public boolean isRowAvailable(int x) {
             String fName="[isRowAvailable]";
-            try {
-                logger.info(fName+"x="+x);
-                for (int j=0;j<TILE_COLUMNS;j++) {
-                    BRICK brick=getBrick(x,j);
-                    if(!brick.isVisible()){
-                        logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"]is not visible>true");
-                        return true;
-                    }
+            logger.info(fName+"x="+x);
+            for (int j=0;j<TILE_COLUMNS;j++) {
+                BRICK brick=getBrick(x,j);
+                if(!brick.isVisible()){
+                    logger.info(fName+"brick["+brick.getX()+","+brick.getY()+"]is not visible>true");
+                    return true;
                 }
-                logger.info(fName+"default>false");
-                return false;
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-                return true;
             }
-
+            logger.info(fName+"default>false");
+            return false;
         }
 
         List<BRICK>bricks=new ArrayList<>();
@@ -1527,113 +1310,84 @@ public class Minesweeper extends Command implements llGlobalHelper{
         }
         private boolean getBricks () {
             String fName="[getBricks]";
-            try {
-                logger.info(fName);
-                bricks=new ArrayList<>();
-                TILE_COLUMNS=gGuildProfile.getFieldEntryAsInt(keyColumns);
-                TILE_ROWS=gGuildProfile.getFieldEntryAsInt(keyRows);
-                MINE_NUMBER=gGuildProfile.getFieldEntryAsInt(keyMineNumber);
-                logger.info(fName+"TILE_COLUMNS="+TILE_COLUMNS+", TILE_ROWS="+TILE_ROWS+", MINE_NUMBER="+MINE_NUMBER);
-                JSONArray jsonArray=gGuildProfile.optFieldEntryAsJSONArray(keyBricks);
-                logger.info(fName+"jsonArray="+jsonArray.toString());
-                for(int i=0;i<jsonArray.length();i++){
-                    BRICK brick=new BRICK(jsonArray.getJSONObject(i));
-                    bricks.add(brick);
-                }
-                return true;
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-                return false;
+            logger.info(fName);
+            bricks=new ArrayList<>();
+            TILE_COLUMNS=gGuildProfile.getFieldEntryAsInt(keyColumns);
+            TILE_ROWS=gGuildProfile.getFieldEntryAsInt(keyRows);
+            MINE_NUMBER=gGuildProfile.getFieldEntryAsInt(keyMineNumber);
+            logger.info(fName+"TILE_COLUMNS="+TILE_COLUMNS+", TILE_ROWS="+TILE_ROWS+", MINE_NUMBER="+MINE_NUMBER);
+            JSONArray jsonArray=gGuildProfile.optFieldEntryAsJSONArray(keyBricks);
+            logger.info(fName+"jsonArray="+jsonArray.toString());
+            for(int i=0;i<jsonArray.length();i++){
+                BRICK brick=new BRICK(jsonArray.getJSONObject(i));
+                bricks.add(brick);
             }
+            return true;
         }
         private boolean saveBricks () {
             String fName="[saveBricks]";
-            try {
-                logger.info(fName);
-                JSONArray jsonArray=new JSONArray();
-                for (BRICK brick : bricks) {
-                    jsonArray.put(brick.getJSON());
-                }
-                logger.info(fName+"jsonArray="+jsonArray.toString());
-                gGuildProfile.putFieldEntry(keyBricks,jsonArray);
-                gGuildProfile.putFieldEntry(keyMineNumber,MINE_NUMBER);
-                gGuildProfile.putFieldEntry(keyColumns,TILE_COLUMNS);
-                gGuildProfile.putFieldEntry(keyRows,TILE_ROWS);
-                return true;
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-                return false;
+            logger.info(fName);
+            JSONArray jsonArray=new JSONArray();
+            for (BRICK brick : bricks) {
+                jsonArray.put(brick.getJSON());
             }
+            logger.info(fName+"jsonArray="+jsonArray.toString());
+            gGuildProfile.putFieldEntry(keyBricks,jsonArray);
+            gGuildProfile.putFieldEntry(keyMineNumber,MINE_NUMBER);
+            gGuildProfile.putFieldEntry(keyColumns,TILE_COLUMNS);
+            gGuildProfile.putFieldEntry(keyRows,TILE_ROWS);
+            return true;
         }
         private void debugPrintBricks () {
             String fName="[debugPrintBricks]";
-            try {
-                logger.info(fName);
-                int x=0,y=0;
-                StringBuilder strx= new StringBuilder();
-                StringBuilder stry= new StringBuilder();
-                for (BRICK brick : bricks) {
-                    if (brick.getX() == x) {
-                        if (!stry.toString().isBlank()) {
-                            stry.append(", ");
-                        }
-                        stry.append(brick.print());
-                    } else {
-                        x = brick.getX();
-                        strx.append(stry).append("\n");
-                        stry = new StringBuilder();
+            logger.info(fName);
+            int x=0,y=0;
+            StringBuilder strx= new StringBuilder();
+            StringBuilder stry= new StringBuilder();
+            for (BRICK brick : bricks) {
+                if (brick.getX() == x) {
+                    if (!stry.toString().isBlank()) {
+                        stry.append(", ");
                     }
+                    stry.append(brick.print());
+                } else {
+                    x = brick.getX();
+                    strx.append(stry).append("\n");
+                    stry = new StringBuilder();
                 }
-                if(!stry.toString().isBlank()){
-                    strx.append(stry);
-                }
-                logger.info(fName+"bricks:\n"+strx);
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
             }
+            if(!stry.toString().isBlank()){
+                strx.append(stry);
+            }
+            logger.info(fName+"bricks:\n"+strx);
         }
         private BRICK getBrick (int x, int y) {
             String fName="[getBrick]";
-            try {
-                logger.info(fName+"x="+x+", y="+y);
-                for (int i=0;i<bricks.size();i++) {
-                    BRICK brick=bricks.get(i);
-                    if(brick.getX()==x&&brick.getY()==y){
-                        logger.info(fName+"success");
-                        return brick;
-                    }
+            logger.info(fName+"x="+x+", y="+y);
+            for (int i=0;i<bricks.size();i++) {
+                BRICK brick=bricks.get(i);
+                if(brick.getX()==x&&brick.getY()==y){
+                    logger.info(fName+"success");
+                    return brick;
                 }
-                logger.info(fName+"default");
-                return  new BRICK();
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-                return  new BRICK();
             }
+            logger.info(fName+"default");
+            return  new BRICK();
         }
         private boolean setBrick (int x, int y,BRICK brick) {
             String fName="[setBrick]";
-            try {
-                logger.info(fName+"x="+x+", y="+y+", brick="+brick.print());
-                for (int i=0;i<bricks.size();i++) {
-                    BRICK brickt=bricks.get(i);
-                    if(brickt.getX()==x&&brickt.getY()==y){
-                        logger.info(fName+"found and so set");
-                        bricks.set(i,brick);
-                        logger.info(fName+"setted to:"+bricks.get(i).print());
-                        return true;
-                    }
+            logger.info(fName+"x="+x+", y="+y+", brick="+brick.print());
+            for (int i=0;i<bricks.size();i++) {
+                BRICK brickt=bricks.get(i);
+                if(brickt.getX()==x&&brickt.getY()==y){
+                    logger.info(fName+"found and so set");
+                    bricks.set(i,brick);
+                    logger.info(fName+"setted to:"+bricks.get(i).print());
+                    return true;
                 }
-                logger.info(fName+"not found>false");
-                return false;
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-                return false;
             }
+            logger.info(fName+"not found>false");
+            return false;
         }
 
         Map<Long,PLAYER>players=new HashMap<>();
@@ -1971,660 +1725,25 @@ public class Minesweeper extends Command implements llGlobalHelper{
             }
         }
 
-        lcJSONUserProfile gUserProfile;
+
         lcJSONGuildProfile gGuildProfile;
-        public boolean getGuildProfile(){
-            String fName="[getGuildPProfile]";
-            logger.info(fName+".safety check");
-            try{
-                if(gGuildProfile ==null||!gGuildProfile.isProfile()){
-                    logger.info(fName + ".get");
-                    gGuildProfile =gGlobal.getGuildSettings(gGuild, profileName);
-                    if(gGuildProfile ==null||!gGuildProfile.isExistent()|| gGuildProfile.jsonObject.isEmpty()){
-                        gGuildProfile =new lcJSONGuildProfile(gGlobal, profileName,gGuild,llv2_GuildsSettings);
-                        gGuildProfile.getProfile(llv2_GuildsSettings);
-                        if(!gGuildProfile.jsonObject.isEmpty()){
-                            gGlobal.putGuildSettings(gGuild, gGuildProfile);
-                        }
-                    }
-                    iGuildPSafety();
-                    if(gGuildProfile.isUpdated){
-                        gGlobal.putGuildSettings(gGuild, gGuildProfile);
-                        if(isAutoSave){
-                            if(gGuildProfile.saveProfile()){
-                                logger.info(fName + ".success save to db>true");
-                                return true;
-                            }else{
-                                logger.error(fName + ".error save to db");
-                            }
-                        }
-                    }
-                    logger.info(fName + ".still got but failed to save>true");
-                    return true;
-                }else{
-                    logger.info(fName + ".skip>true");
-                    return true;
-                }
-            }
-            catch(Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-                return  false;
-            }
-        }
+
         String keyBricks="bricks",keyPlayers="players",keyColumns="columns",keyRows="rows",keyMineNumber="mineNumber";
         public void iGuildPSafety(){
             String fName="iSafety";
-            try {
-                gGuildProfile.safetyPutFieldEntry(keyBricks, new JSONArray());
-                gGuildProfile.safetyPutFieldEntry(keyMineNumber, 0);
-                gGuildProfile.safetyPutFieldEntry(keyColumns, 0);
-                gGuildProfile.safetyPutFieldEntry(keyRows, 0);
-                gGuildProfile.safetyPutFieldEntry(keyPlayers, new JSONArray());
-                gGuildProfile.safetyPutFieldEntry(keyFinished, false);
-                gGuildProfile.safetyPutFieldEntry(keyTurns, 0);
-            }catch (Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-            }
-
-        }
-        boolean isAutoSave =true;
-        boolean saveGuild(){
-            String fName="[saveGuildP]";
-            logger.info(fName);
-            try{
-                gGlobal.putGuildSettings(gGuild, gGuildProfile);
-                if(gGuildProfile.saveProfile()){
-                    logger.info(fName + ".success");return  true;
-                }
-                logger.warn(fName + ".failed");return false;
-            }
-            catch(Exception e){
-                logger.error(fName + ".exception=" + e);
-                logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
-                return false;
-            }
+            gGuildProfile.safetyPutFieldEntry(keyBricks, new JSONArray());
+            gGuildProfile.safetyPutFieldEntry(keyMineNumber, 0);
+            gGuildProfile.safetyPutFieldEntry(keyColumns, 0);
+            gGuildProfile.safetyPutFieldEntry(keyRows, 0);
+            gGuildProfile.safetyPutFieldEntry(keyPlayers, new JSONArray());
+            gGuildProfile.safetyPutFieldEntry(keyFinished, false);
+            gGuildProfile.safetyPutFieldEntry(keyTurns, 0);
         }
         String profileName="Minesweeper",table="MemberProfile";
         private lcJSONUserProfile iSafetyUserProfileEntry(lcJSONUserProfile gUserProfile) {
             String fName = "[iSafetyUserProfileEntry]";
             return gUserProfile;
         }
-        private Boolean getUserProfile(Member member){
-            String fName="[getProfile]";
-            logger.info(fName);
-            try{
-                logger.info(fName + ".member:"+ member.getId());
-                gUserProfile=gGlobal.getUserProfile(profileName,member,gGuild,profileName);
-                if(gUserProfile!=null&&gUserProfile.isProfile()){
-                    logger.info(fName + ".is locally cached");
-                }else{
-                    logger.info(fName + ".need to get or create");
-                    gUserProfile=new lcJSONUserProfile(gGlobal,member,gGuild,profileName);
-                    if(gUserProfile.getProfile(table)){
-                        logger.info(fName + ".has sql entry");
-                    }
-                }
-                gUserProfile=iSafetyUserProfileEntry(gUserProfile);
-                gGlobal.putUserProfile(gUserProfile,profileName);
-                if(!gUserProfile.isUpdated){
-                    logger.info(fName + ".no update>ignore");return true;
-                }
-                if(!saveUserProfile()){ logger.error(fName+".failed to write in Db");
-                    lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Failed to write in Db!", lsMessageHelper.llColorRed);}
-                return true;
 
-            } catch (Exception e) {
-                logger.error(fName+".exception=" + e);
-                logger.error(cName +fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-                return  false;
-            }
-        }
-        private Boolean saveUserProfile(){
-            String fName="[saveProfile]";
-            logger.info(fName);
-            try{
-                gGlobal.putUserProfile(gUserProfile,profileName);
-                if(gUserProfile.saveProfile(table)){
-                    logger.info(fName + ".success");return  true;
-                }
-                logger.warn(fName + ".failed");return false;
-            } catch (Exception e) {
-                logger.error(fName+".exception=" + e);
-                logger.error(cName +fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-                return  false;
-            }
-        }
-        lcBasicFeatureControl gBasicFeatureControl;
-        private void setEnable(boolean enable) {
-            String fName = "[setEnable]";
-            try {
-                logger.info(fName + "enable=" + enable);
-                if(!lsMemberHelper.lsMemberHasPermission_MANAGESERVER(gMember)&&!lsGlobalHelper.slMemberIsBotOwner(gMember)){
-                    logger.info(fName+"denied");
-                    lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied. Require manage server.",llColors.llColorOrange_InternationalEngineering);
-                    return;
-                }
-                gBasicFeatureControl.setEnable(enable);
-                if(enable){
-                    lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Set to enable for guild.", llColors.llColorOrange_Bittersweet);
-                }else{
-                    lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Set to disable for guild.", llColors.llColorOrange_Bittersweet);
-                }
-            } catch (Exception e) {
-                logger.error(cName+fName+"exception:"+e);
-                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
-            }
-        }
-        private void getChannels(int type, boolean toDM) {
-            String fName = "[setChannel]";
-            try {
-                logger.info(fName + "type=" +type+", toDM="+toDM);
-                if(type==1){
-                    logger.info(fName+"allowed");
-                    List<Long>list=gBasicFeatureControl.getAllowedChannelsAsLong();
-                    if(!list.isEmpty()){
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Allowed channels list: "+lsChannelHelper.lsGetTextChannelsMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Allowed channels list: "+lsChannelHelper.lsGetTextChannelsMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }
-                    }else{
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Allowed channels list is empty.", llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Allowed channels list is empty.", llColors.llColorOrange_Bittersweet);
-                        }
-                    }
-                }
-                if(type==-1){
-                    logger.info(fName+"denied");
-                    List<Long>list=gBasicFeatureControl.getDeniedChannelsAsLong();
-                    if(!list.isEmpty()){
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied channels list: "+lsChannelHelper.lsGetTextChannelsMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Denied channels list: "+lsChannelHelper.lsGetTextChannelsMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }
-                    }else{
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied channels list is empty.", llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Denied channels list is empty.", llColors.llColorOrange_Bittersweet);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                logger.error(cName+fName+"exception:"+e);
-                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
-            }
-        }
-        private void getRoles(int type, boolean toDM) {
-            String fName = "[getRoles]";
-            try {
-                logger.info(fName + "type=" +type+", toDM="+toDM);
-                if(type==1){
-                    logger.info(fName+"allowed");
-                    List<Long>list=gBasicFeatureControl.getAllowedRolesAsLong();
-                    if(!list.isEmpty()){
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Allowed roles list: "+lsRoleHelper.lsGetRolesMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Allowed roles list: "+lsRoleHelper.lsGetRolesMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }
-                    }else{
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Allowed roles list is empty.", llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Allowed roles list is empty.", llColors.llColorOrange_Bittersweet);
-                        }
-                    }
-                }
-                if(type==-1){
-                    logger.info(fName+"denied");
-                    List<Long>list=gBasicFeatureControl.getDeniedRolesAsLong();
-                    if(!list.isEmpty()){
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied roles list: "+lsRoleHelper.lsGetRolesMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Denied roles list: "+lsRoleHelper.lsGetRolesMentionAsString(list,", ",gGuild), llColors.llColorOrange_Bittersweet);
-                        }
-                    }else{
-                        if(toDM){
-                            lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied roles list is empty.", llColors.llColorOrange_Bittersweet);
-                        }else{
-                            lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Denied roles list is empty.", llColors.llColorOrange_Bittersweet);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                logger.error(cName+fName+"exception:"+e);
-                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
-            }
-        }
-        private void setChannel(int type, int action, Message message) {
-            String fName = "[setChannel]";
-            try {
-                logger.info(fName + "type=" +type+", action="+action);
-                if(!lsMemberHelper.lsMemberHasPermission_MANAGESERVER(gMember)&&!lsGlobalHelper.slMemberIsBotOwner(gMember)){
-                    logger.info(fName+"denied");
-                    lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied. Require manage server.", llColors.llColorOrange_InternationalEngineering);
-                    return;
-                }
-                boolean updated=false, result=false;
-                if(type==1){
-                    logger.info(fName+"allowed");
-                    if(action==1){
-                        logger.info(fName+"add");
-                        List<TextChannel>textChannels=message.getMentionedChannels();
-                        for(TextChannel textChannel:textChannels){
-                            result=gBasicFeatureControl.addAllowedChannel(textChannel);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Added new channels.\nAllowed channels set to: "+lsChannelHelper.lsGetTextChannelsMentionAsString(gBasicFeatureControl.getAllowedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==2){
-                        logger.info(fName+"set");
-                        if(!gBasicFeatureControl.clearAllowedChannels()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        List<TextChannel>textChannels=message.getMentionedChannels();
-                        for(TextChannel textChannel:textChannels){
-                            result=gBasicFeatureControl.addAllowedChannel(textChannel);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Set channels.\nAllowed channels set to: "+lsChannelHelper.lsGetTextChannelsMentionAsString(gBasicFeatureControl.getAllowedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-
-                    }
-                    if(action==-1){
-                        logger.info(fName+"rem");
-                        List<TextChannel>textChannels=message.getMentionedChannels();
-                        for(TextChannel textChannel:textChannels){
-                            result=gBasicFeatureControl.remAllowedChannel(textChannel);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Removed channels.\nAllowed channels set to:"+lsChannelHelper.lsGetTextChannelsMentionAsString(gBasicFeatureControl.getAllowedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==-2){
-                        logger.info(fName+"clear");
-                        if(!gBasicFeatureControl.clearAllowedChannels()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Cleared allowed channels.", llColors.llColorOrange_Bittersweet);
-                    }
-                }
-                if(type==-1){
-                    logger.info(fName+"denied");
-                    if(action==1){
-                        logger.info(fName+"add");
-                        List<TextChannel>textChannels=message.getMentionedChannels();
-                        for(TextChannel textChannel:textChannels){
-                            result=gBasicFeatureControl.addDeniedChannel(textChannel);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Added new channels.\nDenied channels set to: "+lsChannelHelper.lsGetTextChannelsMentionAsString(gBasicFeatureControl.getDeniedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==2){
-                        logger.info(fName+"set");
-                        if(!gBasicFeatureControl.clearDeniedChannels()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        List<TextChannel>textChannels=message.getMentionedChannels();
-                        for(TextChannel textChannel:textChannels){
-                            result=gBasicFeatureControl.addDeniedChannel(textChannel);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Set channels.\nDenied channels set to: "+lsChannelHelper.lsGetTextChannelsMentionAsString(gBasicFeatureControl.getDeniedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-
-                    }
-                    if(action==-1){
-                        logger.info(fName+"rem");
-                        List<TextChannel>textChannels=message.getMentionedChannels();
-                        for(TextChannel textChannel:textChannels){
-                            result=gBasicFeatureControl.remDeniedChannel(textChannel);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Removed channels.\nDenied channels set to:"+lsChannelHelper.lsGetTextChannelsMentionAsString(gBasicFeatureControl.getDeniedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==-2){
-                        logger.info(fName+"clear");
-                        if(!gBasicFeatureControl.clearDeniedChannels()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Cleared denied channels.", llColors.llColorOrange_Bittersweet);
-                    }
-                }
-            } catch (Exception e) {
-                logger.error(cName+fName+"exception:"+e);
-                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
-            }
-        }
-        private void setRole(int type, int action, Message message) {
-            String fName = "[setRole]";
-            try {
-                logger.info(fName + "type=" +type+", action="+action);
-                if(!lsMemberHelper.lsMemberHasPermission_MANAGESERVER(gMember)&&!lsGlobalHelper.slMemberIsBotOwner(gMember)){
-                    logger.info(fName+"denied");
-                    lsMessageHelper.lsSendQuickEmbedMessage(gUser,gTitle,"Denied. Require manage server.", llColors.llColorOrange_InternationalEngineering);
-                    return;
-                }
-                boolean updated=false, result=false;
-                if(type==1){
-                    logger.info(fName+"allowed");
-                    if(action==1){
-                        logger.info(fName+"add");
-                        List<Role>roles=message.getMentionedRoles();
-                        for(Role role:roles){
-                            result=gBasicFeatureControl.addAllowedRole(role);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Added new roles.\nAllowed roles set to: "+lsRoleHelper.lsGetRolesMentionAsString(gBasicFeatureControl.getAllowedRolesAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==2){
-                        logger.info(fName+"set");
-                        if(!gBasicFeatureControl.clearAllowedRoles()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        List<Role>roles=message.getMentionedRoles();
-                        for(Role role:roles){
-                            result=gBasicFeatureControl.addAllowedRole(role);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Set roles.\nAllowed roles set to: "+lsRoleHelper.lsGetRolesMentionAsString(gBasicFeatureControl.getAllowedRolesAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-
-                    }
-                    if(action==-1){
-                        logger.info(fName+"rem");
-                        List<Role>roles=message.getMentionedRoles();
-                        for(Role role:roles){
-                            result=gBasicFeatureControl.remAllowedRole(role);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Removed roles.\nAllowed roles set to:"+lsRoleHelper.lsGetRolesMentionAsString(gBasicFeatureControl.getAllowedRolesAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==-2){
-                        logger.info(fName+"clear");
-                        if(!gBasicFeatureControl.clearAllowedRoles()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Cleared allowed roles.", llColors.llColorOrange_Bittersweet);
-                    }
-                }
-                if(type==-1){
-                    logger.info(fName+"denied");
-                    if(action==1){
-                        logger.info(fName+"add");
-                        List<Role>roles=message.getMentionedRoles();
-                        for(Role role:roles){
-                            result=gBasicFeatureControl.addDeniedRole(role);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Added new roles.\nDenied roles set to: "+lsRoleHelper.lsGetRolesMentionAsString(gBasicFeatureControl.getDeniedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==2){
-                        logger.info(fName+"set");
-                        if(!gBasicFeatureControl.clearDeniedRoles()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        List<Role>roles=message.getMentionedRoles();
-                        for(Role role:roles){
-                            result=gBasicFeatureControl.addDeniedRole(role);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Set roles.\nDenied roles set to: "+lsRoleHelper.lsGetRolesMentionAsString(gBasicFeatureControl.getDeniedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-
-                    }
-                    if(action==-1){
-                        logger.info(fName+"rem");
-                        List<Role>roles=message.getMentionedRoles();
-                        for(Role role:roles){
-                            result=gBasicFeatureControl.remDeniedRole(role);
-                            if(!updated&&result)updated=true;
-                        }
-                        if(!updated){
-                            logger.warn(fName+"failed to update");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to update!");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save!");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Removed roles.\nDenied roles set to:"+lsRoleHelper.lsGetRolesMentionAsString(gBasicFeatureControl.getDeniedChannelsAsLong(),", ",gGuild), llColors.llColorOrange_Bittersweet);
-                    }
-                    if(action==-2){
-                        logger.info(fName+"clear");
-                        if(!gBasicFeatureControl.clearDeniedRoles()){
-                            logger.warn(fName+"failed to clear");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to set");
-                            return;
-                        }
-                        if(!gBasicFeatureControl.saveProfile()){
-                            logger.warn(fName+"failed to save");
-                            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,"Failed to save");
-                            return;
-                        }
-                        lsMessageHelper.lsSendQuickEmbedMessage(gTextChannel,gTitle,"Cleared denied roles.", llColors.llColorOrange_Bittersweet);
-                    }
-                }
-            } catch (Exception e) {
-                logger.error(cName+fName+"exception:"+e);
-                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
-            }
-        }
-        private void menuGuild(){
-            String fName="[menuGuild]";
-            logger.info(fName);
-            try{
-                EmbedBuilder embed=new EmbedBuilder();
-                embed.setColor(llColors.llColorBlue1);
-                embed.setTitle(gTitle+" Options");
-                embed.addField("Enable","Select "+gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasGreenCircle)+" or "+gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasRedCircle)+" to enable/disable for this server.",false);
-                embed.addField("Allowed channels","Commands:`"+llPrefixStr+gCommand+" server allowchannels  :one:/list|add|rem|set|clear`",false);
-                embed.addField("Blocked channels","Commands:`"+llPrefixStr+gCommand+" server blockchannels :two:/list|add|rem|set|clear`",false);
-                embed.addField("Allowed roles","Commands:`"+llPrefixStr+gCommand+" server allowroles :three:/list|add|rem|set|clear`",false);
-                embed.addField("Blocked roles","Commands:`"+llPrefixStr+gCommand+" server blockroles :four:/list|add|rem|set|clear`",false);
-                embed.addField("Help","Select "+gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasInformationSource)+" for more commands & help",false);
-                Message message=lsMessageHelper.lsSendMessageResponse_withReactionNotification(gUser,embed);
-                lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasInformationSource));
-                if(gBasicFeatureControl.getEnable()){
-                    lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasRedCircle));
-                }else{
-                    lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasGreenCircle));
-                }
-                if(!gBasicFeatureControl.getAllowedChannelsAsLong().isEmpty()) lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasOne));
-                if(!gBasicFeatureControl.getDeniedChannelsAsLong().isEmpty()) lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasTwo));
-                if(!gBasicFeatureControl.getAllowedRolesAsLong().isEmpty()) lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasThree));
-                if(!gBasicFeatureControl.getAllowedRolesAsLong().isEmpty()) lsMessageHelper.lsMessageAddReactions(message,gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasFour));
-                gGlobal.waiter.waitForEvent(PrivateMessageReactionAddEvent.class,
-                        e -> (e.getMessageIdLong()==message.getIdLong()&&!e.getUser().isBot()&&e.getUserIdLong()==gUser.getIdLong()),
-                        e -> {
-                            try {
-                                String name=e.getReactionEmote().getName();
-                                logger.warn(fName+"name="+name);
-                                lsMessageHelper.lsMessageDelete(message);
-                                if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasInformationSource))) {
-                                    help("main");return;
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasGreenCircle))) {
-                                    setEnable(true);
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasRedCircle))) {
-                                    setEnable(false);
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasOne))) {
-                                    getChannels(1,true);
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasTwo))) {
-                                    getChannels(-1,true);
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasThree))) {
-                                    getRoles(1,true);
-                                }
-                                else if(name.equalsIgnoreCase(gGlobal.emojis.getEmoji(lsUnicodeEmotes.aliasFour))) {
-                                    getRoles(-1,true);
-                                }
-                                else{
-                                    menuGuild();
-                                }
-                            }catch (Exception e3){
-                                logger.error(fName + ".exception=" + e3);
-                                logger.error(fName + ".exception:" + Arrays.toString(e3.getStackTrace()));
-                                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e3.toString());
-                                lsMessageHelper.lsMessageDelete(message);
-                            }
-
-                        },5, TimeUnit.MINUTES, () -> {
-                            logger.info(fName+"timeout");
-                            lsMessageHelper.lsMessageDelete(message);
-                        });
-
-            } catch (Exception e) {
-                logger.error(fName+".exception=" + e);
-                logger.error(cName +fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
-                lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,gTitle,e.toString());
-            }
-        }
     }
 }

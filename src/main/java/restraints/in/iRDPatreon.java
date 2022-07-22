@@ -7,7 +7,7 @@ import models.ll.colors.llColors;
 import models.ls.lsMessageHelper;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
-import nsfw.diaper.idDiaperPatreon;
+import nsfw.diaper.modules.interfaces.idDiaperPatreon;
 import org.apache.log4j.Logger;
 import restraints.models.enums.GAGLEVELS;
 import restraints.models.enums.GAGTYPES;

@@ -28,11 +28,13 @@ import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import org.apache.log4j.Logger;
 import restraints.models.entity.pishock.PishockConfig;
-import telegram.TelegramRoot;
+import forRemoval.telegram.TelegramRoot;
 import util.entity.GuildNotificationReader;
 import util.removed.worldclock;
 import web.jexpress.OAUTH2HANDLING;
 import web.jexpress.ServerExpress;
+import web.spring.Spring2Init;
+import web.spring.discord.entity.DashUserSession;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,6 +59,11 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
     public EventWaiter waiter; public ScheduledExecutorService waiterThreadpool;
     public ScheduledExecutorService schedule;
     public lcSqlConnEntity sql;
+    public lcSqlConnEntity getSql(){
+        String fName="[getSql]";
+        logger.info(cName+fName);
+        return sql;
+    }
     //public CommandClientBuilder commandclient;
     public CommandClient commandClientBuilt;
 
@@ -155,6 +162,28 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
         String fName="getGuildMap4JDAv2";
         try{
             Map<String, Guild> guilds= new LinkedHashMap<>();
+            for(JDA jda:shardManager.getShards()) {
+                logger.info(cName+fName+"shard id:"+jda.getShardInfo().getShardId());
+                if(jda!=null){
+                    logger.info(cName+fName+"entry:not null");
+                    List<Guild> items= jda.getGuilds();
+                    logger.info(cName+fName+"entry items:"+items.size());
+                    for(Guild item : items){
+                        logger.info(cName+fName+"item id:"+item.getId());
+                        guilds.put(item.getId(),item);
+                    }
+                }
+            }
+            logger.info(cName+fName+"size:"+guilds.size());
+            return guilds;
+        }catch (Exception e){
+            logger.error(cName + fName + ".exception:" + e);return null;
+        }
+    }
+    public Map<String, Object> getGuildMap4JDAAsObject(){
+        String fName="getGuildMap4JDAsObject";
+        try{
+            Map<String, Object> guilds= new LinkedHashMap<>();
             for(JDA jda:shardManager.getShards()) {
                 logger.info(cName+fName+"shard id:"+jda.getShardInfo().getShardId());
                 if(jda!=null){
@@ -1107,7 +1136,7 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
                 logger.info(cName + fName + ".member is null");
                 return null;
             }
-            lcJSONUserProfile entries=new lcJSONUserProfile(this,member,guild);
+            lcJSONUserProfile entries=new lcJSONUserProfile(this,member,guild,field);
             logger.info(cName+fName+".result="+userProfileJson.getJSONObject(kGuild).getJSONObject(field).getJSONObject(kUser));
             entries.jsonObject =userProfileJson.getJSONObject(kGuild).getJSONObject(field).getJSONObject(kUser);
             return entries;
@@ -1349,7 +1378,19 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
             return null;
         }
     }
-
+    public Boolean putUserProfile(lcJSONUserProfile profile){
+        String fName="[putUserProfile]";
+        logger.info(cName+fName);
+        try {
+            String field=profile.getName();
+            logger.info(cName+fName+".field:"+field);
+            return  putUserProfile(profile,field);
+        } catch (Exception e) {
+            logger.error(cName + fName + ".exception:" + e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            return false;
+        }
+    }
     public Boolean putUserProfile(lcJSONUserProfile profile,String field){
         String fName="[putUserProfile]";
         logger.info(cName+fName);
@@ -1712,6 +1753,7 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
     public OAUTH2HANDLING oauth2Handling;
     public TelegramBot botTelegram;
     public TelegramRoot telegramRoot;
+    public Spring2Init spring2Init;
 
 
     public TextChannel lsGetTextChannelById(String id){
@@ -2010,6 +2052,31 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
                     return null;
                 }
             }
+
+            public String getClientSecret() {
+                String fName="[getClientSecret]";
+                try {
+                    String result=jsonObject.getString("client_secret");
+                    logger.info(fName + "result=" + result);
+                    return  result;
+                } catch (Exception e) {
+                    logger.error(fName + ".exception=" + e+", StackTrace="+Arrays.toString(e.getStackTrace()));
+                    return null;
+                }
+            }
+
+            public String getRedirectUrl() {
+                String fName="[getRedirectUrl]";
+                try {
+                    String result=jsonObject.getString("redirect_url");
+                    logger.info(fName + "result=" + result);
+                    return  result;
+                } catch (Exception e) {
+                    logger.error(fName + ".exception=" + e+", StackTrace="+Arrays.toString(e.getStackTrace()));
+                    return null;
+                }
+            }
+
             public class _WEBSOKETFACTORY{
                 private JSONObject jsonObject=new JSONObject();
                 public _WEBSOKETFACTORY(JSONObject jsonObject){
@@ -2381,5 +2448,12 @@ public class lcGlobalHelper implements llMessageHelper, llGlobalHelper {
 
     public GuildNotificationReader generalGuildNotification;
     public PishockConfig pishockConfig;
+
+    private    Map<String, DashUserSession>mapDashSession=new HashMap<>();
+    public Map<String, DashUserSession> getDashSession(){
+        String fName="[getDashSession]";
+        logger.info(cName+fName);
+        return  mapDashSession;
+    }
 
 }

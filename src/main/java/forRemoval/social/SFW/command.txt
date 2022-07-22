@@ -1,0 +1,13 @@
+boop	N/A	furboop @user
+cuddle	snuggle, snuggles, cuddles	furcuddle @user
+hold	N/A	furhold @user
+hug	huggles, huggies, huddles, hugs, huggle	furhug @user
+Latch onto a friend and wrap them in floof!
+insult	N/A	furinsult
+kill	N/A	furkill
+kiss	kisses, kissies	furkiss @user
+lick	N/A	furlick @user
+nuzzle	N/A	furnuzzle [@user]
+pat	N/A	furpat [@user]
+pickup	N/A	furpickup [@user]
+ship	N/A	furship [@user] [@user 2]

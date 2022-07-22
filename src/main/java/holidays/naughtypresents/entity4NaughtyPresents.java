@@ -23,13 +23,7 @@ public class entity4NaughtyPresents {
         logger.info(fName);
     }
     public entity4NaughtyPresents(lcGlobalHelper global){
-        String fName="[constructor]";
-        try {
-            gGlobal=global;
-        }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
-        }
+        gGlobal=global;
     }
     public boolean readFile(){
         String fName="[readFile]";
@@ -46,8 +40,7 @@ public class entity4NaughtyPresents {
             jsonMain=text2Json.jsonObject;
             return true;
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -57,8 +50,7 @@ public class entity4NaughtyPresents {
             gGlobal.jsonObject.put(iNaughtyPresents.profileName,jsonMain);
             return true;
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -66,23 +58,19 @@ public class entity4NaughtyPresents {
         String fName="[getCache]";
         try {
             if(gGlobal.jsonObject.has(iNaughtyPresents.profileName)){
-                logger.warn(fName+"Does not exists in cache json");
-                return  false;
+                throw  new Exception("Does not exists in cache json");
             }
             if(gGlobal.jsonObject.isNull(iNaughtyPresents.profileName)){
-                logger.warn(fName+"Cache jsonObject is null");
-                return  false;
+                throw  new Exception("Cache jsonObject is null");
             }
             JSONObject jsonObject=gGlobal.jsonObject.getJSONObject(iNaughtyPresents.profileName);
             if(jsonObject.isEmpty()){
-                logger.warn(fName+"Cache jsonObject is empty");
-                return  false;
+                throw  new Exception("Cache jsonObject is empty");
             }
             logger.info(fName+"jsonObject="+jsonObject.toString());
             return true;
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -94,8 +82,7 @@ public class entity4NaughtyPresents {
             logger.info(fName+".jsonObject.size="+jsonObject.length());
             return jsonObject;
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -115,49 +102,31 @@ public class entity4NaughtyPresents {
             logger.info(fName+".events isn't empty");
             return false;
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return true;
         }
     }
     public int eventsSize(){
         String fName="[eventsSize]";
-        try {
-
-            JSONObject jsonObject=getEventsJson();
-            if(jsonObject==null){
-                logger.info(fName+".events is null");
-                return 0;
-            }
-            if(jsonObject.isEmpty()){
-                logger.info(fName+".events is empty");
-                return 0;
-            }
-            int size=jsonObject.length();
-            logger.info(fName+".events.size="+size);
-            return size;
-        }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
-            return -1;
+        JSONObject jsonObject=getEventsJson();
+        if(jsonObject==null){
+            logger.info(fName+".events is null");
+            return 0;
         }
+        int size=jsonObject.length();
+        logger.info(fName+".events.size="+size);
+        return size;
     }
 
     public class Event{
-        private String cName="@Event";
+        final private String cName="@Event";
         private String key="";
         private  JSONObject jsonParent=new JSONObject();
         public Event(){
 
         }
         public Event(String key,JSONObject jsonObject){
-            String fName="[build]";
-            try {
-                _setKey(key,jsonObject);
-            }catch (Exception e){
-                logger.error(cName+fName+".exception=" + e);
-                logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+            _setKey(key,jsonObject);
         }
         private Event _setKey(String key){
             String fName="[_setKey]";
@@ -188,14 +157,8 @@ public class entity4NaughtyPresents {
         }
         public String getKey(){
             String fName="[getKey]";
-            try {
-                logger.info(cName+fName+"key="+key);
-                return key;
-            }catch (Exception e){
-                logger.error(cName+fName+".exception=" + e);
-                logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-                return null;
-            }
+            logger.info(cName+fName+"key="+key);
+            return key;
         }
         private Event _setJsonParent(JSONObject jsonObject){
             String fName="[_setJsonParent]";
@@ -211,20 +174,12 @@ public class entity4NaughtyPresents {
             }
         }
         private JSONObject _getJsonParent(){
-            String fName="[_getJsonParent]";
-            try {
-                return jsonParent;
-            }catch (Exception e){
-                logger.error(cName+fName+".exception=" + e);
-                logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-                return null;
-            }
+            return jsonParent;
         }
         private JSONObject _getJson(){
             String fName="[_getJson]";
             try {
-                JSONObject jsonObject= _getJsonParent().getJSONObject(key);
-                return jsonObject;
+                return _getJsonParent().getJSONObject(key);
             }catch (Exception e){
                 logger.error(cName+fName+".exception=" + e);
                 logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
@@ -328,19 +283,9 @@ public class entity4NaughtyPresents {
         public JSONArray getPresentsJson4Event(){
             String fName="[getPresentsJson4Event]";
             try {
-                JSONArray jsonArray=_getJson().getJSONArray(iNaughtyPresents.KEYS_Store.Event.presents);
-                if(jsonArray==null){
-                    logger.info(fName+"events["+this.key+"].presents is null");
-                    return null;
-                }
-                if(jsonArray.isEmpty()){
-                    logger.info(fName+"events["+this.key+"].presents is empty");
-                    return jsonArray;
-                }
-                return jsonArray;
+                return _getJson().getJSONArray(iNaughtyPresents.KEYS_Store.Event.presents);
             }catch (Exception e){
-                logger.error(fName+".exception=" + e);
-                logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+                logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
                 return null;
             }
         }
@@ -359,8 +304,7 @@ public class entity4NaughtyPresents {
                 logger.info(fName+"events["+this.key+"].presents isn't empty");
                 return false;
             }catch (Exception e){
-                logger.error(fName+".exception=" + e);
-                logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+                logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
                 return true;
             }
         }
@@ -372,17 +316,12 @@ public class entity4NaughtyPresents {
                     logger.info(fName+"events["+this.key+"].presents is null");
                     return 0;
                 }
-                if(jsonArray.isEmpty()){
-                    logger.info(fName+"events["+this.key+"].presents is empty");
-                    return 0;
-                }
                 int size=jsonArray.length();
                 logger.info(fName+"events["+this.key+"].presents.size="+size);
                 return size;
             }catch (Exception e){
-                logger.error(fName+".exception=" + e);
-                logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
-                return -1;
+                logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
+                return 0;
             }
         }
         public List<Present>getPresents4Event(){
@@ -412,8 +351,7 @@ public class entity4NaughtyPresents {
                 logger.info(fName+"list.size="+list.size());
                 return list;
             }catch (Exception e){
-                logger.error(fName+".exception=" + e);
-                logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+                logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
                 return null;
             }
         }
@@ -475,7 +413,7 @@ public class entity4NaughtyPresents {
             }
         }
         public class Restraint{
-            private String cName="@Restraint";
+            final private String cName="@Restraint";
             private String key="";
             private Event parent=null;
             private  JSONObject jsonParent=new JSONObject();
@@ -520,15 +458,7 @@ public class entity4NaughtyPresents {
                 }
             }
             public String getKey(){
-                String fName="[getKey]";
-                try {
-                    logger.info(cName+fName+"key="+key);
-                    return key;
-                }catch (Exception e){
-                    logger.error(cName+fName+".exception=" + e);
-                    logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-                    return null;
-                }
+                return key;
             }
             private Restraint _setParent(Event event){
                 String fName="[_setParent]";
@@ -557,40 +487,18 @@ public class entity4NaughtyPresents {
                 }
             }
             private Event _getParent(){
-                String fName="[_getParent]";
-                try {
-                    return parent;
-                }catch (Exception e){
-                    logger.error(cName+fName+".exception=" + e);
-                    logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-                    return null;
-                }
+                return parent;
             }
             public Event getParent(){
-                String fName="[getParent]";
-                try {
-                    return _getParent();
-                }catch (Exception e){
-                    logger.error(cName+fName+".exception=" + e);
-                    logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-                    return null;
-                }
+                return _getParent();
             }
             private JSONObject _getJsonParent(){
-                String fName="[_getJsonParent]";
-                try {
-                    return jsonParent;
-                }catch (Exception e){
-                    logger.error(cName+fName+".exception=" + e);
-                    logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-                    return null;
-                }
+                return jsonParent;
             }
             private JSONObject _getJson(){
                 String fName="[_getJson]";
                 try {
-                    JSONObject jsonObject= _getJsonParent().getJSONObject(key);
-                    return jsonObject;
+                    return _getJsonParent().getJSONObject(key);
                 }catch (Exception e){
                     logger.error(cName+fName+".exception=" + e);
                     logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
@@ -635,8 +543,7 @@ public class entity4NaughtyPresents {
                 }
                 return list;
             }catch (Exception e){
-                logger.error(fName+".exception=" + e);
-                logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+                logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
                 return null;
             }
         }
@@ -668,8 +575,7 @@ public class entity4NaughtyPresents {
                 }
                 return present;
             }catch (Exception e){
-                logger.error(fName+".exception=" + e);
-                logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+                logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
                 return null;
             }
         }
@@ -704,8 +610,7 @@ public class entity4NaughtyPresents {
                 }
                 throw  new Exception("unsupported situation");
             }catch (Exception e){
-                logger.error(fName+".exception=" + e);
-                logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+                logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
                 return null;
             }
         }
@@ -732,8 +637,7 @@ public class entity4NaughtyPresents {
             }
             return list;
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -766,8 +670,7 @@ public class entity4NaughtyPresents {
             }
             return event;
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -803,8 +706,7 @@ public class entity4NaughtyPresents {
             }
             throw  new Exception("unsupported situation");
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -819,8 +721,7 @@ public class entity4NaughtyPresents {
             logger.info(fName+".jsonObject.="+jsonObject.toString());
             return jsonObject;
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -840,8 +741,7 @@ public class entity4NaughtyPresents {
             logger.info(fName+".presents isn't empty");
             return false;
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return true;
         }
     }
@@ -863,27 +763,20 @@ public class entity4NaughtyPresents {
             logger.info(fName+".presents.size="+size);
             return size;
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return -1;
         }
     }
     
     public class Present{
-        private String cName="@Present";
+        final private String cName="@Present";
         private String key="";
         private  JSONObject jsonParent=new JSONObject();
         public Present(){
 
         }
         public Present(String key,JSONObject jsonObject){
-            String fName="[build]";
-            try {
-                _setKey(key,jsonObject);
-            }catch (Exception e){
-                logger.error(cName+fName+".exception=" + e);
-                logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+            _setKey(key,jsonObject);
         }
         private Present _setKey(String key){
             String fName="[_setKey]";
@@ -913,15 +806,7 @@ public class entity4NaughtyPresents {
             }
         }
         public String getKey(){
-            String fName="[getKey]";
-            try {
-                logger.info(cName+fName+"key="+key);
-                return key;
-            }catch (Exception e){
-                logger.error(cName+fName+".exception=" + e);
-                logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-                return null;
-            }
+            return key;
         }
         private Present _setJsonParent(JSONObject jsonObject){
             String fName="[_setJsonParent]";
@@ -937,20 +822,12 @@ public class entity4NaughtyPresents {
             }
         }
         private JSONObject _getJsonParent(){
-            String fName="[_getJsonParent]";
-            try {
-                return jsonParent;
-            }catch (Exception e){
-                logger.error(cName+fName+".exception=" + e);
-                logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-                return null;
-            }
+            return jsonParent;
         }
         private JSONObject _getJson(){
             String fName="[_getJson]";
             try {
-                JSONObject jsonObject= _getJsonParent().getJSONObject(key);
-                return jsonObject;
+                return _getJsonParent().getJSONObject(key);
             }catch (Exception e){
                 logger.error(cName+fName+".exception=" + e);
                 logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
@@ -1134,8 +1011,7 @@ public class entity4NaughtyPresents {
             }
             return list;
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -1168,8 +1044,7 @@ public class entity4NaughtyPresents {
             }
             return present;
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -1206,8 +1081,7 @@ public class entity4NaughtyPresents {
             }
             throw  new Exception("unsupported situation");
         }catch (Exception e){
-            logger.error(fName+".exception=" + e);
-            logger.error(fName+".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }

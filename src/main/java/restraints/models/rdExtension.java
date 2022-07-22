@@ -2,6 +2,7 @@ package restraints.models;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import models.lc.helper.lcSendMessageHelper;
 import models.lc.interaction.applicationcommand.lcApplicationInteractionReceive;
 import models.lc.interaction.applicationcommand.lcApplicationInteractionMessage;
 import models.lc.interaction.messagecomponent.lcSharedMessageComponentManager;
@@ -383,6 +384,33 @@ public class rdExtension {
             updateIsAdult();
             gTarget=target;
             logger.info(fName + ".gTarget:" + gTarget.getId());
+            gBDSMCommands.restraints.init(); gBDSMCommands.collar.init();
+        } catch (Exception e) {
+            logger.error(fName+"exception:"+e);
+            logger.error(fName + ".exception:" + Arrays.toString(e.getStackTrace()));
+            lsMessageHelper.lsSendQuickErrorEmbedMessageResponse(gTextChannel,gUser,sRTitle,e.toString());
+        }
+    }
+    lcApplicationInteractionReceive.lMessageCommand gMessageCommand;
+    public void launch(lcGlobalHelper global,lcApplicationInteractionReceive.lMessageCommand ev){
+        String fName="[runLocal]";
+        logger.info(".run build lcApplicationInteractionReceive.lMessageCommand");
+        try {
+            gGlobal=global;
+            gMessageCommand =ev;
+            gUser = gMessageCommand.getUser();
+            logger.info(fName + ".user:" + gUser.getId() + "|" + gUser.getName());
+            if(gMessageCommand.isFromGuild()){
+                gGuild = gMessageCommand.getGuild();
+                gTextChannel = gMessageCommand.getTextChannel();
+                gMember= gMessageCommand.getMember();
+                logger.info(fName + ".guild:" + gGuild.getId() + "|" + gGuild.getName());
+                logger.info(fName + ".TextChannel:" + gTextChannel.getId() + "|" + gTextChannel.getName());
+            }else{
+                logger.warn(fName + "not from guild");
+            }
+            gBDSMCommands =new lcBDSMGuildProfiles(gGlobal,gGuild);
+            updateIsAdult();
             gBDSMCommands.restraints.init(); gBDSMCommands.collar.init();
         } catch (Exception e) {
             logger.error(fName+"exception:"+e);
@@ -1592,7 +1620,8 @@ public class rdExtension {
         }
     }
 
-    public InteractionHook gComponentInteractionHook;
+    public InteractionHook gCurrentInteractionHook,gComponentInteractionHook;
+    public lcSendMessageHelper messageHelper=new lcSendMessageHelper();
     public void deferReplySet(SelectionMenuEvent selectionMenuEvent){
         String fName="[deferReplySet -selectionMenuEvent]";
         try{
@@ -1711,7 +1740,6 @@ public class rdExtension {
             logger.error(fName+ ".exception:" + Arrays.toString(e.getStackTrace()));
         }
     }
-    public InteractionHook gCurrentInteractionHook;
     public Message sendPrivateEmbed(EmbedBuilder embedBuilder){
         String fName="[sendPrivateEmbed]";
         try{

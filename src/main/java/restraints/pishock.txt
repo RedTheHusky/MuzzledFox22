@@ -1,0 +1,59 @@
+{
+  "username": "New feature, Muzzled Fox",
+  "avatar_url": "https://cdn.discordapp.com/attachments/797045849271566348/817672490482270228/icons8-electricity-64.png",
+  "content": "Is your pet misbehaving? Keeps saying the same words even if they blacklisted?\nWell maybe its time to teach them a lesson.\n**The new feature allows linking it with PiShock.**\nWhat is PiShock?  PiShock is an internet controlled remote shocking device.\nIn short story it means the bot can shock the pet in real life (if they wearing PiShock shock collar)",
+  "embeds": []
+}
+{
+  "username": "New feature 4 Muzzled Fox",
+  "avatar_url": "https://s3.us-east-2.amazonaws.com/stickers-for-discord/475589373791043594-1560155420931-domzap.png",
+  "content": "",
+  "embeds": [
+    {
+      "color": 15201561,
+      "description": "Is your pet misbehaving? Keeps saying the same words even if they blacklisted?\nWell maybe its time to teach them a lesson.\n**The new feature allows linking it with PiShock.**",
+      "timestamp": "",
+      "author": {},
+      "image": {},
+      "thumbnail": {},
+      "footer": {},
+      "fields": [
+        {
+          "name": "What is PiShock?",
+          "value": "PiShock is an internet controlled remote shocking device.\nIn short story, it means the bot can now shock the pet in real life (if they wearing PiShock shock collar)"
+        },
+        {
+          "name": "What are the choices?",
+          "value": "Shockers can be added to special slot for collar, chastity.\nBesides that a basic shockers list can be created, where one shocker is selected as default.\nAll the default shocker commands: beep, vibrate, shock and more."
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "username": "New feature 4 Muzzled Fox",
+  "avatar_url": "https://s3.us-east-2.amazonaws.com/stickers-for-discord/475589373791043594-1560155420931-domzap.png",
+  "content": "",
+  "embeds": [
+    {
+      "color": 15201561,
+      "description": "Is your pet misbehaving? Keeps saying the same words even if they blacklisted? or forgot to say the words you wanted too?\nOr do you want to shock them as a reminder of their position?\n\n**Whit the new feature its possible to link the bot virtual shocking feature to PiShock, transforming fictional shocks to real life ones.**",
+      "timestamp": "",
+      "author": {},
+      "image": {},
+      "thumbnail": {},
+      "footer": {},
+      "fields": [
+        {
+          "name": "What is PiShock?",
+          "value": "PiShock is an internet controlled remote shocking device.\nIn short story, it means the bot can now shock the pet in real life (if they wearing PiShock shock collar)"
+        },
+        {
+          "name": "What are the choices?",
+          "value": "Shockers can be added to special slot for collar, chastity.\nBesides that a basic shockers list can be created, where one shocker is selected as default.\nAll the default shocker commands: beep, vibrate, shock and more."
+        }
+      ]
+    }
+  ]
+}
