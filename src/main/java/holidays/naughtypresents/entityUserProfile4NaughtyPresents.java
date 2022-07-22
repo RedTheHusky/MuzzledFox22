@@ -23,18 +23,8 @@ public class entityUserProfile4NaughtyPresents {
      Member gMember;
      Guild gGuild;
      public boolean flagGet4Cache=false,flagPut2Cache=false;
-    public entityUserProfile4NaughtyPresents(){
-        String fName="[constructor]";
-    }
-    public entityUserProfile4NaughtyPresents(lcGlobalHelper global, Member member){
-        String fName="[constructor]";
-        try {
-            build(global, member);
-        }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
-        }
-    }
+    public entityUserProfile4NaughtyPresents(){ }
+    public entityUserProfile4NaughtyPresents(lcGlobalHelper global, Member member){ build(global, member); }
     public boolean build(lcGlobalHelper global, Member member){
         String fName="[build]";
         try {
@@ -45,10 +35,7 @@ public class entityUserProfile4NaughtyPresents {
             flagGet4Cache=true;flagPut2Cache=true;
             if(!getProfile()){
                 logger.warn(fName+"failed to get profile>new profile");
-                if(!newProfile()){
-                    logger.warn(fName+"failed to create new profile");
-                    return false;
-                }
+                if(!newProfile())throw  new Exception("failed to create new profile");
             }else{
                 logger.info(fName+"got profile");
             }
@@ -71,8 +58,7 @@ public class entityUserProfile4NaughtyPresents {
             checkPatreon();
             return true;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -89,8 +75,7 @@ public class entityUserProfile4NaughtyPresents {
                 return getSQLProfile();
             }
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -107,8 +92,7 @@ public class entityUserProfile4NaughtyPresents {
                return false;
             }
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -125,74 +109,51 @@ public class entityUserProfile4NaughtyPresents {
                 return false;
             }
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
     public boolean setGlobal(lcGlobalHelper global){
         String fName="[setGlobal]";
         try {
-            if(global==null){
-                logger.info(fName+printUser()+"global can't be null>false");
-                return false;
-            }
+            if(global==null)throw  new Exception(printUser()+"global can't be null>false");
             gGlobal=global;
             logger.info(fName+printUser()+"set");
             return true;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
     public boolean setMember(Member member){
         String fName="[setMember]";
         try {
-            if(member==null){
-                logger.info(fName+printUser()+"member can't be null>false");
-                return false;
-            }
-            gMember=member;
+            if(member==null)throw  new Exception(printUser()+"member can't be null>false");
             logger.info(fName+printUser()+"member="+member.getId());
             return true;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
     public boolean setGuild(Guild guild){
         String fName="[setGuild]";
         try {
-            if(guild==null){
-                logger.info(fName+printUser()+"guild can't be null>false");
-                return false;
-            }
+            if(guild==null)throw  new Exception("guild can't be null>false");
             gGuild=guild;
             logger.info(fName+printUser()+"guild="+guild.getId());
             return true;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
     public boolean getProfile(lcGlobalHelper global,Member member){
         String fName="[getProfile]";
         try {
-            if(!setGlobal(global)){
-                logger.info(fName+printUser()+"global can't be null>false");
-                return false;
-            }
-            if(!setMember(member)){
-                logger.info(fName+printUser()+"member can't be null>false");
-                return false;
-            }
-            if(!setGuild(member.getGuild())){
-                logger.info(fName+printUser()+"guild can't be null>false");
-                return false;
-            }
+            if(!setGlobal(global))throw  new Exception(printUser()+"global can't be null>false");
+            if(!setMember(member))throw  new Exception(printUser()+"member can't be null>false");
+            if(!setGuild(member.getGuild()))throw  new Exception(printUser()+"guild can't be null>false");
             if(!getProfile()){
                 logger.info(fName+printUser()+"failed to get>false");
                 return false;
@@ -200,26 +161,16 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser()+"default & success > true");
             return true;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
     public boolean getCacheProfile(lcGlobalHelper global,Member member){
         String fName="[getCacheProfile]";
         try {
-            if(!setGlobal(global)){
-                logger.info(fName+printUser()+"global can't be null>false");
-                return false;
-            }
-            if(!setMember(member)){
-                logger.info(fName+printUser()+"member can't be null>false");
-                return false;
-            }
-            if(!setGuild(member.getGuild())){
-                logger.info(fName+printUser()+"guild can't be null>false");
-                return false;
-            }
+            if(!setGlobal(global))throw  new Exception(printUser()+"global can't be null>false");
+            if(!setMember(member))throw  new Exception(printUser()+"member can't be null>false");
+            if(!setGuild(member.getGuild()))throw  new Exception(printUser()+"guild can't be null>false");
             if(!getCacheProfile()){
                 logger.info(fName+printUser()+"failed to get>false");
                 return false;
@@ -227,26 +178,16 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser()+"default & success > true");
             return true;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
     public boolean getSQLProfile(lcGlobalHelper global,Member member){
         String fName="[getSQLProfile]";
         try {
-            if(!setGlobal(global)){
-                logger.info(fName+printUser()+"global can't be null>false");
-                return false;
-            }
-            if(!setMember(member)){
-                logger.info(fName+printUser()+"member can't be null>false");
-                return false;
-            }
-            if(!setGuild(member.getGuild())){
-                logger.info(fName+printUser()+"guild can't be null>false");
-                return false;
-            }
+            if(!setGlobal(global))throw  new Exception(printUser()+"global can't be null>false");
+            if(!setMember(member))throw  new Exception(printUser()+"member can't be null>false");
+            if(!setGuild(member.getGuild()))throw  new Exception(printUser()+"guild can't be null>false");
             if(!getSQLProfile()){
                 logger.info(fName+printUser()+"failed to get>false");
                 return false;
@@ -254,8 +195,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser()+"default & success > true");
             return true;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -267,8 +207,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser() + ".created");
             return true;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -285,8 +224,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser() + ".updated");
             return true;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -300,8 +238,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser() + ".failed");
             return false;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -315,8 +252,7 @@ public class entityUserProfile4NaughtyPresents {
             }
             logger.warn(fName+printUser() + ".failed");return false;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -328,8 +264,7 @@ public class entityUserProfile4NaughtyPresents {
             }
             logger.warn(fName+printUser() + ".failed");return false;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -342,8 +277,7 @@ public class entityUserProfile4NaughtyPresents {
             }
             logger.warn(fName+printUser() + ".failed");return false;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -357,8 +291,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser()+"member="+gMember.getId());
             return  gMember;
         } catch (Exception e) {
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -372,8 +305,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser()+"guild="+gGuild.getId());
             return  gGuild;
         } catch (Exception e) {
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -401,8 +333,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser());
             return gUserProfile.isProfile();
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -417,8 +348,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser() + ".please update");
             return true;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -432,8 +362,7 @@ public class entityUserProfile4NaughtyPresents {
             isPatreon=value;
             return value;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -443,8 +372,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser() + ".value="+isPatreon);
             return isPatreon;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -485,8 +413,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser()+".jsonArray.size="+jsonArray.length());
             return jsonArray;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -506,8 +433,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser()+".events isn't empty");
             return false;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return true;
         }
     }
@@ -528,8 +454,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser()+".events.size="+size);
             return size;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return -1;
         }
     }
@@ -552,8 +477,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+"events["+index+"].entities["+index+"] removed");
             return  true;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
@@ -565,13 +489,7 @@ public class entityUserProfile4NaughtyPresents {
 
         }
         public Event(int index,JSONArray jsonArray){
-            String fName="[build]";
-            try {
-                _setIndex(index,jsonArray);
-            }catch (Exception e){
-                logger.error(cName+fName+".exception=" + e);
-                logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+            _setIndex(index,jsonArray);
         }
         private Event _setIndex(int index){
             String fName="[_setIndex]";
@@ -603,15 +521,7 @@ public class entityUserProfile4NaughtyPresents {
             }
         }
         public int getIndex(){
-            String fName="[getIndex]";
-            try {
-                logger.info(cName+fName+"index="+index);
-                return index;
-            }catch (Exception e){
-                logger.error(cName+fName+".exception=" + e);
-                logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-                return -1;
-            }
+            return index;
         }
         private Event _setJsonParent(JSONArray jsonArray){
             String fName="[_setJsonParent]";
@@ -627,20 +537,12 @@ public class entityUserProfile4NaughtyPresents {
             }
         }
         private JSONArray _getJsonParent(){
-            String fName="[_getJsonParent]";
-            try {
-                return jsonParent;
-            }catch (Exception e){
-                logger.error(cName+fName+".exception=" + e);
-                logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-                return null;
-            }
+            return jsonParent;
         }
         private JSONObject _getJson(){
             String fName="[_getJson]";
             try {
-                JSONObject jsonObject= _getJsonParent().getJSONObject(index);
-                return jsonObject;
+                return _getJsonParent().getJSONObject(index);
             }catch (Exception e){
                 logger.error(cName+fName+".exception=" + e);
                 logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
@@ -767,8 +669,7 @@ public class entityUserProfile4NaughtyPresents {
             }
             return list;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -798,8 +699,7 @@ public class entityUserProfile4NaughtyPresents {
             }
             return list;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -824,8 +724,7 @@ public class entityUserProfile4NaughtyPresents {
             }
             return event;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -850,8 +749,7 @@ public class entityUserProfile4NaughtyPresents {
             event2._setIndex(jsonArray.length()-1,jsonArray);
             return  event2;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -864,8 +762,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser()+".jsonArray.isEmpty="+jsonArray.length());
             return jsonArray;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -885,8 +782,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser()+".presents isn't empty");
             return false;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return true;
         }
     }
@@ -907,8 +803,7 @@ public class entityUserProfile4NaughtyPresents {
             logger.info(fName+printUser()+".presents.size="+size);
             return size;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return -1;
         }
     }
@@ -933,8 +828,7 @@ public class entityUserProfile4NaughtyPresents {
             entityUserProfile4NaughtyPresents.Present present1=new Present(jsonArray.length()-1,jsonArray);
             return  present1;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -960,8 +854,7 @@ public class entityUserProfile4NaughtyPresents {
             entityUserProfile4NaughtyPresents.Present present1=new Present(jsonArray.length()-1,jsonArray);
             return  present1;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -988,8 +881,7 @@ public class entityUserProfile4NaughtyPresents {
             entityUserProfile4NaughtyPresents.Present present1=new Present(jsonArray.length()-1,jsonArray);
             return  present1;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -1001,13 +893,7 @@ public class entityUserProfile4NaughtyPresents {
 
         }
         public Present(int index,JSONArray jsonArray){
-            String fName="[build]";
-            try {
-                _setIndex(index,jsonArray);
-            }catch (Exception e){
-                logger.error(cName+fName+".exception=" + e);
-                logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-            }
+            _setIndex(index,jsonArray);
         }
         private Present _setIndex(int index){
             String fName="[_setIndex]";
@@ -1037,15 +923,7 @@ public class entityUserProfile4NaughtyPresents {
             }
         }
         public int getIndex(){
-            String fName="[getIndex]";
-            try {
-                logger.info(cName+fName+"index="+index);
-                return index;
-            }catch (Exception e){
-                logger.error(cName+fName+".exception=" + e);
-                logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-                return 0;
-            }
+            return index;
         }
         private Present _setJsonParent(JSONArray jsonArray){
             String fName="[_setJsonParent]";
@@ -1061,20 +939,12 @@ public class entityUserProfile4NaughtyPresents {
             }
         }
         public JSONArray _getJsonParent(){
-            String fName="[_getJsonParent]";
-            try {
-                return jsonParent;
-            }catch (Exception e){
-                logger.error(cName+fName+".exception=" + e);
-                logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
-                return null;
-            }
+            return jsonParent;
         }
         public JSONObject _getJson(){
             String fName="[_getJson]";
             try {
-                JSONObject jsonObject= _getJsonParent().getJSONObject(index);
-                return jsonObject;
+                return _getJsonParent().getJSONObject(index);
             }catch (Exception e){
                 logger.error(cName+fName+".exception=" + e);
                 logger.error(cName+fName+".exception:" + Arrays.toString(e.getStackTrace()));
@@ -1395,8 +1265,7 @@ public class entityUserProfile4NaughtyPresents {
             }
             return list;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -1427,8 +1296,7 @@ public class entityUserProfile4NaughtyPresents {
             }
             return list;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
@@ -1455,8 +1323,7 @@ public class entityUserProfile4NaughtyPresents {
             if(present._setIndex(index,jsonObject)==null)throw  new Exception(fName+" faild to set");
             return  present;
         }catch (Exception e){
-            logger.error(fName+printUser() + ".exception=" + e);
-            logger.error(fName+printUser() + ".exception:" + Arrays.toString(e.getStackTrace()));
+            logger.error(fName+".exception=" + e+", StackTrace:"+Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
