@@ -1,0 +1,66 @@
+{
+	"bot": {
+		"shards": 7,
+		"waiter_threadpool": 7,
+		"id": "389512707973316608",
+		"token": "",
+		"client_secret": "",
+		"redirect_url": "",
+		"owner_id": "",
+		"member_cache_policy": 0,
+		"websoketfactory": {
+			"enabled": true,
+			"connection_timeout": 300000,
+			"socket_timeout": 300000
+		},
+		"httpclientbuilder": {
+			"enabled": false,
+			"max_requests_per_host": 25,
+			"max_idle_connections": 5,
+			"keep_alive_duration": 60
+		}
+	},
+	"Lovense": {
+		"callBackURL": "",
+		"token": "",
+		"callbackURL_Main": "",
+		"callbackURL_Debug": "",
+		"callbackURL_Website": ""
+	},
+	"Pishock": {
+		"api": {
+			"username": "",
+			"apikey": ""
+		},
+		"links": {
+			"discord": ""
+		}
+	},
+	"InkBunny": {
+		"sid": "",
+		"username": "",
+		"password": ""
+	},
+	"Weasyl": {
+		"api_key": ""
+	},
+	"FurAffinity": {
+		"cookie": ""
+	},
+	"Emlalock": {
+		"session_id": ""
+	},
+	"ChastiKey": {
+		"client": {
+			"id": "",
+			"key": ""
+		}
+	},
+	"sql": {
+		"url": "",
+		"properties": {
+			"user": "",
+			"password": ""
+		}
+	}
+}

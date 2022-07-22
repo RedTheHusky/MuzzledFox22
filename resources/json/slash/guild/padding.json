@@ -6,7 +6,7 @@
 		{
 			"type": 1,
 			"name": "menu",
-			"description": "Menu for pishock",
+			"description": "Menu for virtual padding",
 			"options": [
 				{
 					"name": "user",

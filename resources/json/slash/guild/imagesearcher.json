@@ -1,0 +1,39 @@
+{
+	"name": "image_search",
+	"description": "Search for image",
+	"type": 1,
+	"options": [
+		{
+			"type": 1,
+			"name": "fa",
+			"description": "Images from fa",
+			"options": [
+				{
+					"type": 3,
+					"name": "image",
+					"description": "What image keyword to search for"
+				},
+				{
+					"type": 3,
+					"name": "author",
+					"description": "Loading author gallery"
+				},
+				{
+					"type": 5,
+					"name": "general",
+					"description": "include general labeled images"
+				},
+				{
+					"type": 5,
+					"name": "mature",
+					"description": "include mature labeled images"
+				},
+				{
+					"type": 5,
+					"name": "adult",
+					"description": "include adult labeled images"
+				}
+			]
+		}
+	]
+}

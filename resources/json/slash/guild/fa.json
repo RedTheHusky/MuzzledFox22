@@ -1,0 +1,29 @@
+{
+	"name": "fa",
+	"description": "Search for...",
+	"type": 1,
+	"options": [
+		{
+			"type": 3,
+			"name": "image",
+			"description": "What image keyword to search for"
+		},
+		{
+			"type": 3,
+			"name": "author",
+			"description": "Loading author gallery"
+		},
+		{
+			"type": 3,
+			"name": "isGeneral"
+		},
+		{
+			"type": 3,
+			"name": "isMature"
+		},
+		{
+			"type": 3,
+			"name": "isAdult"
+		}
+	]
+}
